@@ -1,7 +1,6 @@
 package br.com.dbc.vemser.dbcompras.security;
 import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
-import br.com.vemser.petshop.entity.UsuarioEntity;
-import br.com.vemser.petshop.service.UsuarioService;
+import br.com.dbc.vemser.dbcompras.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

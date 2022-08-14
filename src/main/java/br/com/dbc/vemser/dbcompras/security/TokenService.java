@@ -1,7 +1,8 @@
 package br.com.dbc.vemser.dbcompras.security;
-import br.com.vemser.petshop.entity.CargoEntity;
-import br.com.vemser.petshop.entity.UsuarioEntity;
-import br.com.vemser.petshop.service.UsuarioService;
+import br.com.dbc.vemser.dbcompras.entity.CargoEntity;
+import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
+import br.com.dbc.vemser.dbcompras.enums.CargoUsuario;
+import br.com.dbc.vemser.dbcompras.service.UsuarioService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -35,13 +36,14 @@ public class TokenService {
         Date now = new Date();
         Date exp = new Date(now.getTime() + Long.parseLong(expiration));
 
-        List<String> listCargos = usuarioEntity.getCargos().stream()
+        List<String> listCargos = usuarioEntity.getCargos()
+                .stream()
                 .map(CargoEntity::getNome)
                 .toList();
 
         String token = Jwts.builder()
-                .setIssuer("petshop-api")
-                .claim(Claims.ID, usuarioEntity.getIdUsuario())
+                .setIssuer("dbccompras-api")
+                .claim(Claims.ID, usuarioEntity.getIdUser())
                 .claim(KEY_CARGOS, listCargos)
                 .setIssuedAt(now)
                 .setExpiration(exp)
