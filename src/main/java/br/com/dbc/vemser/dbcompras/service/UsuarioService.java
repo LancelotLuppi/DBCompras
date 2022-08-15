@@ -1,17 +1,20 @@
 package br.com.dbc.vemser.dbcompras.service;
 
 import br.com.dbc.vemser.dbcompras.dto.*;
-import br.com.dbc.vemser.dbcompras.entity.CargoEntity;
 import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
-import br.com.dbc.vemser.dbcompras.enums.CargoUsuario;
+import br.com.dbc.vemser.dbcompras.enums.TipoCargo;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.repository.CargoRepository;
 import br.com.dbc.vemser.dbcompras.repository.UsuarioRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import br.com.dbc.vemser.dbcompras.security.TokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,37 +29,61 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final ObjectMapper objectMapper;
     private final CargoRepository cargoRepository;
+    private final TokenService tokenService;
+    private final AuthenticationManager authenticationManager;
 
-    public UsuarioEntity converterUsuarioEntity(UsuarioCreateDTO usuarioCreateDTO) {
-        return objectMapper.convertValue(usuarioCreateDTO, UsuarioEntity.class);
+
+
+    public Optional<UsuarioEntity> findByEmail(String email){
+        return usuarioRepository.findByEmail(email);
     }
 
-    public UsuarioDTO converterUsuarioDTO(UsuarioEntity usuario) {
-        return objectMapper.convertValue(usuario, UsuarioDTO.class);
+    public UsuarioDTO findById()
+            throws UsuarioException {
+        return retornarUsuarioDTO(retornarUsuarioEntityById());
     }
 
-    private String encodePassword(String password){
-        return new BCryptPasswordEncoder().encode(password);
+    public UsuarioReturnDTO create(UsuarioCreateDTO usuario) {
+        UsuarioEntity usuarioEntity = retornarUsuarioEntity(usuario);
+        usuarioEntity.setCargos(Set.of(cargoRepository.findById(TipoCargo.COLABORADOR.getCargo()).get()));
+        usuarioEntity.setPassword(encodePassword(usuario.getPassword()));
+        usuarioEntity.setEnable(true);
+        usuarioEntity = usuarioRepository.save(usuarioEntity);
+
+        return objectMapper.convertValue(usuarioEntity, UsuarioReturnDTO.class);
     }
 
 
-    public Optional<UsuarioEntity> findByUsername(String username) {
-        return null;
+
+    public String validarLogin(LoginDTO login) {
+        return recuperarToken(login.getEmail(), login.getPassword());
     }
 
-    public Optional<UsuarioEntity> findByLogin(String login){
-        return usuarioRepository.findByLogin(login);
+    public UsuarioUpdateLoginDTO updatePassword (UsuarioUpdateLoginDTO usuario)
+            throws UsuarioException {
+        UsuarioEntity usuarioEntity = retornarUsuarioEntityById();
+
+        usuarioEntity.setPassword(encodePassword(usuario.getSenha()));
+
+        usuarioRepository.save(usuarioEntity);
+        return objectMapper.convertValue(usuarioEntity, UsuarioUpdateLoginDTO.class);
+
     }
 
-    public Integer getIdLoggedUser() throws UsuarioException {
-        Integer idUser;
-        try {
-            idUser =  (Integer) SecurityContextHolder.getContext()
-                    .getAuthentication().getPrincipal();
-        } catch (Exception e){
-            throw new UsuarioException("Usuário não logado");
-        }
-        return idUser;
+    public UsuarioDTO update(UsuarioUpdateDTO usuarioUpdate) throws UsuarioException {
+
+        UsuarioEntity usuarioEntity = retornarUsuarioEntityById();
+
+        usuarioEntity.setNome(usuarioUpdate.getNome());
+        usuarioEntity.setEmail(usuarioUpdate.getEmail());
+        usuarioEntity = usuarioRepository.save(usuarioEntity);
+        return retornarUsuarioDTO(usuarioEntity);
+    }
+
+    public void delete()
+            throws UsuarioException {
+        UsuarioEntity usuario = retornarUsuarioEntityById();
+        usuarioRepository.delete(usuario);
     }
 
     public UsuarioLoginDTO getLoggedUser()
@@ -71,64 +98,40 @@ public class UsuarioService {
                 .orElseThrow(() -> new UsuarioException("Usuário não cadastrado"));
     }
 
-    public UsuarioDTO findById()
-            throws UsuarioException {
-        return converterUsuarioDTO(retornarUsuarioEntityById());
+    private Integer getIdLoggedUser() throws UsuarioException {
+        Integer idUser;
+        try {
+            idUser =  (Integer) SecurityContextHolder.getContext()
+                    .getAuthentication().getPrincipal();
+        } catch (Exception e){
+            throw new UsuarioException("Usuário não logado");
+        }
+        return idUser;
     }
 
-    public UsuarioDTO create(UsuarioCreateDTO usuario, CargoUsuario cargo) throws JsonProcessingException {
-        UsuarioEntity usuarioEntity = converterUsuarioEntity(usuario);
-        Optional<CargoEntity> cargoEntity = cargoRepository.findById(cargo.ordinal());
-        usuarioEntity.setCargos(Set.of(cargoEntity.get()));
-        usuarioEntity.setPassword(encodePassword(usuario.getSenha()));
-        usuarioEntity.setEnable(true);
-        usuarioEntity = usuarioRepository.save(usuarioEntity);
-        UsuarioDTO usuarioDTO = converterUsuarioDTO(usuarioEntity);
-        return usuarioDTO;
+    private String recuperarToken(String usuarioEntity, String usuarioEntity1) {
+        UsernamePasswordAuthenticationToken userPassAuthToken =
+                new UsernamePasswordAuthenticationToken(
+                        usuarioEntity,
+                        usuarioEntity1);
+
+        Authentication authentication = authenticationManager.authenticate(userPassAuthToken);
+        Object usuarioLogado =  authentication.getPrincipal();
+        UsuarioEntity usuarioEntityLogado = (UsuarioEntity) usuarioLogado;
+
+        return tokenService.generateToken(usuarioEntityLogado);
     }
 
-    public UsuarioUpdateLoginDTO updateLogin (UsuarioUpdateLoginDTO usuario)
-            throws UsuarioException {
-        UsuarioEntity usuarioEntity = retornarUsuarioEntityById();
-
-        if(usuario.getLogin() != null){
-            usuarioEntity.setLogin(usuario.getLogin());
-        }
-
-        if(usuario.getSenha() != null){
-            usuarioEntity.setPassword(encodePassword(usuario.getSenha()));
-        }
-
-        usuarioRepository.save(usuarioEntity);
-        return objectMapper.convertValue(usuarioEntity, UsuarioUpdateLoginDTO.class);
-
+    private UsuarioEntity retornarUsuarioEntity (UsuarioCreateDTO usuarioCreateDTO) {
+        return objectMapper.convertValue(usuarioCreateDTO, UsuarioEntity.class);
     }
 
-    public UsuarioDTO update(UsuarioUpdateDTO usuarioUpdate, CargoUsuario cargo)
-            throws JsonProcessingException, UsuarioException {
-
-        UsuarioEntity usuarioEntity = retornarUsuarioEntityById();
-
-        if(usuarioUpdate.getEmail() != null){
-            usuarioEntity.setEmail(usuarioUpdate.getEmail());
-        }
-
-        if(usuarioUpdate.getPhoto() != 0){
-            usuarioEntity.setPhoto(usuarioUpdate.getPhoto());
-        }
-
-        if(usuarioUpdate.getNome() != null) {
-            usuarioEntity.setNome(usuarioUpdate.getNome());
-        }
-
-        usuarioEntity = usuarioRepository.save(usuarioEntity);
-        return converterUsuarioDTO(usuarioEntity);
+    private UsuarioDTO retornarUsuarioDTO (UsuarioEntity usuario) {
+        return objectMapper.convertValue(usuario, UsuarioDTO.class);
     }
 
-    public void delete()
-            throws UsuarioException {
-        UsuarioEntity usuario = retornarUsuarioEntityById();
-        usuarioRepository.delete(usuario);
+    private String encodePassword(String password){
+        return new Argon2PasswordEncoder().encode(password);
     }
 
 }

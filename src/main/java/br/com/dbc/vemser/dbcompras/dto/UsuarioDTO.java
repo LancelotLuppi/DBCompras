@@ -1,26 +1,9 @@
 package br.com.dbc.vemser.dbcompras.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class UsuarioDTO extends UsuarioCreateDTO {
 
-    private Integer idUsuario;
-
-    @JsonIgnore
-    private String senha;
-
-    @Override
-    public String toString() {
-        return "UsuarioDTO{" +
-                "idUsuario=" + idUsuario +
-                '}';
-    }
+    private Integer idUser;
 }

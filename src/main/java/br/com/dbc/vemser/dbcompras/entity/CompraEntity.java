@@ -23,11 +23,6 @@ public class CompraEntity {
     @Column(name = "id_purchase", insertable = false, updatable = false)
     private Integer idCompra;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_user",
-            referencedColumnName = "id_user")
-    private UsuarioEntity usuario;
-
     @Column(name = "name")
     private String name;
 
@@ -38,5 +33,10 @@ public class CompraEntity {
 
     @Column(name = "total_value")
     private Double valor;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_user",
+            referencedColumnName = "id_user")
+    private UsuarioEntity usuario;
 
 }

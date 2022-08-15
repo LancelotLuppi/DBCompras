@@ -7,8 +7,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class UsuarioCreateDTO {
-
+public class UsuarioReturnDTO {
     @Schema(example = "Juliana da Silva", description = "nome completo do usuario")
     @NotNull
     @NotEmpty
@@ -17,10 +16,4 @@ public class UsuarioCreateDTO {
     @Schema(example = "seuEmail@dominio.com", description = "email do usuario")
     @NotEmpty
     private String email;
-
-    @Schema(description = "senha do usuario", example = "Drag@nBorn1")
-    @NotNull
-    @NotEmpty
-    private String password;
-
 }

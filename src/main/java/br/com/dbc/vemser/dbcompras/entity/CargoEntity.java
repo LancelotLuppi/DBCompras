@@ -1,6 +1,5 @@
 package br.com.dbc.vemser.dbcompras.entity;
 
-import br.com.dbc.vemser.dbcompras.enums.CargoUsuario;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,7 +18,7 @@ public class CargoEntity implements GrantedAuthority {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_ID_CARGO")
-    @SequenceGenerator(name = "SEQ_ID_CARGO", sequenceName = "seq_id_office", allocationSize = 1)
+    @SequenceGenerator(name = "SEQ_ID_CARGO", sequenceName = "seq_office", allocationSize = 1)
     @Column(name = "id_office")
     private Integer idCargo;
 

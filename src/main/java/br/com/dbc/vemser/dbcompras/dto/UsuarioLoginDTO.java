@@ -13,10 +13,10 @@ public class UsuarioLoginDTO {
 
     @Schema(description = "login do usuario", example = "joão")
     @NotBlank
-    private String login;
+    private String email;
 
     @Schema(example = "Drag@nBorn1")
     @NotBlank
-    private String senha;
+    private String password;
 
 }

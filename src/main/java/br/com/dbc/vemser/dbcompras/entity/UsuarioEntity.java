@@ -1,7 +1,10 @@
 package br.com.dbc.vemser.dbcompras.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -13,7 +16,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "user")
+@Entity(name = "usuario")
 public class UsuarioEntity implements UserDetails {
 
     @Id
@@ -25,9 +28,6 @@ public class UsuarioEntity implements UserDetails {
     @Column(name = "name")
     private String nome;
 
-    @Column(name = "login")
-    private String login;
-
     @Column(name = "email")
     private String email;
 
@@ -35,7 +35,7 @@ public class UsuarioEntity implements UserDetails {
     private String password;
 
     @Column(name = "photo")
-    private byte photo;
+    private byte[] photo;
 
     @Column(name = "enable")
     private boolean enable;
@@ -51,27 +51,32 @@ public class UsuarioEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return cargos;
     }
 
     @Override
     public String getUsername() {
-        return null;
+        return email;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override

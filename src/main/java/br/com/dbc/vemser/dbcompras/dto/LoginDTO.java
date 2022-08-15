@@ -8,10 +8,10 @@ import javax.validation.constraints.NotEmpty;
 @Data
 public class LoginDTO {
 
-    @Schema(example = "user")
+    @Schema(example = "Email de cadastro")
     @NotEmpty
-    private String login;
+    private String email;
 
     @NotEmpty
-    private String senha;
+    private String password;
 }

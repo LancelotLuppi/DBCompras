@@ -2,11 +2,9 @@ package br.com.dbc.vemser.dbcompras.controller;
 
 import br.com.dbc.vemser.dbcompras.dto.UsuarioDTO;
 import br.com.dbc.vemser.dbcompras.dto.UsuarioUpdateDTO;
-import br.com.dbc.vemser.dbcompras.enums.CargoUsuario;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.service.UsuarioService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 
 
 import org.springframework.http.ResponseEntity;
@@ -18,25 +16,21 @@ import javax.validation.Valid;
 
 @Validated
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/usuario")
 public class UsuarioController {
 
-    @Autowired
-    private UsuarioService usuarioService;
+    private final UsuarioService usuarioService;
 
     @GetMapping("/find-by-id")
-    public ResponseEntity<UsuarioDTO> findById()
-            throws UsuarioException {
+    public ResponseEntity<UsuarioDTO> findById() throws UsuarioException {
         return ResponseEntity.ok(usuarioService.findById());
     }
 
     @PutMapping("/update-user")
-    public ResponseEntity<UsuarioDTO> update(
-            @RequestParam(required = false) CargoUsuario cargos,
-            @Valid @RequestBody UsuarioUpdateDTO usuario
-    )
-            throws UsuarioException, JsonProcessingException {
-        return ResponseEntity.ok(usuarioService.update(usuario, cargos));
+    public ResponseEntity<UsuarioDTO> update(@Valid @RequestBody UsuarioUpdateDTO usuario)
+            throws UsuarioException {
+        return ResponseEntity.ok(usuarioService.update(usuario));
     }
 
     @DeleteMapping("/delete-user")
