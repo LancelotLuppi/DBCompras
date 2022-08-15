@@ -1,11 +1,9 @@
 package br.com.dbc.vemser.dbcompras.security;
 import br.com.dbc.vemser.dbcompras.entity.CargoEntity;
 import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
-import br.com.dbc.vemser.dbcompras.service.UsuarioService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -49,6 +47,7 @@ public class TokenService {
 
         return TokenAuthenticationFilter.BEARER + token;
     }
+
 
 
     public UsernamePasswordAuthenticationToken isValid(String token) {

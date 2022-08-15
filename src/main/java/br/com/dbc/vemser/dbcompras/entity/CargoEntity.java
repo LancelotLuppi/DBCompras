@@ -40,5 +40,4 @@ public class CargoEntity implements GrantedAuthority {
     }
 
 
-
 }
