@@ -24,22 +24,18 @@ public class CargoEntity implements GrantedAuthority {
     private Integer idCargo;
 
     @Column(name = "name")
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private CargoUsuario name;
 
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "user_office",
-            joinColumns = @JoinColumn(name = "id_office"),
-            inverseJoinColumns = @JoinColumn(name = "id_user")
-    )
+    @OneToMany(fetch = FetchType.LAZY,
+            mappedBy = "cargos")
     private Set<UsuarioEntity> usuarios;
 
     @Override
     public String getAuthority() {
-        return name;
+        return "";
     }
-
 
 
 }

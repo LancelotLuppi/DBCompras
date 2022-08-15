@@ -43,7 +43,6 @@ public class AuthController {
         UsuarioEntity usuarioEntity = (UsuarioEntity) usuarioLogado;
 
         return ResponseEntity.ok(tokenService.generateToken(usuarioEntity));
-
     }
 
     @GetMapping("/get-islogged")

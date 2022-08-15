@@ -78,8 +78,7 @@ public class UsuarioService {
 
     public UsuarioDTO create(UsuarioCreateDTO usuario, CargoUsuario cargo) throws JsonProcessingException {
         UsuarioEntity usuarioEntity = converterUsuarioEntity(usuario);
-        Optional<CargoEntity> cargoEntity = cargoRepository.findById(cargo.ordinal());
-        usuarioEntity.setCargos(Set.of(cargoEntity.get()));
+        usuarioEntity.setCargos(cargoRepository.findByName(cargo));
         usuarioEntity.setPassword(encodePassword(usuario.getSenha()));
         usuarioEntity.setEnable(true);
         usuarioEntity = usuarioRepository.save(usuarioEntity);

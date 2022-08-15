@@ -9,4 +9,5 @@ import java.util.Set;
 
 @Repository
 public interface CargoRepository extends JpaRepository<CargoEntity, Integer> {
+    CargoEntity findByName(CargoUsuario cargo);
 }

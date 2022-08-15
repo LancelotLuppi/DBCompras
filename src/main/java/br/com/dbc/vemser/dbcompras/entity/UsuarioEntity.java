@@ -7,13 +7,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
-import java.util.Set;
+import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "user")
+@Entity(name = "usuario")
 public class UsuarioEntity implements UserDetails {
 
     @Id
@@ -41,18 +41,16 @@ public class UsuarioEntity implements UserDetails {
     private boolean enable;
 
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "user_office",
-            joinColumns = @JoinColumn(name = "id_user"),
-            inverseJoinColumns = @JoinColumn(name = "id_office")
-    )
-    private Set<CargoEntity> cargos;
+    @ManyToOne(fetch = FetchType.LAZY) // traz quando solicitado
+    @JoinColumn(name = "id_office", referencedColumnName = "id_office")
+    private CargoEntity cargos;
 
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return List.of(cargos);
     }
+
 
     @Override
     public String getUsername() {
