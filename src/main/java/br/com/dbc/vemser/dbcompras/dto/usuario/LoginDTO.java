@@ -21,6 +21,7 @@ public class LoginDTO {
     private String email;
 
     @NotEmpty
+    @NotNull
     @Schema(example = "123")
     private String password;
 }
