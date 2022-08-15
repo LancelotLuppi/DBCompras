@@ -49,6 +49,8 @@ public class UsuarioService {
         usuarioEntity.setEnable(true);
         usuarioEntity = usuarioRepository.save(usuarioEntity);
 
+
+
         return objectMapper.convertValue(usuarioEntity, LoginReturnDTO.class);
     }
 
@@ -108,11 +110,11 @@ public class UsuarioService {
         return idUser;
     }
 
-    private String recuperarToken(String usuarioEntity, String usuarioEntity1) {
+    private String recuperarToken(String email, String senha) {
         UsernamePasswordAuthenticationToken userPassAuthToken =
                 new UsernamePasswordAuthenticationToken(
-                        usuarioEntity,
-                        usuarioEntity1);
+                        email,
+                        senha);
 
         Authentication authentication = authenticationManager.authenticate(userPassAuthToken);
         Object usuarioLogado =  authentication.getPrincipal();
