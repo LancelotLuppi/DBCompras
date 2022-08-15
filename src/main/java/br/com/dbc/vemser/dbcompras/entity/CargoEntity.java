@@ -24,7 +24,7 @@ public class CargoEntity implements GrantedAuthority {
     private Integer idCargo;
 
     @Column(name = "name")
-    private String nome;
+    private String name;
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -37,7 +37,7 @@ public class CargoEntity implements GrantedAuthority {
 
     @Override
     public String getAuthority() {
-        return nome;
+        return name;
     }
 
 

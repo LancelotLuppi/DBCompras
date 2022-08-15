@@ -30,15 +30,14 @@ public class TokenService {
     private static final String KEY_CARGOS = "cargos";
 
 
-    public String generateToken(Authentication authentication) {
-        UsuarioEntity usuarioEntity = (UsuarioEntity) authentication.getPrincipal();
+    public String generateToken(UsuarioEntity usuarioEntity) {
 
         Date now = new Date();
         Date exp = new Date(now.getTime() + Long.parseLong(expiration));
 
         List<String> listCargos = usuarioEntity.getCargos()
                 .stream()
-                .map(CargoEntity::getNome)
+                .map(CargoEntity::getName)
                 .toList();
 
         String token = Jwts.builder()

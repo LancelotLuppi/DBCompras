@@ -37,7 +37,7 @@ public class SecurityConfiguration {
 
     private Customizer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry> permissoes() {
         return (authz) ->
-                authz.antMatchers("/", "/auth/cadastro").permitAll()
+                authz.antMatchers("/", "/auth/**").permitAll()
                         .anyRequest().authenticated();
     }
 
