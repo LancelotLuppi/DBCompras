@@ -1,7 +1,8 @@
-package br.com.dbc.vemser.dbcompras.dto;
+package br.com.dbc.vemser.dbcompras.dto.usuario;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
+
 import javax.validation.constraints.NotBlank;
 
 @Data

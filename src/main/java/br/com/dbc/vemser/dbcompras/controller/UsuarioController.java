@@ -1,7 +1,8 @@
 package br.com.dbc.vemser.dbcompras.controller;
 
-import br.com.dbc.vemser.dbcompras.dto.UsuarioDTO;
-import br.com.dbc.vemser.dbcompras.dto.UsuarioUpdateDTO;
+import br.com.dbc.vemser.dbcompras.dto.usuario.UsuarioDTO;
+import br.com.dbc.vemser.dbcompras.dto.usuario.UsuarioLoginDTO;
+import br.com.dbc.vemser.dbcompras.dto.usuario.UsuarioUpdateDTO;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.service.UsuarioService;
 import lombok.RequiredArgsConstructor;

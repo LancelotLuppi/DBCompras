@@ -1,6 +1,6 @@
 package br.com.dbc.vemser.dbcompras.service;
 
-import br.com.dbc.vemser.dbcompras.dto.*;
+import br.com.dbc.vemser.dbcompras.dto.usuario.*;
 import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
 import br.com.dbc.vemser.dbcompras.enums.TipoCargo;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
@@ -15,7 +15,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -43,14 +42,14 @@ public class UsuarioService {
         return retornarUsuarioDTO(retornarUsuarioEntityById());
     }
 
-    public UsuarioReturnDTO create(UsuarioCreateDTO usuario) {
+    public LoginReturnDTO create(UsuarioCreateDTO usuario) {
         UsuarioEntity usuarioEntity = retornarUsuarioEntity(usuario);
         usuarioEntity.setCargos(Set.of(cargoRepository.findById(TipoCargo.COLABORADOR.getCargo()).get()));
         usuarioEntity.setPassword(encodePassword(usuario.getPassword()));
         usuarioEntity.setEnable(true);
         usuarioEntity = usuarioRepository.save(usuarioEntity);
 
-        return objectMapper.convertValue(usuarioEntity, UsuarioReturnDTO.class);
+        return objectMapper.convertValue(usuarioEntity, LoginReturnDTO.class);
     }
 
 
@@ -59,14 +58,14 @@ public class UsuarioService {
         return recuperarToken(login.getEmail(), login.getPassword());
     }
 
-    public UsuarioUpdateLoginDTO updatePassword (UsuarioUpdateLoginDTO usuario)
+    public LoginDTO updatePassword (LoginDTO usuario)
             throws UsuarioException {
         UsuarioEntity usuarioEntity = retornarUsuarioEntityById();
 
-        usuarioEntity.setPassword(encodePassword(usuario.getSenha()));
+        usuarioEntity.setPassword(encodePassword(usuario.getPassword()));
 
         usuarioRepository.save(usuarioEntity);
-        return objectMapper.convertValue(usuarioEntity, UsuarioUpdateLoginDTO.class);
+        return objectMapper.convertValue(usuarioEntity, LoginDTO.class);
 
     }
 
@@ -86,9 +85,9 @@ public class UsuarioService {
         usuarioRepository.delete(usuario);
     }
 
-    public UsuarioLoginDTO getLoggedUser()
+    public LoginReturnDTO getLoggedUser()
             throws UsuarioException {
-        return objectMapper.convertValue(retornarUsuarioEntityById(), UsuarioLoginDTO.class);
+        return objectMapper.convertValue(retornarUsuarioEntityById(), LoginReturnDTO.class);
     }
 
     public UsuarioEntity retornarUsuarioEntityById()

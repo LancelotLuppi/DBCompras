@@ -1,4 +1,4 @@
-package br.com.dbc.vemser.dbcompras.dto;
+package br.com.dbc.vemser.dbcompras.dto.usuario;
 
 import lombok.Data;
 
