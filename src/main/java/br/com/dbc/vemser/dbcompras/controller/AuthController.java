@@ -22,14 +22,14 @@ public class AuthController {
         return ResponseEntity.ok(usuarioService.validarLogin(login));
     }
 
-    @GetMapping("/get-islogged")
+    @GetMapping("/get-logged")
     public ResponseEntity<LoginReturnDTO> getUser () throws UsuarioException {
         return ResponseEntity.ok(usuarioService.getLoggedUser());
     }
 
     @PostMapping("/create-user")
-    public ResponseEntity<LoginReturnDTO> create(@RequestBody UsuarioCreateDTO usuarioCreateDTO) {
-        return ResponseEntity.ok(usuarioService.create(usuarioCreateDTO));
+    public ResponseEntity<LoginReturnDTO> create(@RequestBody LoginDTO loginDTO) {
+        return ResponseEntity.ok(usuarioService.create(loginDTO));
     }
 
     @PutMapping("/update-credenciais")

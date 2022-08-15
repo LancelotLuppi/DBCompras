@@ -1,6 +1,9 @@
 package br.com.dbc.vemser.dbcompras.service;
 
-import br.com.dbc.vemser.dbcompras.dto.usuario.*;
+import br.com.dbc.vemser.dbcompras.dto.usuario.LoginDTO;
+import br.com.dbc.vemser.dbcompras.dto.usuario.LoginReturnDTO;
+import br.com.dbc.vemser.dbcompras.dto.usuario.UsuarioDTO;
+import br.com.dbc.vemser.dbcompras.dto.usuario.UsuarioUpdateDTO;
 import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
 import br.com.dbc.vemser.dbcompras.enums.TipoCargo;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
@@ -42,10 +45,10 @@ public class UsuarioService {
         return retornarUsuarioDTO(retornarUsuarioEntityById());
     }
 
-    public LoginReturnDTO create(UsuarioCreateDTO usuario) {
-        UsuarioEntity usuarioEntity = retornarUsuarioEntity(usuario);
+    public LoginReturnDTO create(LoginDTO login) {
+        UsuarioEntity usuarioEntity = retornarUsuarioEntity(login);
         usuarioEntity.setCargos(Set.of(cargoRepository.findById(TipoCargo.COLABORADOR.getCargo()).get()));
-        usuarioEntity.setPassword(encodePassword(usuario.getPassword()));
+        usuarioEntity.setPassword(encodePassword(login.getPassword()));
         usuarioEntity.setEnable(true);
         usuarioEntity = usuarioRepository.save(usuarioEntity);
 
@@ -123,8 +126,8 @@ public class UsuarioService {
         return tokenService.generateToken(usuarioEntityLogado);
     }
 
-    private UsuarioEntity retornarUsuarioEntity (UsuarioCreateDTO usuarioCreateDTO) {
-        return objectMapper.convertValue(usuarioCreateDTO, UsuarioEntity.class);
+    private UsuarioEntity retornarUsuarioEntity (LoginDTO loginDTO) {
+        return objectMapper.convertValue(loginDTO, UsuarioEntity.class);
     }
 
     private UsuarioDTO retornarUsuarioDTO (UsuarioEntity usuario) {
