@@ -27,11 +27,6 @@ public class CotacaoEntity {
             referencedColumnName = "id_purchase")
     private CompraEntity compras;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_user",
-            referencedColumnName = "id_user")
-    private UsuarioEntity usuario;
-
     @Column(name = "name")
     private String nome;
 
@@ -43,5 +38,10 @@ public class CotacaoEntity {
 
     @Column(name = "status")
     private Boolean status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_user",
+            referencedColumnName = "id_user")
+    private UsuarioEntity usuario;
 
 }

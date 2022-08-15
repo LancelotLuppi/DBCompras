@@ -1,7 +1,8 @@
-package br.com.dbc.vemser.dbcompras.dto;
+package br.com.dbc.vemser.dbcompras.dto.usuario;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
+
 import javax.validation.constraints.NotBlank;
 
 @Data
@@ -13,10 +14,10 @@ public class UsuarioLoginDTO {
 
     @Schema(description = "login do usuario", example = "joão")
     @NotBlank
-    private String login;
+    private String email;
 
     @Schema(example = "Drag@nBorn1")
     @NotBlank
-    private String senha;
+    private String password;
 
 }

@@ -1,13 +1,16 @@
 package br.com.dbc.vemser.dbcompras.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -25,9 +28,6 @@ public class UsuarioEntity implements UserDetails {
     @Column(name = "name")
     private String nome;
 
-    @Column(name = "login")
-    private String login;
-
     @Column(name = "email")
     private String email;
 
@@ -35,41 +35,48 @@ public class UsuarioEntity implements UserDetails {
     private String password;
 
     @Column(name = "photo")
-    private byte photo;
+    private byte[] photo;
 
     @Column(name = "enable")
     private boolean enable;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY) // traz quando solicitado
-    @JoinColumn(name = "id_office", referencedColumnName = "id_office")
-    private CargoEntity cargos;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_office",
+            joinColumns = @JoinColumn(name = "id_user"),
+            inverseJoinColumns = @JoinColumn(name = "id_office")
+    )
+    private Set<CargoEntity> cargos;
 
-    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(cargos);
+        return cargos;
     }
-
 
     @Override
     public String getUsername() {
-        return null;
+        return email;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
