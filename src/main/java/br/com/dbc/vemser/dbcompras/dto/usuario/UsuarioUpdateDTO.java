@@ -1,11 +1,7 @@
 package br.com.dbc.vemser.dbcompras.dto.usuario;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-
-import javax.validation.constraints.Past;
-import javax.validation.constraints.Size;
-import java.time.LocalDate;
+import lombok.Data;
 
 @Data
 public class UsuarioUpdateDTO {

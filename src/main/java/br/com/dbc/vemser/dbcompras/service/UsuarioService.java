@@ -20,7 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.Base64;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -35,29 +35,16 @@ public class UsuarioService {
     private final AuthenticationManager authenticationManager;
 
 
-
-    public Optional<UsuarioEntity> findByEmail(String email){
-        return usuarioRepository.findByEmail(email);
-    }
-
-    public UsuarioDTO findById()
-            throws UsuarioException {
-        return retornarUsuarioDTO(retornarUsuarioEntityById());
-    }
-
     public LoginReturnDTO create(LoginDTO login) {
         UsuarioEntity usuarioEntity = retornarUsuarioEntity(login);
         usuarioEntity.setCargos(Set.of(cargoRepository.findById(TipoCargo.COLABORADOR.getCargo()).get()));
         usuarioEntity.setPassword(encodePassword(login.getPassword()));
+        usuarioEntity.setPhoto(Base64.getDecoder().decode(login.getImagemPerfilB64()));
         usuarioEntity.setEnable(true);
         usuarioEntity = usuarioRepository.save(usuarioEntity);
 
-
-
         return objectMapper.convertValue(usuarioEntity, LoginReturnDTO.class);
     }
-
-
 
     public String validarLogin(LoginDTO login) {
         return recuperarToken(login.getEmail(), login.getPassword());
@@ -72,6 +59,11 @@ public class UsuarioService {
         usuarioRepository.save(usuarioEntity);
         return objectMapper.convertValue(usuarioEntity, LoginDTO.class);
 
+    }
+
+    public UsuarioDTO findById()
+            throws UsuarioException {
+        return retornarUsuarioDTO(retornarUsuarioEntityById());
     }
 
     public UsuarioDTO update(UsuarioUpdateDTO usuarioUpdate) throws UsuarioException {
