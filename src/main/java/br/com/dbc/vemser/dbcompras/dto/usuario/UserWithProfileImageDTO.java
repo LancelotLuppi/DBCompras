@@ -6,7 +6,9 @@ import lombok.Data;
 import java.util.Optional;
 
 @Data
-public class LoginWithProfileImageDTO extends LoginDTO {
+public class UserWithProfileImageDTO extends UserDTO {
+
     @Schema(description = "String em Base64 decodificada da imagem de perfil do usuário")
     private Optional<String> imagemPerfilB64;
+
 }
