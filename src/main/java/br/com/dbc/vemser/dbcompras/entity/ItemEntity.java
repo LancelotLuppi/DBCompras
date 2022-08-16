@@ -1,5 +1,6 @@
 package br.com.dbc.vemser.dbcompras.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,13 +27,9 @@ public class ItemEntity {
     @Column(name = "amount")
     private Integer quantidade;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_purchase",
             referencedColumnName = "id_purchase")
     private CompraEntity compra;
-
-    public ItemEntity(String nome, Integer quantidade) {
-        this.nome = nome;
-        this.quantidade = quantidade;
-    }
 }

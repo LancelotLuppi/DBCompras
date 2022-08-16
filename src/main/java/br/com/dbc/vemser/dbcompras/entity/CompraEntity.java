@@ -2,6 +2,7 @@ package br.com.dbc.vemser.dbcompras.entity;
 
 import br.com.dbc.vemser.dbcompras.enums.SituacaoCompra;
 import br.com.dbc.vemser.dbcompras.enums.StatusCotacoes;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,11 +38,13 @@ public class CompraEntity {
     @Column(name = "total_value")
     private Double valor;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_user",
             referencedColumnName = "id_user")
     private UsuarioEntity usuario;
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_purchase",
     referencedColumnName = "id_purchase")

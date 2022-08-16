@@ -1,6 +1,7 @@
 package br.com.dbc.vemser.dbcompras.entity;
 
 import br.com.dbc.vemser.dbcompras.enums.StatusCotacoes;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,6 +40,7 @@ public class CotacaoEntity {
     @Column(name = "status")
     private Boolean status;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_user",
             referencedColumnName = "id_user")

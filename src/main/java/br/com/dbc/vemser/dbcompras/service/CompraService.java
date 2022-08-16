@@ -2,7 +2,6 @@ package br.com.dbc.vemser.dbcompras.service;
 
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraDTO;
-import br.com.dbc.vemser.dbcompras.dto.compra.CompraUpdateDTO;
 import br.com.dbc.vemser.dbcompras.entity.CompraEntity;
 import br.com.dbc.vemser.dbcompras.entity.ItemEntity;
 import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
@@ -18,7 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,11 +35,6 @@ public class CompraService {
     private final UsuarioService usuarioService;
     private final ItemRepository itemRepository;
 
-    private final ItemService itemService;
-
-    private CompraDTO converterCompraEntityToCompraDTO(CompraEntity compra) {
-        return objectMapper.convertValue(compra, CompraDTO.class);
-    }
 
     public CompraDTO create(CompraCreateDTO compraCreateDTO) throws UsuarioException {
 
@@ -48,53 +44,31 @@ public class CompraService {
         compra.setDataCompra(LocalDateTime.now());
         compra.setStatus(SituacaoCompra.ABERTO);
         compra.setUsuario(usuario);
-        compra.getItens().clear();
         CompraEntity compraSalva = compraRepository.save(compra);
-
-        Set<ItemEntity> itens = compraCreateDTO.getItens().stream()
-                .map(item -> objectMapper.convertValue(item, ItemEntity.class))
-                .peek(itemEntity -> itemEntity.setCompra(compraSalva))
-                .map(itemRepository::save)
-                .collect(Collectors.toSet());
+        salvarItensDaCompra(compraCreateDTO, compraSalva);
 
         return converterCompraEntityToCompraDTO(compra);
 
     }
 
-
-
-    public CompraDTO update (Integer idCompra , CompraUpdateDTO compraDTO, SituacaoCompra status) throws UsuarioException, EntidadeNaoEncontradaException {
-
+    public CompraDTO update(Integer idCompra, CompraCreateDTO compraDTO) throws UsuarioException, EntidadeNaoEncontradaException, RegraDeNegocioException {
+        verificarCompraDoUserLogado(idCompra);
         CompraEntity compra = findByID(idCompra);
 
-        if(compraDTO.getName() != null){
+        if (compraDTO.getName() != null) {
             compra.setName(compraDTO.getName());
         }
+        if (!compraDTO.getItens().isEmpty()) {
+            Set<ItemEntity> itensAntigos = compra.getItens();
+            itensAntigos.forEach(itemRepository::delete);
 
-        if(compraDTO.getValor() != null){
-            compra.setValor(compraDTO.getValor());
-        }
-
-        if(status != null){
-            compra.setStatus(status);
-        }
-
-
-        if(!compraDTO.getItens().isEmpty()){
-
-            Set<ItemEntity> listaDeItens = compraDTO.getItens().stream()
-                    .map(item -> objectMapper.convertValue(item, ItemEntity.class))
-                    .peek(itemEntity -> itemEntity.setCompra(compra))
-                    .map(itemRepository::save)
-                    .collect(Collectors.toSet());
-
-            compra.setItens(listaDeItens);
-
+            compra.getItens().clear();
+            Set<ItemEntity> novosItens = new HashSet<>(salvarItensDaCompra(compraDTO, compra));
+            compra.setItens(novosItens);
         }
 
         compraRepository.save(compra);
         return converterCompraEntityToCompraDTO(compra);
-
     }
 
     private CompraEntity findByID(Integer idCompra) throws UsuarioException, EntidadeNaoEncontradaException {
@@ -109,20 +83,27 @@ public class CompraService {
     }
 
     public List<CompraDTO> list() throws UsuarioException {
-
         return usuarioService.retornarUsuarioEntityLogado()
                 .getCompras()
                 .stream()
                 .map(this::converterCompraEntityToCompraDTO)
                 .toList();
-
     }
 
-    public void delete(Integer id) throws UsuarioException {
-
-        UsuarioEntity usuario = usuarioService.retornarUsuarioEntityLogado();
+    public void delete(Integer id) throws UsuarioException, RegraDeNegocioException {
+        verificarCompraDoUserLogado(id);
         compraRepository.deleteById(id);
+    }
 
+    public void removerItensDaCompra(Integer idCompra, Integer idItem) throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
+        verificarCompraDoUserLogado(idCompra);
+        CompraEntity compra = findByID(idCompra);
+
+        Set<ItemEntity> itemEntities = compra.getItens();
+
+        itemEntities.removeIf(itemEntity -> idItem.equals(itemEntity.getIdItem()));
+        compra.setItens(itemEntities);
+        compraRepository.save(compra);
     }
 
     public void verificarCompraDoUserLogado(Integer idCompra) throws UsuarioException, RegraDeNegocioException {
@@ -134,33 +115,20 @@ public class CompraService {
         }
     }
 
-    private CompraEntity converterCompraCreateDTOToCompraEntity(CompraCreateDTO compraCreateDTO) {
+    private Set<ItemEntity> salvarItensDaCompra(CompraCreateDTO compraCreateDTO, CompraEntity compraSalva) {
+        return recuperarListaItensDoDto(compraCreateDTO).stream()
+                .peek(itemEntity -> itemEntity.setCompra(compraSalva))
+                .map(itemRepository::save)
+                .collect(Collectors.toSet());
+    }
 
-        CompraEntity compra = objectMapper.convertValue(compraCreateDTO, CompraEntity.class);
-
-        Set<ItemEntity> itens = compraCreateDTO.getItens().stream()
+    private Set<ItemEntity> recuperarListaItensDoDto(CompraCreateDTO compraCreateDTO) {
+        return compraCreateDTO.getItens().stream()
                 .map(item -> objectMapper.convertValue(item, ItemEntity.class))
                 .collect(Collectors.toSet());
-
-        compra.getItens().clear();
-        compra.setItens(itens);
-
-        compra.setDataCompra(LocalDateTime.now());
-
-        itens.stream().map(itemRepository::save);
-
-        return compra;
-    }
-    public void removerItensDaCompra (Integer idCompra, Integer idItem) throws EntidadeNaoEncontradaException, UsuarioException {
-
-        CompraEntity compra = findByID(idCompra);
-
-        Set<ItemEntity> itemEntities = compra.getItens();
-
-        itemEntities.removeIf(itemEntity -> idItem.equals(itemEntity.getIdItem()));
-        compra.setItens(itemEntities);
-        compraRepository.save(compra);
-
     }
 
+    private CompraDTO converterCompraEntityToCompraDTO(CompraEntity compra) {
+        return objectMapper.convertValue(compra, CompraDTO.class);
+    }
 }

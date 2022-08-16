@@ -7,11 +7,6 @@ import java.util.List;
 
 @Data
 public class CompraUpdateDTO {
-
     private String name;
-
-    private Double valor;
-
     private List<ItemCreateDTO> itens;
-
 }
