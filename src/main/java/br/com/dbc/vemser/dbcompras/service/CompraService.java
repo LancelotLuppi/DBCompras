@@ -60,17 +60,6 @@ public class CompraService {
             compra.setValor(compraDTO.getValor());
         }
 
-        if(status != null){
-            compra.setStatus(status);
-        }
-
-        if(!compraDTO.getItens().isEmpty()){
-            compra.setItens(compraDTO.getItens()
-                    .stream()
-                    .map(itemDTO -> objectMapper.convertValue(itemDTO, ItemEntity.class))
-                    .toList());
-        }
-
         compraRepository.save(compra);
         return converterCompraEntityToCompraDTO(compra);
 
