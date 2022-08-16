@@ -49,7 +49,7 @@ public class SecurityConfiguration {
                 "/swagger-resources/**",
                 "/swagger-ui/**",
                 "/auth",
-                "/auth/create-user"
+                "/usuario/create-user"
         );
     }
 

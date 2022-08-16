@@ -3,19 +3,16 @@ package br.com.dbc.vemser.dbcompras.dto.usuario;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.util.Optional;
 
 @Data
-public class LoginDTO {
-    @Schema(description = "Identificador único do usuário")
-    private Integer idUser;
-
+public class LoginCreateDTO extends LoginAccessDTO {
     @NotEmpty
     @Schema(description = "Nome completo do usuário", example = "Gabriel Luppi")
     private String nome;
 
-    @NotBlank
-    @Schema(description = "Email de login do usuário", example = "meuteste@teste.com")
-    private String email;
+    @Schema(description = "String em Base64 decodificada da imagem de perfil do usuário")
+    private String imagemPerfilB64;
 }

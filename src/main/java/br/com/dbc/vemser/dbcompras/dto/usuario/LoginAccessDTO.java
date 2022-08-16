@@ -3,19 +3,17 @@ package br.com.dbc.vemser.dbcompras.dto.usuario;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 
 @Data
-public class LoginDTO {
-    @Schema(description = "Identificador único do usuário")
-    private Integer idUser;
-
-    @NotEmpty
-    @Schema(description = "Nome completo do usuário", example = "Gabriel Luppi")
-    private String nome;
-
+public class LoginAccessDTO {
     @NotBlank
     @Schema(description = "Email de login do usuário", example = "meuteste@teste.com")
     private String email;
+
+    @Email
+    @NotBlank
+    @Schema(example = "123")
+    private String password;
 }
