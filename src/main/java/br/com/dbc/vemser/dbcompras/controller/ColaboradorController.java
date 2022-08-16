@@ -14,40 +14,33 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/compra")
-public class CompraController {
-
+@RequestMapping("/colaborador")
+public class ColaboradorController {
     private final CompraService compraService;
-
-    @GetMapping
-    public ResponseEntity<List<CompraDTO>> list() throws UsuarioException {
-        return ResponseEntity.ok(compraService.list());
-    }
 
     @PostMapping("/create")
     public ResponseEntity<CompraDTO> create (@Valid @RequestBody CompraCreateDTO compraCreateDTO) throws UsuarioException {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(compraService.create(compraCreateDTO));
     }
 
+    @PutMapping("/update/{id}")
+    public ResponseEntity<CompraDTO> update (@PathVariable Integer id , @Valid @RequestBody CompraCreateDTO compraUpdateDTO) throws UsuarioException, EntidadeNaoEncontradaException, RegraDeNegocioException {
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(compraService.update(id, compraUpdateDTO));
+    }
+
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> delete (@PathVariable("id") Integer idCompra) throws UsuarioException {
+    public ResponseEntity<Void> delete (@PathVariable("id") Integer idCompra) throws UsuarioException, RegraDeNegocioException {
         compraService.delete(idCompra);
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<CompraDTO> update (@PathVariable Integer id , @Valid @RequestBody CompraUpdateDTO compraUpdateDTO, SituacaoCompra status) throws UsuarioException, EntidadeNaoEncontradaException {
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(compraService.update(id, compraUpdateDTO,status));
-    }
-
-    @DeleteMapping("/delete-item/{idPlaylist}/{idItem}")
-    public ResponseEntity<Void> deleteItens (@PathVariable("idPlaylist") Integer idCompra,
-                                             @PathVariable("idItem") Integer idItem) throws EntidadeNaoEncontradaException, UsuarioException {
+    @DeleteMapping("/delete-item/{idCompra}/{idItem}")
+    public ResponseEntity<Void> deleteItem (@PathVariable("idCompra") Integer idCompra,
+                                             @PathVariable("idItem") Integer idItem) throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
         compraService.removerItensDaCompra(idCompra, idItem);
         return ResponseEntity.noContent().build();
     }
