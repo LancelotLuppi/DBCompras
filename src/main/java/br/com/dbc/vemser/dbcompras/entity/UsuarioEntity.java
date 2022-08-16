@@ -47,6 +47,14 @@ public class UsuarioEntity implements UserDetails {
         mappedBy = "usuario")
     public Set<CompraEntity> compras;
 
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            mappedBy = "usuario")
+    public Set<CotacaoEntity> cotacoes;
+
+
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)

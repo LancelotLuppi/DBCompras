@@ -2,9 +2,8 @@ package br.com.dbc.vemser.dbcompras.controller;
 
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraDTO;
-import br.com.dbc.vemser.dbcompras.dto.compra.CompraUpdateDTO;
-import br.com.dbc.vemser.dbcompras.enums.SituacaoCompra;
 import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
+import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.service.CompraService;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +39,7 @@ public class ColaboradorController {
 
     @DeleteMapping("/delete-item/{idCompra}/{idItem}")
     public ResponseEntity<Void> deleteItem (@PathVariable("idCompra") Integer idCompra,
-                                             @PathVariable("idItem") Integer idItem) throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
+                                             @PathVariable("idItem") Integer idItem) throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException, RegraDeNegocioException {
         compraService.removerItensDaCompra(idCompra, idItem);
         return ResponseEntity.noContent().build();
     }

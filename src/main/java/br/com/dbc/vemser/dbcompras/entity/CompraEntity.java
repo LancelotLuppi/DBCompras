@@ -1,7 +1,6 @@
 package br.com.dbc.vemser.dbcompras.entity;
 
 import br.com.dbc.vemser.dbcompras.enums.SituacaoCompra;
-import br.com.dbc.vemser.dbcompras.enums.StatusCotacoes;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

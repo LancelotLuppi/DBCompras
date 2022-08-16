@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -54,6 +55,17 @@ public class CotacaoService {
 
         cotacaoRepository.save(cotacao);
         return converterCotacaoEntityToCotacaoDTO(cotacao);
+    }
+
+    public List<CotacaoDTO> list() throws UsuarioException {
+
+        UsuarioEntity usuario = usuarioService.retornarUsuarioEntityLogado();
+
+        return cotacaoRepository.findByUsuario(usuario.getIdUser())
+                .stream()
+                .map(this::converterCotacaoEntityToCotacaoDTO)
+                .toList();
+
     }
 
 }

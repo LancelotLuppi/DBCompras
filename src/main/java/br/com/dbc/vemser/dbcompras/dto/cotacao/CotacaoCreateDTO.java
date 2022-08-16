@@ -3,7 +3,6 @@ package br.com.dbc.vemser.dbcompras.dto.cotacao;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemDTO;
 import lombok.Data;
 
-import java.time.LocalDateTime;
 import java.util.Set;
 
 @Data
