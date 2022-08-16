@@ -7,7 +7,7 @@ import br.com.dbc.vemser.dbcompras.entity.CompraEntity;
 import br.com.dbc.vemser.dbcompras.entity.ItemEntity;
 import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
 import br.com.dbc.vemser.dbcompras.enums.SituacaoCompra;
-import br.com.dbc.vemser.dbcompras.enums.StatusCotacoes;
+import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.repository.CompraRepository;
@@ -61,15 +61,11 @@ public class CompraService {
 
     }
 
-    public CompraEntity findById (Integer id){
-        return objectMapper.convertValue(compraRepository.findById(id), CompraEntity.class);
-    }
 
-    public CompraDTO update (Integer idCompra , CompraUpdateDTO compraDTO, SituacaoCompra status) throws UsuarioException {
 
-        UsuarioEntity usuario = usuarioService.retornarUsuarioEntityLogado();
+    public CompraDTO update (Integer idCompra , CompraUpdateDTO compraDTO, SituacaoCompra status) throws UsuarioException, EntidadeNaoEncontradaException {
 
-        CompraEntity compra = findById(idCompra);
+        CompraEntity compra = findByID(idCompra);
 
         if(compraDTO.getName() != null){
             compra.setName(compraDTO.getName());
@@ -82,6 +78,7 @@ public class CompraService {
         if(status != null){
             compra.setStatus(status);
         }
+
 
         if(!compraDTO.getItens().isEmpty()){
 
@@ -100,9 +97,21 @@ public class CompraService {
 
     }
 
-    public List<CompraDTO> list() {
+    private CompraEntity findByID(Integer idCompra) throws UsuarioException, EntidadeNaoEncontradaException {
+        UsuarioEntity usuario = usuarioService.retornarUsuarioEntityLogado();
 
-        return compraRepository.findAll()
+        Set<CompraEntity> compras = usuario.getCompras();
+
+        return compras.stream()
+                .filter(compraEntity -> compraEntity.getIdCompra().equals(idCompra))
+                .findFirst()
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Esta não compra não foi criada ainda"));
+    }
+
+    public List<CompraDTO> list() throws UsuarioException {
+
+        return usuarioService.retornarUsuarioEntityLogado()
+                .getCompras()
                 .stream()
                 .map(this::converterCompraEntityToCompraDTO)
                 .toList();
@@ -142,9 +151,9 @@ public class CompraService {
 
         return compra;
     }
-    public void removerItensDaCompra (Integer idCompra, Integer idItem){
+    public void removerItensDaCompra (Integer idCompra, Integer idItem) throws EntidadeNaoEncontradaException, UsuarioException {
 
-        CompraEntity compra = findById(idCompra);
+        CompraEntity compra = findByID(idCompra);
 
         Set<ItemEntity> itemEntities = compra.getItens();
 
