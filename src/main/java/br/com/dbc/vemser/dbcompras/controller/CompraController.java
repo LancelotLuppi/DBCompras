@@ -40,9 +40,4 @@ public class CompraController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<CompraDTO> update (@PathVariable Integer id , @Valid @RequestBody CompraUpdateDTO compraUpdateDTO, StatusCotacoes status) throws UsuarioException, RegraDeNegocioException {
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(compraService.update(id, compraUpdateDTO,status));
-    }
-
 }

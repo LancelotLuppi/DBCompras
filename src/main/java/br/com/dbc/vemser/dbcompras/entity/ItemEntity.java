@@ -29,6 +29,6 @@ public class ItemEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_purchase",
             referencedColumnName = "id_purchase")
-    private CompraEntity compras;
+    private CompraEntity compra;
 
 }
