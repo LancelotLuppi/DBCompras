@@ -5,6 +5,7 @@ import br.com.dbc.vemser.dbcompras.dto.compra.CompraDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraUpdateDTO;
 import br.com.dbc.vemser.dbcompras.enums.SituacaoCompra;
 import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
+import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.service.CompraService;
 import lombok.RequiredArgsConstructor;
