@@ -7,13 +7,15 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 @Data
-public class LoginAccessDTO {
+public class UserLoginDTO {
+
+    @Schema(description = "Email de login do usuário", example = "meuemail@dbccompany.com.br")
     @NotBlank
-    @Schema(description = "Email de login do usuário", example = "meuteste@teste.com")
+    @Email
     private String email;
 
-    @Email
+    @Schema(description = "Senha do usuário", example = "123")
     @NotBlank
-    @Schema(example = "123")
     private String password;
+
 }
