@@ -4,6 +4,6 @@ public enum StatusCotacoes {
 
     APROVADO,
     REPROVADO,
-    EN_ANALISE;
+    EM_ANALISE;
 
 }
