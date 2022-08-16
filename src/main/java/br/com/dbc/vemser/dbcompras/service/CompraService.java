@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
@@ -27,6 +28,8 @@ public class CompraService {
     private final CompraRepository compraRepository;
 
     private final UsuarioService usuarioService;
+
+    private final ItemService itemService;
 
     private CompraDTO converterCompraEntityToCompraDTO(CompraEntity compra) {
         return objectMapper.convertValue(compra, CompraDTO.class);
@@ -72,10 +75,17 @@ public class CompraService {
         }
 
         if(!compraDTO.getItens().isEmpty()){
-            compra.setItens(compraDTO.getItens()
-                    .stream()
-                    .map(itemDTO -> objectMapper.convertValue(itemDTO, ItemEntity.class))
-                    .toList());
+
+            List<ItemEntity> listaDeItens = compraDTO.getItens()
+                            .stream()
+                            .map(itemDTO -> new ItemEntity(itemDTO.getNome(),itemDTO.getQuantidade()))
+                            .toList();
+
+            itemService.saveItensRepository(listaDeItens);
+            List<ItemEntity> itensSalvos = compra.getItens();
+            itensSalvos.addAll(listaDeItens);
+            compra.setItens(itensSalvos);
+
         }
 
         compraRepository.save(compra);
@@ -96,6 +106,18 @@ public class CompraService {
 
         UsuarioEntity usuario = usuarioService.retornarUsuarioEntityById();
         compraRepository.deleteById(id);
+
+    }
+
+    public void removerItensDaCompra (Integer idCompra, Integer idItem){
+
+        CompraEntity compra = findById(idCompra);
+
+        List<ItemEntity> itemEntities = compra.getItens();
+
+        itemEntities.removeIf(itemEntity -> idItem.equals(itemEntity.getIdItem()));
+        compra.setItens(itemEntities);
+        compraRepository.save(compra);
 
     }
 

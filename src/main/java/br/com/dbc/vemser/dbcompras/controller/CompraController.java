@@ -34,7 +34,7 @@ public class CompraController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> delete (@PathVariable Integer idCompra) throws UsuarioException {
+    public ResponseEntity<Void> delete (@PathVariable("id") Integer idCompra) throws UsuarioException {
         compraService.delete(idCompra);
         return ResponseEntity.noContent().build();
     }
@@ -42,6 +42,13 @@ public class CompraController {
     @PutMapping("/update/{id}")
     public ResponseEntity<CompraDTO> update (@PathVariable Integer id , @Valid @RequestBody CompraUpdateDTO compraUpdateDTO, StatusCotacoes status) throws UsuarioException {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(compraService.update(id, compraUpdateDTO,status));
+    }
+
+    @DeleteMapping("/delete-item/{idPlaylist}/{idItem}")
+    public ResponseEntity<Void> deleteItens (@PathVariable("idPlaylist") Integer idCompra,
+                                             @PathVariable("idItem") Integer idItem){
+        compraService.removerItensDaCompra(idCompra, idItem);
+        return ResponseEntity.noContent().build();
     }
 
 }
