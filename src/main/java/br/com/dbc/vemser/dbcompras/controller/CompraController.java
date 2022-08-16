@@ -4,6 +4,7 @@ import br.com.dbc.vemser.dbcompras.dto.compra.CompraCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraUpdateDTO;
 import br.com.dbc.vemser.dbcompras.enums.StatusCotacoes;
+import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.service.CompraService;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +41,7 @@ public class CompraController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<CompraDTO> update (@PathVariable Integer id , @Valid @RequestBody CompraUpdateDTO compraUpdateDTO, StatusCotacoes status) throws UsuarioException {
+    public ResponseEntity<CompraDTO> update (@PathVariable Integer id , @Valid @RequestBody CompraUpdateDTO compraUpdateDTO, StatusCotacoes status) throws UsuarioException, RegraDeNegocioException {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(compraService.update(id, compraUpdateDTO,status));
     }
 

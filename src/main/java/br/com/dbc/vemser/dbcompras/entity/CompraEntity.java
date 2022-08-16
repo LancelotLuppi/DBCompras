@@ -1,5 +1,6 @@
 package br.com.dbc.vemser.dbcompras.entity;
 
+import br.com.dbc.vemser.dbcompras.enums.SituacaoCompra;
 import br.com.dbc.vemser.dbcompras.enums.StatusCotacoes;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,7 +9,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -30,7 +31,8 @@ public class CompraEntity {
     @Column(name = "data")
     private LocalDateTime dataCompra;
 
-    private StatusCotacoes status;
+    @Column(name = "status")
+    private SituacaoCompra status;
 
     @Column(name = "total_value")
     private Double valor;
@@ -43,6 +45,6 @@ public class CompraEntity {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_purchase",
     referencedColumnName = "id_purchase")
-    private List<ItemEntity> itens;
+    private Set<ItemEntity> itens;
 
 }
