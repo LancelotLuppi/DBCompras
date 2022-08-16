@@ -1,10 +1,6 @@
 package br.com.dbc.vemser.dbcompras.controller;
 
-import br.com.dbc.vemser.dbcompras.dto.usuario.LoginAccessDTO;
-import br.com.dbc.vemser.dbcompras.dto.usuario.LoginCreateDTO;
-import br.com.dbc.vemser.dbcompras.dto.usuario.LoginDTO;
-import br.com.dbc.vemser.dbcompras.dto.usuario.LoginUpdateDTO;
-import br.com.dbc.vemser.dbcompras.enums.StatusUsuario;
+import br.com.dbc.vemser.dbcompras.dto.usuario.*;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.service.UsuarioService;
@@ -24,30 +20,34 @@ public class UsuarioController {
 
     private final UsuarioService usuarioService;
 
-
     @PostMapping("/create-user")
-    public ResponseEntity<LoginDTO> create(@RequestBody LoginCreateDTO loginCreateDTO) throws RegraDeNegocioException {
-        return ResponseEntity.ok(usuarioService.create(loginCreateDTO));
+    public ResponseEntity<UserLoginComSucessoDTO> create(@Valid @RequestBody UserCreateDTO userCreateDTO) throws RegraDeNegocioException {
+        return ResponseEntity.ok(usuarioService.create(userCreateDTO));
     }
 
     @GetMapping("/get-logged")
-    public ResponseEntity<LoginDTO> getUser () throws UsuarioException {
+    public ResponseEntity<UserDTO> getUser () throws UsuarioException {
         return ResponseEntity.ok(usuarioService.getLoggedUser());
     }
 
-    @PutMapping("/logged-user/nome-e-email")
-    public ResponseEntity<LoginDTO> updateLogged(@Valid @RequestBody LoginUpdateDTO usuario)
-            throws UsuarioException {
+    @PutMapping("/logged-user/nome-email-foto")
+    public ResponseEntity<UserDTO> updateLogged(@Valid @RequestBody UserUpdateDTO usuario)
+            throws UsuarioException, RegraDeNegocioException {
         return ResponseEntity.ok(usuarioService.updateLoggedUser(usuario));
     }
 
     @PutMapping("/logged-user/change-password")
-    public ResponseEntity<LoginDTO> updatePassword(@RequestBody String novaSenha) throws UsuarioException {
+    public ResponseEntity<UserDTO> updatePassword(@RequestBody String novaSenha) throws UsuarioException {
         return ResponseEntity.ok(usuarioService.updatePassword(novaSenha));
     }
 
     @PutMapping("/logged-user/status-account")
-    public void updateStatusLoggedAccount(LoginAccessDTO confirmacao) throws UsuarioException, RegraDeNegocioException {
+    public void updateStatusLoggedAccount(UserLoginDTO confirmacao) throws UsuarioException, RegraDeNegocioException {
         usuarioService.desativarContaLogada(confirmacao);
+    }
+
+    @DeleteMapping("/delete/{idUsuario}")
+    public void deletarUser(@PathVariable("idUsuario") Integer idUsuario) throws RegraDeNegocioException {
+        usuarioService.deletarUsuario(idUsuario);
     }
 }

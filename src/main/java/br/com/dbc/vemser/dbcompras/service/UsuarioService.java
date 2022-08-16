@@ -1,9 +1,6 @@
 package br.com.dbc.vemser.dbcompras.service;
 
-import br.com.dbc.vemser.dbcompras.dto.usuario.LoginCreateDTO;
-import br.com.dbc.vemser.dbcompras.dto.usuario.LoginDTO;
-import br.com.dbc.vemser.dbcompras.dto.usuario.LoginAccessDTO;
-import br.com.dbc.vemser.dbcompras.dto.usuario.LoginUpdateDTO;
+import br.com.dbc.vemser.dbcompras.dto.usuario.*;
 import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
 import br.com.dbc.vemser.dbcompras.enums.StatusUsuario;
 import br.com.dbc.vemser.dbcompras.enums.TipoCargo;
@@ -23,7 +20,7 @@ import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Base64;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -37,66 +34,89 @@ public class UsuarioService {
     private final TokenService tokenService;
     private final AuthenticationManager authenticationManager;
 
-
-    public LoginDTO create(LoginCreateDTO login) throws RegraDeNegocioException {
-
-        if(usuarioRepository.findByEmail(login.getEmail()).isPresent()) {
-            throw new RegraDeNegocioException("Este email já está cadastrado");
-        }
+    public UserLoginComSucessoDTO create(UserCreateDTO login) throws RegraDeNegocioException {
+        validarEmail(login.getEmail());
+        verificarSeEmailExiste(login.getEmail());
+        validarSenha(login.getSenha());
 
         UsuarioEntity usuarioEntity = retornarUsuarioEntity(login);
+
         usuarioEntity.setCargos(Set.of(cargoRepository.findById(TipoCargo.COLABORADOR.getCargo()).get()));
-        usuarioEntity.setPassword(encodePassword(login.getPassword()));
-        usuarioEntity.setPhoto(login.getImagemPerfilB64()!=null ? Base64.getDecoder().decode(login.getImagemPerfilB64()) : null);
+        usuarioEntity.setPassword(encodePassword(login.getSenha()));
+        usuarioEntity.setPhoto(login.getFoto()!=null ? Base64.getDecoder().decode(login.getFoto()) : null);
         usuarioEntity.setEnable(StatusUsuario.ATIVAR.getStatus());
+
         usuarioEntity = usuarioRepository.save(usuarioEntity);
 
-        return objectMapper.convertValue(usuarioEntity, LoginDTO.class);
-
+        return createToUserLoginComSucessoDTO(usuarioEntity, login.getEmail(), login.getSenha());
     }
 
-    public String validarLogin(LoginAccessDTO login) {
-        return recuperarToken(login.getEmail(), login.getPassword());
-    }
-
-    public LoginDTO getLoggedUser()
-            throws UsuarioException {
-        return objectMapper.convertValue(retornarUsuarioEntityLogado(), LoginDTO.class);
-    }
-
-    public LoginDTO updatePassword(String novaSenha) throws UsuarioException {
+    public UserDTO updatePassword(String novaSenha) throws UsuarioException {
         UsuarioEntity usuarioEntity = retornarUsuarioEntityLogado();
 
         usuarioEntity.setPassword(encodePassword(novaSenha));
         usuarioRepository.save(usuarioEntity);
 
-        return objectMapper.convertValue(usuarioEntity, LoginDTO.class);
+        return objectMapper.convertValue(usuarioEntity, UserDTO.class);
     }
 
-    public LoginDTO updateLoggedUser(LoginUpdateDTO usuarioUpdate) throws UsuarioException {
+    public UserDTO updateLoggedUser(UserUpdateDTO usuarioUpdate) throws UsuarioException, RegraDeNegocioException {
         UsuarioEntity usuarioEntity = retornarUsuarioEntityLogado();
 
-        usuarioEntity.setNome(usuarioUpdate.getNome());
-        usuarioEntity.setEmail(usuarioUpdate.getEmail());
+        if(usuarioUpdate.getEmail() != null) {
+            validarEmail(usuarioUpdate.getEmail());
+            verificarSeEmailExiste(usuarioUpdate.getEmail());
+            usuarioEntity.setEmail(usuarioUpdate.getEmail());
+        }
+        if(usuarioUpdate.getNome() != null) {
+            usuarioEntity.setNome(usuarioUpdate.getNome());
+        }
+        if(usuarioUpdate.getSenha() != null) {
+            usuarioEntity.setPassword(usuarioUpdate.getSenha());
+        }
+        if(usuarioUpdate.getFoto() != null) {
+            usuarioEntity.setPhoto(usuarioUpdate.getFoto()!=null ? Base64.getDecoder().decode(usuarioUpdate.getFoto()) : null);
+        }
+
         UsuarioEntity usuarioAtualizado = usuarioRepository.save(usuarioEntity);
 
         return retornarUsuarioDTO(usuarioAtualizado);
     }
 
-    public void desativarContaLogada(LoginAccessDTO confirmacao) throws UsuarioException, RegraDeNegocioException {
+    public void desativarContaLogada(UserLoginDTO confirmacao) throws UsuarioException, RegraDeNegocioException {
         UsuarioEntity usuarioEntity = retornarUsuarioEntityLogado();
 
         boolean verificacao = usuarioEntity.getEmail().equals(confirmacao.getEmail())
                 && new Argon2PasswordEncoder().matches(confirmacao.getPassword(), usuarioEntity.getPassword());
 
         if(!verificacao) {
-            throw new RegraDeNegocioException("Usuario ou senha invalidos");
+            throw new RegraDeNegocioException("Usuario ou senha inválidos");
         }
 
         usuarioEntity.setEnable(false);
         usuarioRepository.save(usuarioEntity);
     }
 
+    public void deletarUsuario(Integer idUsuario) throws RegraDeNegocioException {
+        UsuarioEntity usuarioEntity = findById(idUsuario);
+
+        usuarioRepository.delete(usuarioEntity);
+    }
+
+    public Optional<UsuarioEntity> findByEmail(String email) {
+        return usuarioRepository.findByEmail(email);
+    }
+
+    public UserWithProfileImageDTO getLoggedUser()
+            throws UsuarioException {
+        UsuarioEntity usuarioEntity = retornarUsuarioEntityLogado();
+        UserWithProfileImageDTO userWithProfileImageDTO = objectMapper.convertValue(usuarioEntity, UserWithProfileImageDTO.class);
+        
+        byte[] byteFoto = usuarioEntity.getPhoto();
+        userWithProfileImageDTO.setImagemPerfilB64(usuarioEntity.getPhoto()!=null ? Optional.of(Base64.getEncoder().encodeToString(byteFoto)) : null);
+
+        return userWithProfileImageDTO;
+    }
 
     public UsuarioEntity retornarUsuarioEntityLogado()
             throws UsuarioException {
@@ -116,6 +136,10 @@ public class UsuarioService {
         return idUser;
     }
 
+    public String validarLogin(UserLoginDTO login) {
+        return recuperarToken(login.getEmail(), login.getPassword());
+    }
+
     private String recuperarToken(String email, String senha) {
         UsernamePasswordAuthenticationToken userPassAuthToken =
                 new UsernamePasswordAuthenticationToken(
@@ -129,12 +153,54 @@ public class UsuarioService {
         return tokenService.generateToken(usuarioEntityLogado);
     }
 
-    private UsuarioEntity retornarUsuarioEntity(LoginCreateDTO loginCreateDTO) {
-        return objectMapper.convertValue(loginCreateDTO, UsuarioEntity.class);
+    private void verificarSeEmailExiste(String email) throws RegraDeNegocioException {
+        if(findByEmail(email).isPresent()){
+            throw new RegraDeNegocioException("Email já está possui cadastrado");
+        }
     }
 
-    private LoginDTO retornarUsuarioDTO(UsuarioEntity usuario) {
-        return objectMapper.convertValue(usuario, LoginDTO.class);
+    private void validarEmail(String emailParaValidar) throws RegraDeNegocioException {
+        if(emailParaValidar.matches("^(.+)@dbccompany.com.br")){
+            log.info("Email validado");
+        } else {
+            throw new RegraDeNegocioException("Insira um email DBC válido");
+        }
+    }
+
+    private void validarSenha(String senhaParaValidar) throws RegraDeNegocioException {
+        if(senhaParaValidar.matches("^(?=.*[A-Z])(?=.*[!#@$%&])(?=.*[0-9])(?=.*[a-z]).{8,16}$")){
+            log.info("Senha válida");
+        } else {
+            throw new RegraDeNegocioException("Formato de senha inválido.");
+        }
+    }
+
+    private UserLoginComSucessoDTO createToUserLoginComSucessoDTO(UsuarioEntity usuarioEntity, String email, String senha){
+
+        UserLoginComSucessoDTO userLoginComSucessoDTO = new UserLoginComSucessoDTO();
+        userLoginComSucessoDTO.setIdUser(usuarioEntity.getIdUser());
+        userLoginComSucessoDTO.setNome(usuarioEntity.getNome());
+        userLoginComSucessoDTO.setEmail(usuarioEntity.getEmail());
+        userLoginComSucessoDTO.setToken(recuperarToken(email, senha));
+
+        byte[] byteFoto = usuarioEntity.getPhoto();
+
+        userLoginComSucessoDTO.setImagemPerfilB64(usuarioEntity.getPhoto()!=null ? Optional.of(Base64.getEncoder().encodeToString(byteFoto)) : null);
+
+        return userLoginComSucessoDTO;
+    }
+
+    public UsuarioEntity findById(Integer idUsuario) throws RegraDeNegocioException {
+        return usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new RegraDeNegocioException("Usuário não encontrado"));
+    }
+
+    private UsuarioEntity retornarUsuarioEntity(UserCreateDTO userCreateDTO) {
+        return objectMapper.convertValue(userCreateDTO, UsuarioEntity.class);
+    }
+
+    private UserDTO retornarUsuarioDTO(UsuarioEntity usuario) {
+        return objectMapper.convertValue(usuario, UserDTO.class);
     }
 
     private String encodePassword(String password) {
