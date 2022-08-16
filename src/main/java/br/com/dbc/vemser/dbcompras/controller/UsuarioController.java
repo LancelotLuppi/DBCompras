@@ -25,20 +25,15 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.create(userCreateDTO));
     }
 
-    @GetMapping("/get-logged")
-    public ResponseEntity<UserDTO> getUser () throws UsuarioException {
+    @GetMapping("/get-logged-user")
+    public ResponseEntity<UserDTO> getUser() throws UsuarioException {
         return ResponseEntity.ok(usuarioService.getLoggedUser());
     }
 
-    @PutMapping("/logged-user/nome-email-foto")
+    @PutMapping("/logged-user")
     public ResponseEntity<UserDTO> updateLogged(@Valid @RequestBody UserUpdateDTO usuario)
             throws UsuarioException, RegraDeNegocioException {
         return ResponseEntity.ok(usuarioService.updateLoggedUser(usuario));
-    }
-
-    @PutMapping("/logged-user/change-password")
-    public ResponseEntity<UserDTO> updatePassword(@RequestBody String novaSenha) throws UsuarioException {
-        return ResponseEntity.ok(usuarioService.updatePassword(novaSenha));
     }
 
     @PutMapping("/logged-user/status-account")

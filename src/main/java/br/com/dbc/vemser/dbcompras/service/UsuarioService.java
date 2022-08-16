@@ -27,16 +27,16 @@ import java.util.Set;
 @Service
 @Slf4j
 public class UsuarioService {
-
     private final UsuarioRepository usuarioRepository;
     private final ObjectMapper objectMapper;
     private final CargoRepository cargoRepository;
     private final TokenService tokenService;
     private final AuthenticationManager authenticationManager;
 
+
     public UserLoginComSucessoDTO create(UserCreateDTO login) throws RegraDeNegocioException {
         validarEmail(login.getEmail());
-        verificarSeEmailExiste(login.getEmail());
+        verificarSeEmailTemCadastro(login.getEmail());
         validarSenha(login.getSenha());
 
         UsuarioEntity usuarioEntity = retornarUsuarioEntity(login);
@@ -48,16 +48,7 @@ public class UsuarioService {
 
         usuarioEntity = usuarioRepository.save(usuarioEntity);
 
-        return createToUserLoginComSucessoDTO(usuarioEntity, login.getEmail(), login.getSenha());
-    }
-
-    public UserDTO updatePassword(String novaSenha) throws UsuarioException {
-        UsuarioEntity usuarioEntity = retornarUsuarioEntityLogado();
-
-        usuarioEntity.setPassword(encodePassword(novaSenha));
-        usuarioRepository.save(usuarioEntity);
-
-        return objectMapper.convertValue(usuarioEntity, UserDTO.class);
+        return generateUserLoginComSucessoDTO(usuarioEntity, login.getEmail(), login.getSenha());
     }
 
     public UserDTO updateLoggedUser(UserUpdateDTO usuarioUpdate) throws UsuarioException, RegraDeNegocioException {
@@ -65,14 +56,14 @@ public class UsuarioService {
 
         if(usuarioUpdate.getEmail() != null) {
             validarEmail(usuarioUpdate.getEmail());
-            verificarSeEmailExiste(usuarioUpdate.getEmail());
+            verificarSeEmailTemCadastro(usuarioUpdate.getEmail());
             usuarioEntity.setEmail(usuarioUpdate.getEmail());
         }
         if(usuarioUpdate.getNome() != null) {
             usuarioEntity.setNome(usuarioUpdate.getNome());
         }
         if(usuarioUpdate.getSenha() != null) {
-            usuarioEntity.setPassword(usuarioUpdate.getSenha());
+            usuarioEntity.setPassword(encodePassword(usuarioEntity.getPassword()));
         }
         if(usuarioUpdate.getFoto() != null) {
             usuarioEntity.setPhoto(usuarioUpdate.getFoto()!=null ? Base64.getDecoder().decode(usuarioUpdate.getFoto()) : null);
@@ -92,19 +83,13 @@ public class UsuarioService {
         if(!verificacao) {
             throw new RegraDeNegocioException("Usuario ou senha inválidos");
         }
-
         usuarioEntity.setEnable(false);
         usuarioRepository.save(usuarioEntity);
     }
 
     public void deletarUsuario(Integer idUsuario) throws RegraDeNegocioException {
         UsuarioEntity usuarioEntity = findById(idUsuario);
-
         usuarioRepository.delete(usuarioEntity);
-    }
-
-    public Optional<UsuarioEntity> findByEmail(String email) {
-        return usuarioRepository.findByEmail(email);
     }
 
     public UserWithProfileImageDTO getLoggedUser()
@@ -123,6 +108,10 @@ public class UsuarioService {
         return usuarioRepository
                 .findById(getIdLoggedUser())
                 .orElseThrow(() -> new UsuarioException("Usuário não cadastrado"));
+    }
+
+    private Optional<UsuarioEntity> findByEmail(String email) {
+        return usuarioRepository.findByEmail(email);
     }
 
     private Integer getIdLoggedUser() throws UsuarioException {
@@ -153,7 +142,7 @@ public class UsuarioService {
         return tokenService.generateToken(usuarioEntityLogado);
     }
 
-    private void verificarSeEmailExiste(String email) throws RegraDeNegocioException {
+    private void verificarSeEmailTemCadastro(String email) throws RegraDeNegocioException {
         if(findByEmail(email).isPresent()){
             throw new RegraDeNegocioException("Email já está possui cadastrado");
         }
@@ -171,11 +160,11 @@ public class UsuarioService {
         if(senhaParaValidar.matches("^(?=.*[A-Z])(?=.*[!#@$%&])(?=.*[0-9])(?=.*[a-z]).{8,16}$")){
             log.info("Senha válida");
         } else {
-            throw new RegraDeNegocioException("Formato de senha inválido.");
+            throw new RegraDeNegocioException("A senha deve ter entre 8 e 16 caracteres, com letras, números e caracteres especiais");
         }
     }
 
-    private UserLoginComSucessoDTO createToUserLoginComSucessoDTO(UsuarioEntity usuarioEntity, String email, String senha){
+    private UserLoginComSucessoDTO generateUserLoginComSucessoDTO(UsuarioEntity usuarioEntity, String email, String senha){
 
         UserLoginComSucessoDTO userLoginComSucessoDTO = new UserLoginComSucessoDTO();
         userLoginComSucessoDTO.setIdUser(usuarioEntity.getIdUser());

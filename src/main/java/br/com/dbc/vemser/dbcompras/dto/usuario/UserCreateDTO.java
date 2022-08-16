@@ -23,7 +23,7 @@ public class UserCreateDTO {
     @NotBlank
     private String senha;
 
-    @Schema(description = "Foto do usuário")
+    @Schema(description = "Foto do usuário", example = "Base64 da img")
     private String foto;
 
 }
