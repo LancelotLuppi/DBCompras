@@ -1,6 +1,9 @@
 package br.com.dbc.vemser.dbcompras.service;
 
-import br.com.dbc.vemser.dbcompras.dto.usuario.*;
+import br.com.dbc.vemser.dbcompras.dto.usuario.LoginDTO;
+import br.com.dbc.vemser.dbcompras.dto.usuario.LoginReturnDTO;
+import br.com.dbc.vemser.dbcompras.dto.usuario.UsuarioDTO;
+import br.com.dbc.vemser.dbcompras.dto.usuario.UsuarioUpdateDTO;
 import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
 import br.com.dbc.vemser.dbcompras.enums.TipoCargo;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
@@ -17,7 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.Base64;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -32,29 +35,16 @@ public class UsuarioService {
     private final AuthenticationManager authenticationManager;
 
 
-
-    public Optional<UsuarioEntity> findByEmail(String email){
-        return usuarioRepository.findByEmail(email);
-    }
-
-    public UsuarioDTO findById()
-            throws UsuarioException {
-        return retornarUsuarioDTO(retornarUsuarioEntityById());
-    }
-
-    public LoginReturnDTO create(UsuarioCreateDTO usuario) {
-        UsuarioEntity usuarioEntity = retornarUsuarioEntity(usuario);
+    public LoginReturnDTO create(LoginDTO login) {
+        UsuarioEntity usuarioEntity = retornarUsuarioEntity(login);
         usuarioEntity.setCargos(Set.of(cargoRepository.findById(TipoCargo.COLABORADOR.getCargo()).get()));
-        usuarioEntity.setPassword(encodePassword(usuario.getPassword()));
+        usuarioEntity.setPassword(encodePassword(login.getPassword()));
+        usuarioEntity.setPhoto(Base64.getDecoder().decode(login.getImagemPerfilB64()));
         usuarioEntity.setEnable(true);
         usuarioEntity = usuarioRepository.save(usuarioEntity);
 
-
-
         return objectMapper.convertValue(usuarioEntity, LoginReturnDTO.class);
     }
-
-
 
     public String validarLogin(LoginDTO login) {
         return recuperarToken(login.getEmail(), login.getPassword());
@@ -69,6 +59,11 @@ public class UsuarioService {
         usuarioRepository.save(usuarioEntity);
         return objectMapper.convertValue(usuarioEntity, LoginDTO.class);
 
+    }
+
+    public UsuarioDTO findById()
+            throws UsuarioException {
+        return retornarUsuarioDTO(retornarUsuarioEntityById());
     }
 
     public UsuarioDTO update(UsuarioUpdateDTO usuarioUpdate) throws UsuarioException {
@@ -123,8 +118,8 @@ public class UsuarioService {
         return tokenService.generateToken(usuarioEntityLogado);
     }
 
-    private UsuarioEntity retornarUsuarioEntity (UsuarioCreateDTO usuarioCreateDTO) {
-        return objectMapper.convertValue(usuarioCreateDTO, UsuarioEntity.class);
+    private UsuarioEntity retornarUsuarioEntity (LoginDTO loginDTO) {
+        return objectMapper.convertValue(loginDTO, UsuarioEntity.class);
     }
 
     private UsuarioDTO retornarUsuarioDTO (UsuarioEntity usuario) {
