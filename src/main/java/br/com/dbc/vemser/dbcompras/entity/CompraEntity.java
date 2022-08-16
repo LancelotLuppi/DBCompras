@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -38,5 +39,10 @@ public class CompraEntity {
     @JoinColumn(name = "id_user",
             referencedColumnName = "id_user")
     private UsuarioEntity usuario;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_purchase",
+    referencedColumnName = "id_purchase")
+    private List<ItemEntity> itens;
 
 }
