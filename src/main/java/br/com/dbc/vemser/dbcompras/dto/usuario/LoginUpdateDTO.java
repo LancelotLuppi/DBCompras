@@ -7,10 +7,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 
 @Data
-public class LoginDTO {
-    @Schema(description = "Identificador único do usuário")
-    private Integer idUser;
-
+public class LoginUpdateDTO {
     @NotEmpty
     @Schema(description = "Nome completo do usuário", example = "Gabriel Luppi")
     private String nome;

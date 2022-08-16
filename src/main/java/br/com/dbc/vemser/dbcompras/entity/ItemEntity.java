@@ -27,7 +27,8 @@ public class ItemEntity {
     private Integer quantidade;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_purchase")
+    @JoinColumn(name = "id_purchase",
+            referencedColumnName = "id_purchase")
     private CompraEntity compra;
 
     public ItemEntity(String nome, Integer quantidade) {

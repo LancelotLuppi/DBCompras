@@ -41,6 +41,14 @@ public class UsuarioEntity implements UserDetails {
     private boolean enable;
 
     @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY,
+        cascade = CascadeType.ALL,
+        orphanRemoval = true,
+        mappedBy = "usuario")
+    public Set<CompraEntity> compras;
+
+
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_office",
