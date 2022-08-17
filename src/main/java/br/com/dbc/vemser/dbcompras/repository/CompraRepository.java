@@ -7,13 +7,21 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Repository
 public interface CompraRepository extends JpaRepository<CompraEntity, Integer> {
 
     @Modifying
     @Query("delete " +
             "from purchase p " +
-            "where id_purchase = :idCompra")
+            "where p.idCompra = :idCompra")
     @Transactional
     Integer deleteCompra(Integer idCompra);
+
+    @Query("select p " +
+            "from purchase p " +
+            "join p.usuario u " +
+            "where (u.idUser = :idUsuario)")
+    List<CompraEntity> findAllByUsuarioId(Integer idUsuario);
 }

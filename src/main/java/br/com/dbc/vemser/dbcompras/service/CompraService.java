@@ -2,6 +2,7 @@ package br.com.dbc.vemser.dbcompras.service;
 
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraDTO;
+import br.com.dbc.vemser.dbcompras.dto.compra.CompraListDTO;
 import br.com.dbc.vemser.dbcompras.entity.CompraEntity;
 import br.com.dbc.vemser.dbcompras.entity.ItemEntity;
 import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -48,6 +50,13 @@ public class CompraService {
         compraSalva.setItens(itens);
 
         return compraServiceUtil.converterCompraEntityToCompraDTO(compraSalva);
+    }
+
+    public List<CompraListDTO> listColaborador() throws UsuarioException {
+        List<CompraEntity> compraEntityList = compraRepository.findAllByUsuarioId(usuarioServiceUtil.getIdLoggedUser());
+        return compraEntityList.stream()
+                .map(compraServiceUtil::converterEntityParaListDTO)
+                .toList();
     }
 
     public CompraDTO update(Integer idCompra, CompraCreateDTO compraDTO) throws UsuarioException, EntidadeNaoEncontradaException, RegraDeNegocioException {
