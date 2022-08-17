@@ -72,11 +72,11 @@ public class CompraService {
 
     public void delete(Integer id) throws UsuarioException, RegraDeNegocioException {
         compraUtil.verificarCompraDoUserLogado(id);
-        CompraEntity compra = compraRepository.findById(id).get();
-        Set<ItemEntity> itensAntigos = compra.getItens();
-        itensAntigos.forEach(itemRepository::delete);
-        compra.getItens().clear();
-        compraRepository.delete(compra);
+//        CompraEntity compra = compraRepository.findById(id).get();
+//        Set<ItemEntity> itensAntigos = compra.getItens();
+//        itensAntigos.forEach(itemRepository::delete);
+//        compra.setItens(itensAntigos);
+        compraRepository.deleteCompra(id);
     }
 
     public void removerItensDaCompra(Integer idCompra, Integer idItem) throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {

@@ -1,6 +1,5 @@
 package br.com.dbc.vemser.dbcompras.entity;
 
-import br.com.dbc.vemser.dbcompras.enums.SituacaoCompra;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -47,7 +46,7 @@ public class CompraEntity {
     private UsuarioEntity usuario;
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "id_purchase",
     referencedColumnName = "id_purchase")
     private Set<ItemEntity> itens;

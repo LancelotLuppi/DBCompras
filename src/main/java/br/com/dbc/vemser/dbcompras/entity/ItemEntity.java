@@ -29,7 +29,7 @@ public class ItemEntity {
     private Integer quantidade;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "id_purchase",
             referencedColumnName = "id_purchase")
     private CompraEntity compra;
