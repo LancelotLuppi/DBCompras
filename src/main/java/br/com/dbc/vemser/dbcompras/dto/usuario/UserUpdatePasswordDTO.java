@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class UserUpdatePasswordDTO {
     @Schema(description = "Senha atual do usuário para confirmação da troca de senha")
-    private String senhaAutal;
+    private String senhaAtutal;
     @Schema(description = "Nova senha que o usuário deseja colocar")
     private String novaSenha;
 }
