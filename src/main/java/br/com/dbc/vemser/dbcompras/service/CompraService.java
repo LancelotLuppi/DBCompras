@@ -54,6 +54,7 @@ public class CompraService {
         compraUtil.verificarCompraDoUserLogado(idCompra);
         CompraEntity compra = compraUtil.findByID(idCompra);
 
+        compra.setIdCompra(idCompra);
         if (compraDTO.getName() != null) {
             compra.setName(compraDTO.getName());
         }

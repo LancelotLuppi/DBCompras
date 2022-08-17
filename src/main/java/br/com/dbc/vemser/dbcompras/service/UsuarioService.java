@@ -57,6 +57,7 @@ public class UsuarioService {
             usuarioEntity.setNome(usuarioUpdate.getNome());
         }
         if(usuarioUpdate.getSenha() != null) {
+            usuarioUtil.validarSenha(usuarioUpdate.getSenha());
             usuarioEntity.setPassword(usuarioUtil.encodePassword(usuarioEntity.getPassword()));
         }
         if(usuarioUpdate.getFoto() != null) {
