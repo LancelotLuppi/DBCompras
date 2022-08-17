@@ -73,7 +73,7 @@ public class UsuarioService {
 
     public UserDTO updateLoggedPassword(UserUpdatePasswordDTO userUpdatePasswordDTO) throws RegraDeNegocioException, UsuarioException {
         UsuarioEntity usuarioEntity = usuarioServiceUtil.retornarUsuarioEntityLogado();
-        if(usuarioServiceUtil.verificarSenhaUsuario(userUpdatePasswordDTO.getSenhaAutal(), usuarioEntity)) {
+        if(usuarioServiceUtil.verificarSenhaUsuario(userUpdatePasswordDTO.getSenhaAtual(), usuarioEntity)) {
             usuarioEntity.setPassword(usuarioServiceUtil.encodePassword(userUpdatePasswordDTO.getNovaSenha()));
             usuarioRepository.save(usuarioEntity);
             return usuarioServiceUtil.retornarUsuarioDTO(usuarioEntity);
