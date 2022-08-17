@@ -8,7 +8,7 @@ import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.repository.CotacaoRepository;
 import br.com.dbc.vemser.dbcompras.repository.ItemRepository;
-import br.com.dbc.vemser.dbcompras.util.UsuarioUtil;
+import br.com.dbc.vemser.dbcompras.util.UsuarioServiceUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,7 @@ public class CotacaoService {
     private final CotacaoRepository cotacaoRepository;
     private final UsuarioService usuarioService;
     private final ItemRepository itemRepository;
-    private final UsuarioUtil usuarioUtil;
+    private final UsuarioServiceUtil usuarioServiceUtil;
 
     private CotacaoEntity converterCotacaoCreateDTOToCotacaoEntity(CotacaoCreateDTO cotacaoDTO) {
         return objectMapper.convertValue(cotacaoDTO, CotacaoEntity.class);
@@ -41,7 +41,7 @@ public class CotacaoService {
 
     public CotacaoDTO create (CotacaoCreateDTO cotacaoDTO) throws UsuarioException {
 
-        UsuarioEntity usuario = usuarioUtil.retornarUsuarioEntityLogado();
+        UsuarioEntity usuario = usuarioServiceUtil.retornarUsuarioEntityLogado();
 
         CotacaoEntity cotacao = converterCotacaoCreateDTOToCotacaoEntity(cotacaoDTO);
         cotacao.setStatus(false);
@@ -59,7 +59,7 @@ public class CotacaoService {
 
     public List<CotacaoDTO> list() throws UsuarioException {
 
-        UsuarioEntity usuario = usuarioUtil.retornarUsuarioEntityLogado();
+        UsuarioEntity usuario = usuarioServiceUtil.retornarUsuarioEntityLogado();
 
         return cotacaoRepository.findByUsuario(usuario.getIdUser())
                 .stream()

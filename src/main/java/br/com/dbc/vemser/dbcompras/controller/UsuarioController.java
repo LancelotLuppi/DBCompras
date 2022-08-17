@@ -36,6 +36,11 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.updateLoggedUser(usuario));
     }
 
+    @PutMapping("/change-password")
+    public ResponseEntity<UserDTO> updatePassword(@Valid @RequestBody UserUpdatePasswordDTO updatePasswordDTO) throws UsuarioException, RegraDeNegocioException {
+        return ResponseEntity.ok(usuarioService.updateLoggedPassword(updatePasswordDTO));
+    }
+
     @PutMapping("/logged-user/status-account")
     public void updateStatusLoggedAccount(UserLoginDTO confirmacao) throws UsuarioException, RegraDeNegocioException {
         usuarioService.desativarContaLogada(confirmacao);
