@@ -13,15 +13,14 @@ import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.repository.CompraRepository;
 import br.com.dbc.vemser.dbcompras.repository.CotacaoRepository;
 import br.com.dbc.vemser.dbcompras.repository.ItemRepository;
-import br.com.dbc.vemser.dbcompras.util.CompraUtil;
-import br.com.dbc.vemser.dbcompras.util.UsuarioUtil;
+import br.com.dbc.vemser.dbcompras.util.CompraServiceUtil;
+import br.com.dbc.vemser.dbcompras.util.UsuarioServiceUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,11 +36,11 @@ public class CotacaoService {
 
     private final UsuarioService usuarioService;
     private final ItemRepository itemRepository;
-    private final UsuarioUtil usuarioUtil;
+    private final UsuarioServiceUtil usuarioServiceUtil;
 
     private final CompraRepository compraRepository;
 
-    private final CompraUtil compraUtil;
+    private final CompraServiceUtil compraServiceUtil;
 
     private CotacaoEntity converterCotacaoCreateDTOToCotacaoEntity(CotacaoCreateDTO cotacaoDTO) {
         return objectMapper.convertValue(cotacaoDTO, CotacaoEntity.class);
@@ -57,9 +56,8 @@ public class CotacaoService {
 
     public CotacaoDTO create (CotacaoCreateDTO cotacaoDTO, Integer idCompra) throws UsuarioException, RegraDeNegocioException {
 
-
-        UsuarioEntity usuario = usuarioUtil.retornarUsuarioEntityLogado();
-        compraUtil.verificarCompraDoUserLogado(idCompra);
+        UsuarioEntity usuario = usuarioServiceUtil.retornarUsuarioEntityLogado();
+        compraServiceUtil.verificarCompraDoUserLogado(idCompra);
         CotacaoEntity cotacao = converterCotacaoCreateDTOToCotacaoEntity(cotacaoDTO);
         cotacao.setStatus(false);
         cotacao.setUsuario(usuario);
@@ -77,7 +75,7 @@ public class CotacaoService {
 
     public List<CotacaoDTO> list() throws UsuarioException {
 
-        UsuarioEntity usuario = usuarioUtil.retornarUsuarioEntityLogado();
+        UsuarioEntity usuario = usuarioServiceUtil.retornarUsuarioEntityLogado();
 
         return cotacaoRepository.findByUsuario(usuario.getIdUser())
                 .stream()
@@ -88,7 +86,7 @@ public class CotacaoService {
 
     public CotacaoEntity findById (Integer idCotacao) throws EntidadeNaoEncontradaException, UsuarioException {
 
-        UsuarioEntity usuario = usuarioUtil.retornarUsuarioEntityLogado();
+        UsuarioEntity usuario = usuarioServiceUtil.retornarUsuarioEntityLogado();
 
         return cotacaoRepository.findById(idCotacao)
                 .orElseThrow(() -> new  EntidadeNaoEncontradaException("Essa cotação não existe!"));

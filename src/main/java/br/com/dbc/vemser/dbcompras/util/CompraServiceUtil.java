@@ -22,14 +22,14 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CompraUtil {
-    private final UsuarioUtil usuarioUtil;
+public class CompraServiceUtil {
+    private final UsuarioServiceUtil usuarioServiceUtil;
     private final ObjectMapper objectMapper;
     private final ItemRepository itemRepository;
 
 
     public CompraEntity findByID(Integer idCompra) throws UsuarioException, EntidadeNaoEncontradaException {
-        UsuarioEntity usuario = usuarioUtil.retornarUsuarioEntityLogado();
+        UsuarioEntity usuario = usuarioServiceUtil.retornarUsuarioEntityLogado();
 
         Set<CompraEntity> compras = usuario.getCompras();
 
@@ -40,7 +40,7 @@ public class CompraUtil {
     }
 
     public void verificarCompraDoUserLogado(Integer idCompra) throws UsuarioException, RegraDeNegocioException {
-        UsuarioEntity usuario = usuarioUtil.retornarUsuarioEntityLogado();
+        UsuarioEntity usuario = usuarioServiceUtil.retornarUsuarioEntityLogado();
         List<Integer> idCompras = usuario.getCompras().stream()
                 .map(CompraEntity::getIdCompra).toList();
         if (!idCompras.contains(idCompra)) {

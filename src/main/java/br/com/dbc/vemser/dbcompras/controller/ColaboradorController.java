@@ -21,23 +21,23 @@ import javax.validation.Valid;
 public class ColaboradorController {
     private final CompraService compraService;
 
-    @PostMapping("/create")
+    @PostMapping("/nova-compra")
     public ResponseEntity<CompraDTO> create (@Valid @RequestBody CompraCreateDTO compraCreateDTO) throws UsuarioException {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(compraService.create(compraCreateDTO));
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/compra/{id}")
     public ResponseEntity<CompraDTO> update (@PathVariable Integer id , @Valid @RequestBody CompraCreateDTO compraUpdateDTO) throws UsuarioException, EntidadeNaoEncontradaException, RegraDeNegocioException {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(compraService.update(id, compraUpdateDTO));
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/compra/{id}")
     public ResponseEntity<Void> delete (@PathVariable("id") Integer idCompra) throws UsuarioException, RegraDeNegocioException {
         compraService.delete(idCompra);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/delete-item/{idCompra}/{idItem}")
+    @DeleteMapping("/item/{idCompra}/{idItem}")
     public ResponseEntity<Void> deleteItem (@PathVariable("idCompra") Integer idCompra,
                                              @PathVariable("idItem") Integer idItem) throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException, RegraDeNegocioException {
         compraService.removerItensDaCompra(idCompra, idItem);

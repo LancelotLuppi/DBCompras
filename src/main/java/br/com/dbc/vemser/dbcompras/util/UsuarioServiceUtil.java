@@ -24,7 +24,7 @@ import java.util.Optional;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class UsuarioUtil {
+public class UsuarioServiceUtil {
     private final UsuarioRepository usuarioRepository;
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
@@ -81,12 +81,18 @@ public class UsuarioUtil {
         }
     }
 
-    public void validarSenha(String senhaParaValidar) throws RegraDeNegocioException {
+    public void validarFormatacaoSenha(String senhaParaValidar) throws RegraDeNegocioException {
         if(senhaParaValidar.matches("^(?=.*[A-Z])(?=.*[!#@$%&])(?=.*[0-9])(?=.*[a-z]).{8,16}$")){
             log.info("Senha válida");
         } else {
             throw new RegraDeNegocioException("A senha deve ter entre 8 e 16 caracteres, com letras, números e caracteres especiais");
         }
+    }
+
+    public boolean verificarSenhaUsuario(String senha, UsuarioEntity usuario) throws UsuarioException {
+
+        Argon2PasswordEncoder argon2PasswordEncoder = new Argon2PasswordEncoder();
+        return argon2PasswordEncoder.matches(senha, usuario.getPassword());
     }
 
     public UsuarioEntity retornarUsuarioEntity(UserCreateDTO userCreateDTO) {

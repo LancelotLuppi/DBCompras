@@ -8,10 +8,11 @@ import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.repository.CargoRepository;
 import br.com.dbc.vemser.dbcompras.repository.UsuarioRepository;
-import br.com.dbc.vemser.dbcompras.util.UsuarioUtil;
+import br.com.dbc.vemser.dbcompras.util.UsuarioServiceUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,49 +27,60 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final ObjectMapper objectMapper;
     private final CargoRepository cargoRepository;
-    private final UsuarioUtil usuarioUtil;
+    private final UsuarioServiceUtil usuarioServiceUtil;
 
 
     public UserLoginComSucessoDTO create(UserCreateDTO login) throws RegraDeNegocioException {
-        usuarioUtil.validarEmail(login.getEmail());
-        usuarioUtil.verificarSeEmailTemCadastro(login.getEmail());
-        usuarioUtil.validarSenha(login.getSenha());
+        usuarioServiceUtil.validarEmail(login.getEmail());
+        usuarioServiceUtil.verificarSeEmailTemCadastro(login.getEmail());
+        usuarioServiceUtil.validarFormatacaoSenha(login.getSenha());
 
-        UsuarioEntity usuarioEntity = usuarioUtil.retornarUsuarioEntity(login);
+        UsuarioEntity usuarioEntity = usuarioServiceUtil.retornarUsuarioEntity(login);
 
         usuarioEntity.setCargos(Set.of(cargoRepository.findById(TipoCargo.COLABORADOR.getCargo()).get()));
-        usuarioEntity.setPassword(usuarioUtil.encodePassword(login.getSenha()));
+        usuarioEntity.setPassword(usuarioServiceUtil.encodePassword(login.getSenha()));
         usuarioEntity.setPhoto(login.getFoto()!=null ? Base64.getDecoder().decode(login.getFoto()) : null);
         usuarioEntity.setEnable(StatusUsuario.ATIVAR.getStatus());
 
         usuarioEntity = usuarioRepository.save(usuarioEntity);
 
-        return usuarioUtil.generateUserLoginComSucessoDTO(usuarioEntity, login.getEmail(), login.getSenha());
+        return usuarioServiceUtil.generateUserLoginComSucessoDTO(usuarioEntity, login.getEmail(), login.getSenha());
     }
 
     public UserDTO updateLoggedUser(UserUpdateDTO usuarioUpdate) throws UsuarioException, RegraDeNegocioException {
-        UsuarioEntity usuarioEntity = usuarioUtil.retornarUsuarioEntityLogado();
+        UsuarioEntity usuarioEntity = usuarioServiceUtil.retornarUsuarioEntityLogado();
         if(usuarioUpdate.getEmail() != null) {
-            usuarioUtil.validarEmail(usuarioUpdate.getEmail());
-            usuarioUtil.verificarSeEmailTemCadastro(usuarioUpdate.getEmail());
+            usuarioServiceUtil.validarEmail(usuarioUpdate.getEmail());
+            usuarioServiceUtil.verificarSeEmailTemCadastro(usuarioUpdate.getEmail());
             usuarioEntity.setEmail(usuarioUpdate.getEmail());
         }
         if(usuarioUpdate.getNome() != null) {
             usuarioEntity.setNome(usuarioUpdate.getNome());
         }
         if(usuarioUpdate.getSenha() != null) {
-            usuarioUtil.validarSenha(usuarioUpdate.getSenha());
-            usuarioEntity.setPassword(usuarioUtil.encodePassword(usuarioEntity.getPassword()));
+            usuarioServiceUtil.validarFormatacaoSenha(usuarioUpdate.getSenha());
+            usuarioEntity.setPassword(usuarioServiceUtil.encodePassword(usuarioEntity.getPassword()));
         }
         if(usuarioUpdate.getFoto() != null) {
             usuarioEntity.setPhoto(usuarioUpdate.getFoto()!=null ? Base64.getDecoder().decode(usuarioUpdate.getFoto()) : null);
         }
         UsuarioEntity usuarioAtualizado = usuarioRepository.save(usuarioEntity);
-        return usuarioUtil.retornarUsuarioDTO(usuarioAtualizado);
+        return usuarioServiceUtil.retornarUsuarioDTO(usuarioAtualizado);
+    }
+
+    public UserDTO updateLoggedPassword(UserUpdatePasswordDTO userUpdatePasswordDTO) throws RegraDeNegocioException, UsuarioException {
+        UsuarioEntity usuarioEntity = usuarioServiceUtil.retornarUsuarioEntityLogado();
+        if(usuarioServiceUtil.verificarSenhaUsuario(userUpdatePasswordDTO.getSenhaAutal(), usuarioEntity)) {
+            usuarioEntity.setPassword(usuarioServiceUtil.encodePassword(userUpdatePasswordDTO.getNovaSenha()));
+            usuarioRepository.save(usuarioEntity);
+            return usuarioServiceUtil.retornarUsuarioDTO(usuarioEntity);
+        } else {
+            throw new RegraDeNegocioException("Senha inválida");
+        }
     }
 
     public void desativarContaLogada(UserLoginDTO confirmacao) throws UsuarioException, RegraDeNegocioException {
-        UsuarioEntity usuarioEntity = usuarioUtil.retornarUsuarioEntityLogado();
+        UsuarioEntity usuarioEntity = usuarioServiceUtil.retornarUsuarioEntityLogado();
 
         boolean verificacao = usuarioEntity.getEmail().equals(confirmacao.getEmail())
                 && new Argon2PasswordEncoder().matches(confirmacao.getPassword(), usuarioEntity.getPassword());
@@ -81,12 +93,12 @@ public class UsuarioService {
     }
 
     public void deletarUsuario(Integer idUsuario) throws RegraDeNegocioException {
-        UsuarioEntity usuarioEntity = usuarioUtil.findById(idUsuario);
+        UsuarioEntity usuarioEntity = usuarioServiceUtil.findById(idUsuario);
         usuarioRepository.delete(usuarioEntity);
     }
 
     public UserWithProfileImageDTO getLoggedUser() throws UsuarioException {
-        UsuarioEntity usuarioEntity = usuarioUtil.retornarUsuarioEntityLogado();
+        UsuarioEntity usuarioEntity = usuarioServiceUtil.retornarUsuarioEntityLogado();
         UserWithProfileImageDTO userWithProfileImageDTO = objectMapper.convertValue(usuarioEntity, UserWithProfileImageDTO.class);
         
         byte[] byteFoto = usuarioEntity.getPhoto();
@@ -95,7 +107,11 @@ public class UsuarioService {
         return userWithProfileImageDTO;
     }
 
-    public String validarLogin(UserLoginDTO login) {
-        return usuarioUtil.recuperarToken(login.getEmail(), login.getPassword());
+    public String validarLogin(UserLoginDTO login) throws RegraDeNegocioException {
+        try {
+            return usuarioServiceUtil.recuperarToken(login.getEmail(), login.getPassword());
+        } catch (BadCredentialsException ex) {
+            throw new RegraDeNegocioException("Usuário ou senha inválido!");
+        }
     }
 }

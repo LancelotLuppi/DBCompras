@@ -11,8 +11,8 @@ import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.repository.CompraRepository;
 import br.com.dbc.vemser.dbcompras.repository.ItemRepository;
-import br.com.dbc.vemser.dbcompras.util.CompraUtil;
-import br.com.dbc.vemser.dbcompras.util.UsuarioUtil;
+import br.com.dbc.vemser.dbcompras.util.CompraServiceUtil;
+import br.com.dbc.vemser.dbcompras.util.UsuarioServiceUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,14 +29,14 @@ public class CompraService {
 
     private final ObjectMapper objectMapper;
     private final CompraRepository compraRepository;
-    private final CompraUtil compraUtil;
+    private final CompraServiceUtil compraServiceUtil;
     private final ItemRepository itemRepository;
-    private final UsuarioUtil usuarioUtil;
+    private final UsuarioServiceUtil usuarioServiceUtil;
 
 
     public CompraDTO create(CompraCreateDTO compraCreateDTO) throws UsuarioException {
 
-        UsuarioEntity usuario = usuarioUtil.retornarUsuarioEntityLogado();
+        UsuarioEntity usuario = usuarioServiceUtil.retornarUsuarioEntityLogado();
 
         CompraEntity compra = objectMapper.convertValue(compraCreateDTO, CompraEntity.class);
         compra.setDataCompra(LocalDateTime.now());
@@ -44,15 +44,15 @@ public class CompraService {
         compra.setUsuario(usuario);
         CompraEntity compraSalva = compraRepository.save(compra);
 
-        Set<ItemEntity> itens = compraUtil.salvarItensDaCompra(compraCreateDTO, compraSalva);
+        Set<ItemEntity> itens = compraServiceUtil.salvarItensDaCompra(compraCreateDTO, compraSalva);
         compraSalva.setItens(itens);
 
-        return compraUtil.converterCompraEntityToCompraDTO(compraSalva);
+        return compraServiceUtil.converterCompraEntityToCompraDTO(compraSalva);
     }
 
     public CompraDTO update(Integer idCompra, CompraCreateDTO compraDTO) throws UsuarioException, EntidadeNaoEncontradaException, RegraDeNegocioException {
-        compraUtil.verificarCompraDoUserLogado(idCompra);
-        CompraEntity compra = compraUtil.findByID(idCompra);
+        compraServiceUtil.verificarCompraDoUserLogado(idCompra);
+        CompraEntity compra = compraServiceUtil.findByID(idCompra);
 
         compra.setIdCompra(idCompra);
         if (compraDTO.getName() != null) {
@@ -63,26 +63,26 @@ public class CompraService {
             itensAntigos.forEach(itemRepository::delete);
 
             compra.getItens().clear();
-            Set<ItemEntity> novosItens = new HashSet<>(compraUtil.salvarItensDaCompra(compraDTO, compra));
+            Set<ItemEntity> novosItens = new HashSet<>(compraServiceUtil.salvarItensDaCompra(compraDTO, compra));
             compra.setItens(novosItens);
         }
 
         CompraEntity compraAtualizada = compraRepository.save(compra);
-        return compraUtil.converterCompraEntityToCompraDTO(compraAtualizada);
+        return compraServiceUtil.converterCompraEntityToCompraDTO(compraAtualizada);
     }
 
     public void delete(Integer id) throws UsuarioException, RegraDeNegocioException {
-        compraUtil.verificarCompraDoUserLogado(id);
-//        CompraEntity compra = compraRepository.findById(id).get();
-//        Set<ItemEntity> itensAntigos = compra.getItens();
-//        itensAntigos.forEach(itemRepository::delete);
-//        compra.setItens(itensAntigos);
-        compraRepository.deleteCompra(id);
+        compraServiceUtil.verificarCompraDoUserLogado(id);
+        CompraEntity compra = compraRepository.findById(id).get();
+        Set<ItemEntity> itensAntigos = compra.getItens();
+        itensAntigos.forEach(itemRepository::delete);
+        compra.getItens().clear();
+        compraRepository.delete(compra);
     }
 
     public void removerItensDaCompra(Integer idCompra, Integer idItem) throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
-        compraUtil.verificarCompraDoUserLogado(idCompra);
-        CompraEntity compra = compraUtil.findByID(idCompra);
+        compraServiceUtil.verificarCompraDoUserLogado(idCompra);
+        CompraEntity compra = compraServiceUtil.findByID(idCompra);
 
         Set<ItemEntity> itemEntities = compra.getItens();
 
@@ -90,6 +90,6 @@ public class CompraService {
         itemRepository.delete(itemRepository.findById(idItem).get());
         compra.setItens(itemEntities);
         compraRepository.save(compra);
-        compraUtil.converterCompraEntityToCompraDTO(compra);
+        compraServiceUtil.converterCompraEntityToCompraDTO(compra);
     }
 }
