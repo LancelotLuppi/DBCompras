@@ -34,6 +34,9 @@ public class UsuarioService {
         usuarioServiceUtil.validarEmail(login.getEmail());
         usuarioServiceUtil.verificarSeEmailTemCadastro(login.getEmail());
         usuarioServiceUtil.validarFormatacaoSenha(login.getSenha());
+        if(login.getNome().isEmpty() && login.getNome().isBlank()){
+            throw new RegraDeNegocioException("O nome do usuario é obrigatorio");
+        }
 
         UsuarioEntity usuarioEntity = usuarioServiceUtil.retornarUsuarioEntity(login);
 
