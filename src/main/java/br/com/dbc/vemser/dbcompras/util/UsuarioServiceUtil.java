@@ -43,7 +43,7 @@ public class UsuarioServiceUtil {
                 .orElseThrow(() -> new UsuarioException("Usuário não cadastrado"));
     }
 
-    private Integer getIdLoggedUser() throws UsuarioException {
+    public Integer getIdLoggedUser() throws UsuarioException {
         Integer idUser;
         try {
             idUser = (Integer) SecurityContextHolder.getContext()

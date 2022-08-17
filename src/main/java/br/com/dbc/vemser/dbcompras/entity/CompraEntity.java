@@ -37,7 +37,7 @@ public class CompraEntity {
     private String status;
 
     @Column(name = "total_value")
-    private Double valor;
+    private Double valorTotal;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
@@ -51,4 +51,9 @@ public class CompraEntity {
     referencedColumnName = "id_purchase")
     private Set<ItemEntity> itens;
 
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_purchase",
+            referencedColumnName = "id_purchase")
+    private Set<CotacaoEntity> cotacoes;
 }
