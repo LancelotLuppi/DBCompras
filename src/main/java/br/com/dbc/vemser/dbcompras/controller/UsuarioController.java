@@ -21,7 +21,7 @@ public class UsuarioController {
     private final UsuarioService usuarioService;
 
     @PostMapping("/create-user")
-    public ResponseEntity<UserLoginComSucessoDTO> create(@Valid @RequestBody UserCreateDTO userCreateDTO) throws RegraDeNegocioException {
+    public ResponseEntity<UserLoginComSucessoDTO> create(@RequestBody @Valid UserCreateDTO userCreateDTO) throws RegraDeNegocioException {
         return ResponseEntity.ok(usuarioService.create(userCreateDTO));
     }
 
