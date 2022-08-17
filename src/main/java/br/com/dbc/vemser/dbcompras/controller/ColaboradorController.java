@@ -25,12 +25,12 @@ public class ColaboradorController {
 
     @PostMapping("/nova-compra")
     public ResponseEntity<CompraDTO> create (@Valid @RequestBody CompraCreateDTO compraCreateDTO) throws UsuarioException {
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(compraService.create(compraCreateDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(compraService.create(compraCreateDTO));
     }
 
     @PutMapping("/compra/{id}")
     public ResponseEntity<CompraDTO> update (@PathVariable Integer id , @Valid @RequestBody CompraCreateDTO compraUpdateDTO) throws UsuarioException, EntidadeNaoEncontradaException, RegraDeNegocioException {
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(compraService.update(id, compraUpdateDTO));
+        return ResponseEntity.status(HttpStatus.OK).body(compraService.update(id, compraUpdateDTO));
     }
 
     @GetMapping("/compras")
