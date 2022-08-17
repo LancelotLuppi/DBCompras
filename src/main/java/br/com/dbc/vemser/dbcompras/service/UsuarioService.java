@@ -60,10 +60,6 @@ public class UsuarioService {
         if(usuarioUpdate.getNome() != null) {
             usuarioEntity.setNome(usuarioUpdate.getNome());
         }
-        if(usuarioUpdate.getSenha() != null) {
-            usuarioServiceUtil.validarFormatacaoSenha(usuarioUpdate.getSenha());
-            usuarioEntity.setPassword(usuarioServiceUtil.encodePassword(usuarioEntity.getPassword()));
-        }
         if(usuarioUpdate.getFoto() != null) {
             usuarioEntity.setPhoto(usuarioUpdate.getFoto()!=null ? Base64.getDecoder().decode(usuarioUpdate.getFoto()) : null);
         }

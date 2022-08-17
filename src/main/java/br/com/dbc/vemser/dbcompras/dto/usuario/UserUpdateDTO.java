@@ -12,9 +12,6 @@ public class UserUpdateDTO {
     @Schema(description = "Email de login do usuário", example = "meuemail@dbccompany.com.br")
     private String email;
 
-    @Schema(description = "Senha do usuário", example = "123")
-    private String senha;
-
     @Schema(description = "Foto do usuário")
     private String foto;
 
