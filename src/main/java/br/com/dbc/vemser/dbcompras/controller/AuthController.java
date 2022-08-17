@@ -20,7 +20,7 @@ public class AuthController {
     private final UsuarioService usuarioService;
 
     @PostMapping
-    public ResponseEntity<String> auth(@RequestBody @Valid UserLoginDTO login) throws RegraDeNegocioException {
+    public ResponseEntity<String> auth(@Valid @RequestBody UserLoginDTO login) throws RegraDeNegocioException {
         return ResponseEntity.ok(usuarioService.validarLogin(login));
     }
 }
