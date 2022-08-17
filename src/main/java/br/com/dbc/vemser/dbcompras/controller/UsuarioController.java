@@ -1,10 +1,12 @@
 package br.com.dbc.vemser.dbcompras.controller;
 
+import br.com.dbc.vemser.dbcompras.documentation.UsuarioDocumentation;
 import br.com.dbc.vemser.dbcompras.dto.usuario.*;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -16,13 +18,13 @@ import javax.validation.Valid;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/usuario")
-public class UsuarioController {
+public class UsuarioController implements UsuarioDocumentation {
 
     private final UsuarioService usuarioService;
 
     @PostMapping("/create-user")
     public ResponseEntity<UserLoginComSucessoDTO> create(@RequestBody @Valid UserCreateDTO userCreateDTO) throws RegraDeNegocioException {
-        return ResponseEntity.ok(usuarioService.create(userCreateDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.create(userCreateDTO));
     }
 
     @GetMapping("/get-logged")

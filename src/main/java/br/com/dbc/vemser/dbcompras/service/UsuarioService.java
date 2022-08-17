@@ -31,10 +31,6 @@ public class UsuarioService {
 
 
     public UserLoginComSucessoDTO create(UserCreateDTO login) throws RegraDeNegocioException {
-        if(login.getNome() == null || login.getEmail() == null || login.getSenha() == null || login.getNome().isBlank()) {
-            throw new RegraDeNegocioException("Nome, email e senha não podem ser nulos");
-        }
-
         usuarioServiceUtil.validarEmail(login.getEmail());
         usuarioServiceUtil.verificarSeEmailTemCadastro(login.getEmail());
         usuarioServiceUtil.validarFormatacaoSenha(login.getSenha());
