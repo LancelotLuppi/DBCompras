@@ -28,11 +28,14 @@ public class CompraEntity {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "descricao")
+    private String descricao;
+
     @Column(name = "data")
     private LocalDateTime dataCompra;
 
     @Column(name = "status")
-    private SituacaoCompra status;
+    private String status;
 
     @Column(name = "total_value")
     private Double valor;

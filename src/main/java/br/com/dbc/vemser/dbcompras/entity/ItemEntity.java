@@ -42,9 +42,4 @@ public class ItemEntity {
             inverseJoinColumns = @JoinColumn(name = "id_quotation")
     )
     private Set<CotacaoEntity> cotacoes;
-
-    public ItemEntity(String nome, Integer quantidade) {
-        this.nome = nome;
-        this.quantidade = quantidade;
-    }
 }

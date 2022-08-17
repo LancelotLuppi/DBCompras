@@ -40,7 +40,7 @@ public class CompraService {
 
         CompraEntity compra = objectMapper.convertValue(compraCreateDTO, CompraEntity.class);
         compra.setDataCompra(LocalDateTime.now());
-        compra.setStatus(SituacaoCompra.ABERTO);
+        compra.setStatus(SituacaoCompra.ABERTO.getSituacao());
         compra.setUsuario(usuario);
         CompraEntity compraSalva = compraRepository.save(compra);
 
@@ -72,7 +72,11 @@ public class CompraService {
 
     public void delete(Integer id) throws UsuarioException, RegraDeNegocioException {
         compraUtil.verificarCompraDoUserLogado(id);
-        compraRepository.deleteById(id);
+        CompraEntity compra = compraRepository.findById(id).get();
+        Set<ItemEntity> itensAntigos = compra.getItens();
+        itensAntigos.forEach(itemRepository::delete);
+        compra.getItens().clear();
+        compraRepository.delete(compra);
     }
 
     public void removerItensDaCompra(Integer idCompra, Integer idItem) throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
@@ -85,5 +89,6 @@ public class CompraService {
         itemRepository.delete(itemRepository.findById(idItem).get());
         compra.setItens(itemEntities);
         compraRepository.save(compra);
+        compraUtil.converterCompraEntityToCompraDTO(compra);
     }
 }

@@ -9,5 +9,6 @@ import java.util.List;
 public class CompraDTO {
     private Integer idCompra;
     private String name;
+    private String descricao;
     private List<ItemDTO> itens;
 }
