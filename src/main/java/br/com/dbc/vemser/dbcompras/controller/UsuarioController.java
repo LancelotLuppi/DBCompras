@@ -25,7 +25,7 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.create(userCreateDTO));
     }
 
-    @GetMapping("/get-logged-user")
+    @GetMapping("/get-logged")
     public ResponseEntity<UserDTO> getUser() throws UsuarioException {
         return ResponseEntity.ok(usuarioService.getLoggedUser());
     }
