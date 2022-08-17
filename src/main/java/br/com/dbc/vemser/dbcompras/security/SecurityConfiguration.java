@@ -36,7 +36,8 @@ public class SecurityConfiguration {
 
     private Customizer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry> permissoes() {
         return (authz) ->
-                authz.antMatchers("/", "/auth/**").permitAll()
+                authz.antMatchers("/", "/auth/**", "/usuario").permitAll()
+                        .antMatchers("/colaborador/**").hasRole("COLABORADOR")
                         .anyRequest().authenticated();
     }
 

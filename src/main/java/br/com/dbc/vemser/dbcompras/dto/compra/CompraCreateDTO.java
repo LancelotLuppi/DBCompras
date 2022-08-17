@@ -7,8 +7,6 @@ import java.util.List;
 
 @Data
 public class CompraCreateDTO {
-
     private String name;
     private List<ItemCreateDTO> itens;
-
 }
