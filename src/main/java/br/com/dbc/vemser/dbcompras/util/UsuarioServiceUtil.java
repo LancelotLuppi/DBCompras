@@ -82,7 +82,7 @@ public class UsuarioServiceUtil {
     }
 
     public void validarFormatacaoSenha(String senhaParaValidar) throws RegraDeNegocioException {
-        if(senhaParaValidar.matches("^(?=.*[A-Z])(?=.*[!#@$%&])(?=.*[0-9])(?=.*[a-z]).{8,16}$")){
+        if(senhaParaValidar.matches("^(?=.*[A-Z])(?=.*[.!@$%^&(){}:;<>,?/~_+-=|])(?=.*[0-9])(?=.*[a-z]).{8,16}$")){
             log.info("Senha válida");
         } else {
             throw new RegraDeNegocioException("A senha deve ter entre 8 e 16 caracteres, com letras, números e caracteres especiais");
