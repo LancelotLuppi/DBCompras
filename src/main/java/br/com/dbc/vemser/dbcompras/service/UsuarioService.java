@@ -1,9 +1,11 @@
 package br.com.dbc.vemser.dbcompras.service;
 
 import br.com.dbc.vemser.dbcompras.dto.usuario.*;
+import br.com.dbc.vemser.dbcompras.entity.CargoEntity;
 import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
 import br.com.dbc.vemser.dbcompras.enums.StatusUsuario;
 import br.com.dbc.vemser.dbcompras.enums.TipoCargo;
+import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.repository.CargoRepository;
@@ -17,6 +19,7 @@ import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Base64;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -52,6 +55,17 @@ public class UsuarioService {
         usuarioEntity = usuarioRepository.save(usuarioEntity);
 
         return usuarioServiceUtil.generateUserLoginComSucessoDTO(usuarioEntity, login.getEmail(), login.getSenha());
+    }
+
+    public void /*UserWithRoleDTO*/ updateRoleUser(Integer idUsuario, Set<TipoCargo> cargos) throws EntidadeNaoEncontradaException {
+        UsuarioEntity usuarioRecuperado = usuarioRepository.findById(idUsuario).orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não existe"));
+        Set<CargoEntity> novosCargos = new HashSet<>();
+        novosCargos.addAll(cargos.stream()
+                .map(cargo -> cargoRepository.findById(cargo.getCargo()).get())
+                .toList());
+        usuarioRecuperado.setCargos(novosCargos);
+        usuarioRepository.save(usuarioRecuperado);
+
     }
 
     public UserDTO updateLoggedUser(UserUpdateDTO usuarioUpdate) throws UsuarioException, RegraDeNegocioException {
