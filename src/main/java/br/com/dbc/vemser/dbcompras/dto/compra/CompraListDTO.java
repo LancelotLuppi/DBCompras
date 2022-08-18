@@ -3,8 +3,6 @@ package br.com.dbc.vemser.dbcompras.dto.compra;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemDTO;
 import lombok.Data;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 

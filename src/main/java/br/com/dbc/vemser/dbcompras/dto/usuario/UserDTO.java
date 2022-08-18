@@ -3,8 +3,6 @@ package br.com.dbc.vemser.dbcompras.dto.usuario;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 
 @Data
 public class UserDTO {

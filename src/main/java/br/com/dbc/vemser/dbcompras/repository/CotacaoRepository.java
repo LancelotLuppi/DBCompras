@@ -15,12 +15,5 @@ public interface CotacaoRepository extends JpaRepository<CotacaoEntity, Integer>
             "where id_user = :idUser")
     List<CotacaoEntity> findByUsuario(Integer idUser);
 
-    @Query("insert into quotation (valor)" +
-            "  select i.amount, qi.value " +
-            "  from item i" +
-            "  inner join quotation_item qi" +
-            "  on i.id_item = qi.id_item" +
-            "values(:valorTotal)")
-    Double valorDaCotacao(Double valorTotal);
 
 }

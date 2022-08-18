@@ -22,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -66,6 +65,7 @@ public class CotacaoService {
         cotacao.setLocalDate(LocalDateTime.now());
         Set<ItemEntity> itens = cotacaoDTO.getItens().stream()
                 .map(item -> objectMapper.convertValue(item, ItemEntity.class))
+
                 .map(itemRepository::save)
                 .collect(Collectors.toSet());
         cotacao.setItens(itens);
@@ -77,7 +77,10 @@ public class CotacaoService {
             criarCotacaoItemEntity(item, cotacao, item.getPreco());
 
         }
-
+        Double valorTotal = calcularValorTotalCotacao(cotacao);
+        cotacao.setValorTotal(valorTotal);
+        System.out.println(valorTotal);
+        cotacaoRepository.save(cotacao);
         return converterCotacaoEntityToCotacaoDTO(cotacao);
     }
 
@@ -108,6 +111,8 @@ public class CotacaoService {
 
        List<ItemEntity> itens = cotacao.getItens().stream().toList();
 
+       itens.forEach(item -> item.getQuantidade());
+
        List<CotacaoItemEntity> itemEntities = cotacaoItemRepository.findAll()
                .stream()
                .filter(cotacaoItemEntity -> cotacaoItemEntity.getCotacao().getIdCotacao().equals(cotacao.getIdCotacao()))
@@ -118,7 +123,7 @@ public class CotacaoService {
        for(int i = 0; i < itens.size(); i++){
 
           if(itens.get(i).getIdItem().equals(itemEntities.get(i).getItem().getIdItem())){
-              valorTotal += itens.get(i).getQuantidade() + itemEntities.get(i).getValorDoItem();
+              valorTotal += itens.get(i).getQuantidade() * itemEntities.get(i).getValorDoItem();
           }
 
        }
@@ -126,6 +131,45 @@ public class CotacaoService {
        return valorTotal;
 
     }
+
+//    public void GestorAprovaOuReprovaCotacao(Integer topicId, Integer quotationId, StatusCotacoes statusCotacoes)
+//            throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
+//
+//        CotacaoEntity cotacao = findById(topicId);
+//
+//        UsuarioEntity usuario = usuarioServiceUtil.retornarUsuarioEntityLogado();
+//
+//        if (cotacao.getStatus().equals(StatusCotacoes.REPROVADO)){
+//
+//            throw new EntidadeNaoEncontradaException("o Topico não foi aberto");
+//        }
+//
+//        if (usuario.getCotacoes().size() < 2)
+//            throw new RegraDeNegocioException("o topico não tem duas cotações");
+//        Set<CotacaoEntity> cotacaoEntities = usuario.getCotacoes();
+//
+//        // seta todas as quotations para reproved
+//        cotacaoEntities.forEach(cotacaoEntity -> {
+//            cotacaoEntity.setStatus(StatusCotacoes.APROVADO.getSituacaoCompra());
+//        });
+//
+//        //se for para aprovar a cotação a flag sera marcada como true
+//        if (statusCotacoes.getSituacaoCompra()) {
+//            //então sera atualizada somente a cotação do id passado para aproved
+//            quotationEntities.stream()
+//                    .filter(quotationEntity -> quotationEntity.getQuotationId().equals(quotationId))
+//                    .findFirst().orElseThrow((() -> new BusinessRuleException("Cotação não encontrada")))
+//                    .setQuotationStatus(MANAGER_APPROVED);
+//            //e por fim o topico será marcado como manager approved
+//            topic.setStatus(MANAGER_APPROVED);
+//        } else {
+//            //se a lfag for false o topico é reprovado
+//            topic.setStatus(StatusEnum.MANAGER_REPROVED);
+//        }
+//        topic.setQuotations(quotationEntities);
+//        //topico é salvo
+//        this.topicService.save(topic);
+//    }
 
     public CotacaoEntity findById (Integer idCotacao) throws EntidadeNaoEncontradaException, UsuarioException {
 
