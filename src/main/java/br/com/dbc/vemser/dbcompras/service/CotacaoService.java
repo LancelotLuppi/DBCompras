@@ -103,6 +103,30 @@ public class CotacaoService {
 
     }
 
+
+    public Double calcularValorTotalCotacao (CotacaoEntity cotacao){
+
+       List<ItemEntity> itens = cotacao.getItens().stream().toList();
+
+       List<CotacaoItemEntity> itemEntities = cotacaoItemRepository.findAll()
+               .stream()
+               .filter(cotacaoItemEntity -> cotacaoItemEntity.getCotacao().getIdCotacao().equals(cotacao.getIdCotacao()))
+               .toList();
+
+       Double valorTotal = 0.0;
+
+       for(int i = 0; i < itens.size(); i++){
+
+          if(itens.get(i).getIdItem().equals(itemEntities.get(i).getItem().getIdItem())){
+              valorTotal += itens.get(i).getQuantidade() + itemEntities.get(i).getValorDoItem();
+          }
+
+       }
+
+       return valorTotal;
+
+    }
+
     public CotacaoEntity findById (Integer idCotacao) throws EntidadeNaoEncontradaException, UsuarioException {
 
         UsuarioEntity usuario = usuarioServiceUtil.retornarUsuarioEntityLogado();

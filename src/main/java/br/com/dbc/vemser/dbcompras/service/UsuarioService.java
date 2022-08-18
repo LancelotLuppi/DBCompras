@@ -60,10 +60,6 @@ public class UsuarioService {
         if(usuarioUpdate.getNome() != null) {
             usuarioEntity.setNome(usuarioUpdate.getNome());
         }
-        if(usuarioUpdate.getSenha() != null) {
-            usuarioServiceUtil.validarFormatacaoSenha(usuarioUpdate.getSenha());
-            usuarioEntity.setPassword(usuarioServiceUtil.encodePassword(usuarioEntity.getPassword()));
-        }
         if(usuarioUpdate.getFoto() != null) {
             usuarioEntity.setPhoto(usuarioUpdate.getFoto()!=null ? Base64.getDecoder().decode(usuarioUpdate.getFoto()) : null);
         }
@@ -71,12 +67,13 @@ public class UsuarioService {
         return usuarioServiceUtil.retornarUsuarioDTO(usuarioAtualizado);
     }
 
-    public UserDTO updateLoggedPassword(UserUpdatePasswordDTO userUpdatePasswordDTO) throws RegraDeNegocioException, UsuarioException {
+    public void updateLoggedPassword(UserUpdatePasswordDTO userUpdatePasswordDTO) throws RegraDeNegocioException, UsuarioException {
         UsuarioEntity usuarioEntity = usuarioServiceUtil.retornarUsuarioEntityLogado();
         if(usuarioServiceUtil.verificarSenhaUsuario(userUpdatePasswordDTO.getSenhaAutal(), usuarioEntity)) {
+            usuarioServiceUtil.validarFormatacaoSenha(userUpdatePasswordDTO.getNovaSenha());
             usuarioEntity.setPassword(usuarioServiceUtil.encodePassword(userUpdatePasswordDTO.getNovaSenha()));
             usuarioRepository.save(usuarioEntity);
-            return usuarioServiceUtil.retornarUsuarioDTO(usuarioEntity);
+            usuarioServiceUtil.retornarUsuarioDTO(usuarioEntity);
         } else {
             throw new RegraDeNegocioException("Senha inválida");
         }

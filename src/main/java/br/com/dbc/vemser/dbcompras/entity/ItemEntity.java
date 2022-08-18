@@ -9,10 +9,10 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.Set;
 
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 @Entity(name = "item")
 public class ItemEntity {
 
@@ -50,15 +50,4 @@ public class ItemEntity {
     @Column(name = "valor")
     private Double preco;
 
-    @Override
-    public String toString() {
-        return "ItemEntity{" +
-                "idItem=" + idItem +
-                ", nome='" + nome + '\'' +
-                ", quantidade=" + quantidade +
-                ", compra=" + compra +
-                ", cotacoes=" + cotacoes +
-                ", valores=" + valores +
-                '}';
-    }
 }

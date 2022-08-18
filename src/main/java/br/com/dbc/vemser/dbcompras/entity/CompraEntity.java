@@ -6,14 +6,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 @Entity(name = "purchase")
 public class CompraEntity {
 
@@ -37,7 +38,7 @@ public class CompraEntity {
     private String status;
 
     @Column(name = "total_value")
-    private Double valor;
+    private Double valorTotal;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
@@ -50,5 +51,11 @@ public class CompraEntity {
     @JoinColumn(name = "id_purchase",
     referencedColumnName = "id_purchase")
     private Set<ItemEntity> itens;
+
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_purchase",
+            referencedColumnName = "id_purchase")
+    private Set<CotacaoEntity> cotacoes;
 
 }

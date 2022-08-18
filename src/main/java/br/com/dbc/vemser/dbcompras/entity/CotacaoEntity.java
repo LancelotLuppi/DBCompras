@@ -25,7 +25,7 @@ public class CotacaoEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "id_purchase",
-            referencedColumnName = "id_purchase")
+            referencedColumnName = "id_purchase", insertable = false, updatable = false)
     private CompraEntity compras;
 
     @Column(name = "name")
@@ -39,6 +39,9 @@ public class CotacaoEntity {
 
     @Column(name = "status")
     private Boolean status;
+
+    @Column(name = "valor")
+    private Double valorTotal;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
@@ -59,4 +62,9 @@ public class CotacaoEntity {
     @OneToMany(mappedBy = "item")
     Set<CotacaoItemEntity> valores;
 
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_purchase",
+            referencedColumnName = "id_purchase")
+    private CompraEntity compra;
 }

@@ -2,6 +2,7 @@ package br.com.dbc.vemser.dbcompras.util;
 
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraDTO;
+import br.com.dbc.vemser.dbcompras.dto.compra.CompraListDTO;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemDTO;
 import br.com.dbc.vemser.dbcompras.entity.CompraEntity;
 import br.com.dbc.vemser.dbcompras.entity.ItemEntity;
@@ -63,5 +64,14 @@ public class CompraServiceUtil {
         CompraDTO compraDTO = objectMapper.convertValue(compra, CompraDTO.class);
         compraDTO.setItens(itemDTOList);
         return compraDTO;
+    }
+
+    public CompraListDTO converterEntityParaListDTO(CompraEntity compra) {
+        List<ItemDTO> itemDTOList = compra.getItens().stream()
+                .map(item -> objectMapper.convertValue(item, ItemDTO.class))
+                .toList();
+        CompraListDTO listDTO = objectMapper.convertValue(compra, CompraListDTO.class);
+        listDTO.setItens(itemDTOList);
+        return listDTO;
     }
 }
