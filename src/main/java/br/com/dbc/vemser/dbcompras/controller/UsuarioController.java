@@ -39,17 +39,20 @@ public class UsuarioController implements UsuarioDocumentation {
     }
 
     @PutMapping("/change-password")
-    public ResponseEntity<UserDTO> updatePassword(@Valid @RequestBody UserUpdatePasswordDTO updatePasswordDTO) throws UsuarioException, RegraDeNegocioException {
-        return ResponseEntity.ok(usuarioService.updateLoggedPassword(updatePasswordDTO));
+    public ResponseEntity<Void> updatePassword(@Valid @RequestBody UserUpdatePasswordDTO updatePasswordDTO) throws UsuarioException, RegraDeNegocioException {
+        usuarioService.updateLoggedPassword(updatePasswordDTO);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/logged-user/status-account")
-    public void updateStatusLoggedAccount(UserLoginDTO confirmacao) throws UsuarioException, RegraDeNegocioException {
+    public ResponseEntity<Void> updateStatusLoggedAccount(UserLoginDTO confirmacao) throws UsuarioException, RegraDeNegocioException {
         usuarioService.desativarContaLogada(confirmacao);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/delete/{idUsuario}")
-    public void deletarUser(@PathVariable("idUsuario") Integer idUsuario) throws RegraDeNegocioException {
+    public ResponseEntity<Void> deletarUser(@PathVariable("idUsuario") Integer idUsuario) throws RegraDeNegocioException {
         usuarioService.deletarUsuario(idUsuario);
+        return ResponseEntity.noContent().build();
     }
 }
