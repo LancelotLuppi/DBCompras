@@ -1,6 +1,7 @@
 package br.com.dbc.vemser.dbcompras.service;
 
 import br.com.dbc.vemser.dbcompras.dto.usuario.*;
+import br.com.dbc.vemser.dbcompras.entity.CargoEntity;
 import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
 import br.com.dbc.vemser.dbcompras.enums.StatusUsuario;
 import br.com.dbc.vemser.dbcompras.enums.TipoCargo;
@@ -17,6 +18,7 @@ import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Base64;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -29,6 +31,7 @@ public class UsuarioService {
     private final CargoRepository cargoRepository;
     private final UsuarioServiceUtil usuarioServiceUtil;
 
+    private final CargoService cargoService;
 
     public UserLoginComSucessoDTO create(UserCreateDTO login) throws RegraDeNegocioException {
         usuarioServiceUtil.validarEmail(login.getEmail());
@@ -48,6 +51,23 @@ public class UsuarioService {
         usuarioEntity = usuarioRepository.save(usuarioEntity);
 
         return usuarioServiceUtil.generateUserLoginComSucessoDTO(usuarioEntity, login.getEmail(), login.getSenha());
+    }
+
+    public UserUpdateByAdminDTO updateUserByAdmin (Integer idUsuario, Set<TipoCargo> tipoCargos) throws RegraDeNegocioException {
+
+        Set<CargoEntity> cargosUsuario = new HashSet<>();
+        UsuarioEntity usuarioEntity = usuarioServiceUtil.findById(idUsuario);
+        cargosUsuario.addAll(tipoCargos.stream()
+                .map(cargos -> cargoRepository.findById(cargos.getCargo()).get())
+                .toList());
+        usuarioEntity.setCargos(cargosUsuario);
+        usuarioEntity.setIdUser(idUsuario);
+        usuarioRepository.save(usuarioEntity);
+
+        System.out.println(usuarioEntity);
+
+
+        return objectMapper.convertValue(usuarioEntity, UserUpdateByAdminDTO.class);
     }
 
     public UserDTO updateLoggedUser(UserUpdateDTO usuarioUpdate) throws UsuarioException, RegraDeNegocioException {
