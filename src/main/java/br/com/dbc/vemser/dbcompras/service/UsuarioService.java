@@ -3,6 +3,7 @@ package br.com.dbc.vemser.dbcompras.service;
 import br.com.dbc.vemser.dbcompras.dto.usuario.*;
 import br.com.dbc.vemser.dbcompras.entity.CargoEntity;
 import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
+import br.com.dbc.vemser.dbcompras.enums.ControlarAcesso;
 import br.com.dbc.vemser.dbcompras.enums.StatusUsuario;
 import br.com.dbc.vemser.dbcompras.enums.TipoCargo;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
@@ -17,10 +18,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Base64;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -134,4 +133,38 @@ public class UsuarioService {
             throw new RegraDeNegocioException("Usuário ou senha inválido!");
         }
     }
+
+    public UserDTO createUserByAdmin(UserCreateDTO userCreateDTO, Set<TipoCargo> tipoCargo) throws RegraDeNegocioException {
+        usuarioServiceUtil.validarEmail(userCreateDTO.getEmail());
+        usuarioServiceUtil.verificarSeEmailTemCadastro(userCreateDTO.getEmail());
+        usuarioServiceUtil.validarFormatacaoSenha(userCreateDTO.getSenha());
+        UsuarioEntity usuarioEntity = usuarioServiceUtil.retornarUsuarioEntity(userCreateDTO);
+
+
+        usuarioEntity.setCargos(Set.of(cargoRepository.findById(TipoCargo.COLABORADOR.getCargo()).get()));
+        usuarioEntity.setPassword(usuarioServiceUtil.encodePassword(userCreateDTO.getSenha()));
+        usuarioEntity.setPhoto(userCreateDTO.getFoto()!=null ? Base64.getDecoder().decode(userCreateDTO.getFoto()) : null);
+        usuarioEntity.setEnable(StatusUsuario.ATIVAR.getStatus());
+
+        usuarioEntity = usuarioRepository.save(usuarioEntity);
+        updateUserByAdmin(usuarioEntity.getIdUser(), tipoCargo);
+        return usuarioServiceUtil.retornarUsuarioDTO(usuarioEntity);
+
+    }
+
+    public List<UserDTO> list(){
+        return usuarioRepository.findAll()
+                .stream()
+                .map(usuarioServiceUtil::retornarUsuarioDTO)
+                .collect(Collectors.toList());
+    }
+
+    public void controlarAcessoUsuario (Integer idUsuario, ControlarAcesso controlarAcesso)
+            throws RegraDeNegocioException {
+        boolean habilitado = controlarAcesso.getEnable() == 1;
+        UsuarioEntity usuarioEntity = usuarioServiceUtil.findById(idUsuario);
+        usuarioEntity.setEnable(habilitado);
+        usuarioRepository.save(usuarioEntity);
+    }
+
 }
