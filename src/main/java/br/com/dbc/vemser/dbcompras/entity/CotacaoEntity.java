@@ -25,11 +25,6 @@ public class CotacaoEntity {
     @Column(name = "id_quotation", insertable = false, updatable = false)
     private Integer idCotacao;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_purchase",
-            referencedColumnName = "id_purchase", insertable = false, updatable = false)
-    private CompraEntity compras;
-
     @Column(name = "name")
     private String nome;
 
@@ -37,10 +32,13 @@ public class CotacaoEntity {
     private LocalDateTime localDate;
 
     @Column(name = "file")
-    private String anexo;
+    private byte[] anexo;
 
     @Column(name = "status")
     private Boolean status;
+
+    @Column(name = "valor")
+    private Double valor;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
@@ -49,13 +47,8 @@ public class CotacaoEntity {
     private UsuarioEntity usuario;
 
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "quotation_item",
-            joinColumns = @JoinColumn(name = "id_quotation"),
-            inverseJoinColumns = @JoinColumn(name = "id_item")
-    )
-    private Set<ItemEntity> itens;
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<CotacaoXItemEntity> itens;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)

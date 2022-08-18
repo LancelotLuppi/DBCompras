@@ -1,17 +1,15 @@
 package br.com.dbc.vemser.dbcompras.dto.cotacao;
 
-import br.com.dbc.vemser.dbcompras.dto.item.ItemDTO;
 import lombok.Data;
 
-import java.util.Set;
+import java.util.List;
 
 @Data
 public class CotacaoCreateDTO {
 
+    private Integer idCompra;
     private String nome;
-
+    private List<CotacaoValorItensDTO> listaDeValores;
     private String anexo;
-
-    private Set<ItemDTO> itens;
 
 }
