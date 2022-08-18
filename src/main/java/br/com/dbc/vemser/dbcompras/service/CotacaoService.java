@@ -2,15 +2,16 @@ package br.com.dbc.vemser.dbcompras.service;
 
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoDTO;
+import br.com.dbc.vemser.dbcompras.dto.item.ItemCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemDTO;
-import br.com.dbc.vemser.dbcompras.entity.CotacaoEntity;
-import br.com.dbc.vemser.dbcompras.entity.ItemEntity;
-import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
+import br.com.dbc.vemser.dbcompras.entity.*;
+import br.com.dbc.vemser.dbcompras.entity.pk.CotacaoItemPk;
 import br.com.dbc.vemser.dbcompras.enums.StatusCotacoes;
 import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.repository.CompraRepository;
+import br.com.dbc.vemser.dbcompras.repository.CotacaoItemRepository;
 import br.com.dbc.vemser.dbcompras.repository.CotacaoRepository;
 import br.com.dbc.vemser.dbcompras.repository.ItemRepository;
 import br.com.dbc.vemser.dbcompras.util.CompraServiceUtil;
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,14 +35,14 @@ public class CotacaoService {
 
     private final ObjectMapper objectMapper;
     private final CotacaoRepository cotacaoRepository;
-
-    private final UsuarioService usuarioService;
     private final ItemRepository itemRepository;
     private final UsuarioServiceUtil usuarioServiceUtil;
 
     private final CompraRepository compraRepository;
 
     private final CompraServiceUtil compraServiceUtil;
+
+    private final CotacaoItemRepository cotacaoItemRepository;
 
     private CotacaoEntity converterCotacaoCreateDTOToCotacaoEntity(CotacaoCreateDTO cotacaoDTO) {
         return objectMapper.convertValue(cotacaoDTO, CotacaoEntity.class);
@@ -64,13 +66,30 @@ public class CotacaoService {
         cotacao.setLocalDate(LocalDateTime.now());
         Set<ItemEntity> itens = cotacaoDTO.getItens().stream()
                 .map(item -> objectMapper.convertValue(item, ItemEntity.class))
-                .peek(itemEntity -> itemEntity.setCotacoes(Set.of(cotacao)))
                 .map(itemRepository::save)
                 .collect(Collectors.toSet());
         cotacao.setItens(itens);
         cotacao.setCompras(compraRepository.findById(idCompra).get());
         cotacaoRepository.save(cotacao);
+
+        for(ItemEntity item : itens){
+            System.out.println(item);
+            criarCotacaoItemEntity(item, cotacao, item.getPreco());
+
+        }
+
         return converterCotacaoEntityToCotacaoDTO(cotacao);
+    }
+
+    public CotacaoItemEntity criarCotacaoItemEntity (ItemEntity item, CotacaoEntity cotacao, Double valorItem){
+        CotacaoItemEntity cotacaoItem = new CotacaoItemEntity();
+        cotacaoItem.setCotacao(cotacao);
+        cotacaoItem.setItem(item);
+        cotacaoItem.setValorDoItem(valorItem);
+        CotacaoItemPk cotacaoItemPk = new CotacaoItemPk(cotacao.getIdCotacao(), item.getIdItem());
+        cotacaoItem.setCotacaoItemPk(cotacaoItemPk);
+        cotacaoItemRepository.save(cotacaoItem);
+        return cotacaoItem;
     }
 
     public List<CotacaoDTO> list() throws UsuarioException {
@@ -107,13 +126,14 @@ public class CotacaoService {
         }
 
         if(cotacaoUpdateDTO.getItens() != null){
-            cotacao.setItens(null);
-            Set<ItemEntity> itensRecuperados = cotacaoUpdateDTO.getItens().stream()
-                    .map(item -> objectMapper.convertValue(item, ItemEntity.class))
-                    .peek(itemEntity -> itemEntity.setCotacoes(Set.of(cotacao)))
-                    .map(itemRepository::save)
+
+            Set<ItemEntity> itensRecuperados = cotacao.getItens();
+            itensRecuperados = cotacaoUpdateDTO.getItens().stream()
+                    .map(itemDTO -> objectMapper.convertValue(itemDTO, ItemEntity.class))
                     .collect(Collectors.toSet());
+            cotacao.getItens().clear();
             cotacao.setItens(itensRecuperados);
+
         }
 
         CotacaoEntity cotacaoAtualizada = cotacaoRepository.save(cotacao);
@@ -137,14 +157,5 @@ public class CotacaoService {
 
     }
 
-
-
-    public Set<ItemEntity> salvarItensDaCotacao(CotacaoCreateDTO cotacaoCreateDTO, CotacaoEntity cotacaoEntity) {
-        return cotacaoCreateDTO.getItens().stream()
-                .map(item -> objectMapper.convertValue(item, ItemEntity.class))
-                .peek(itemEntity -> itemEntity.setCotacoes(Set.of(cotacaoEntity)))
-                .map(itemRepository::save)
-                .collect(Collectors.toSet());
-    }
 
 }

@@ -19,7 +19,7 @@ public class ItemEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_ITEM")
     @SequenceGenerator(name = "SEQ_ITEM", sequenceName = "seq_id_item", allocationSize = 1)
-    @Column(name = "id_item", insertable = false, updatable = false)
+    @Column(name = "id_item")
     private Integer idItem;
 
     @Column(name = "name")
@@ -42,4 +42,23 @@ public class ItemEntity {
             inverseJoinColumns = @JoinColumn(name = "id_quotation")
     )
     private Set<CotacaoEntity> cotacoes;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "cotacao")
+    Set<CotacaoItemEntity> valores;
+
+    @Column(name = "valor")
+    private Double preco;
+
+    @Override
+    public String toString() {
+        return "ItemEntity{" +
+                "idItem=" + idItem +
+                ", nome='" + nome + '\'' +
+                ", quantidade=" + quantidade +
+                ", compra=" + compra +
+                ", cotacoes=" + cotacoes +
+                ", valores=" + valores +
+                '}';
+    }
 }

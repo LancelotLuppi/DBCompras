@@ -6,4 +6,5 @@ import lombok.Data;
 public class ItemCreateDTO {
     private String nome;
     private Integer quantidade;
+    private Double preco;
 }

@@ -1,7 +1,5 @@
 package br.com.dbc.vemser.dbcompras.entity;
 
-import br.com.dbc.vemser.dbcompras.enums.StatusCotacoes;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,7 +20,7 @@ public class CotacaoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_COTACAO")
     @SequenceGenerator(name = "SEQ_COTACAO", sequenceName = "seq_id_quotation", allocationSize = 1)
-    @Column(name = "id_quotation", insertable = false, updatable = false)
+    @Column(name = "id_quotation")
     private Integer idCotacao;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -56,5 +54,9 @@ public class CotacaoEntity {
             inverseJoinColumns = @JoinColumn(name = "id_item")
     )
     private Set<ItemEntity> itens;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "item")
+    Set<CotacaoItemEntity> valores;
 
 }
