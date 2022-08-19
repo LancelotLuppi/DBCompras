@@ -125,7 +125,7 @@ public class UsuarioService {
         usuarioRepository.delete(usuarioEntity);
     }
 
-    public UserCreateByAdminDTO createUserByAdmin(UserCreateDTO userCreateDTO, Set<TipoCargo> tipoCargo) throws
+    public UserWithCargoDTO createUserByAdmin(UserCreateDTO userCreateDTO, Set<TipoCargo> tipoCargo) throws
             RegraDeNegocioException {
         usuarioServiceUtil.validarEmail(userCreateDTO.getEmail());
         usuarioServiceUtil.verificarSeEmailTemCadastro(userCreateDTO.getEmail());
@@ -140,7 +140,7 @@ public class UsuarioService {
 
         usuarioEntity = usuarioRepository.save(usuarioEntity);
         updateUserByAdmin(usuarioEntity.getIdUser(), tipoCargo);
-        return usuarioServiceUtil.retornarUsuarioCriadoDTO(usuarioEntity);
+        return usuarioServiceUtil.retornarUsuarioDTOComCargo(usuarioEntity);
 
     }
 
