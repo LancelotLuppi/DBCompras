@@ -43,6 +43,10 @@ public class CompraService {
 
     public CompraDTO create(CompraCreateDTO compraCreateDTO) throws UsuarioException, RegraDeNegocioException {
 
+        if(compraCreateDTO.getItens().isEmpty()) {
+            throw new RegraDeNegocioException("Não é possível cadastrar uma compra sem itens");
+        }
+
         UsuarioEntity usuario = usuarioServiceUtil.retornarUsuarioEntityLogado();
 
         CompraEntity compra = objectMapper.convertValue(compraCreateDTO, CompraEntity.class);
