@@ -1,8 +1,6 @@
 package br.com.dbc.vemser.dbcompras.controller;
 
-import br.com.dbc.vemser.dbcompras.dto.usuario.UserCreateDTO;
-import br.com.dbc.vemser.dbcompras.dto.usuario.UserDTO;
-import br.com.dbc.vemser.dbcompras.dto.usuario.UserUpdateByAdminDTO;
+import br.com.dbc.vemser.dbcompras.dto.usuario.*;
 import br.com.dbc.vemser.dbcompras.enums.ControlarAcesso;
 import br.com.dbc.vemser.dbcompras.enums.TipoCargo;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
@@ -20,7 +18,7 @@ import java.util.Set;
 @RequestMapping("/admin")
 @RequiredArgsConstructor
 @Validated
-public class AdminCrontroller {
+public class AdminController {
 
 
     private final UsuarioService usuarioService;
@@ -32,13 +30,13 @@ public class AdminCrontroller {
     }
 
     @PostMapping("/usuario-criar/cargos")
-    public UserDTO criarUserByAdmin (@RequestBody UserCreateDTO userCreateDTO,
-                                     @RequestParam(value = "cargos") Set<TipoCargo> tipoCargo) throws RegraDeNegocioException {
+    public UserCreateByAdminDTO criarUserByAdmin (@RequestBody UserCreateDTO userCreateDTO,
+                                                  @RequestParam(value = "cargos") Set<TipoCargo> tipoCargo) throws RegraDeNegocioException {
         return usuarioService.createUserByAdmin(userCreateDTO, tipoCargo );
     }
 
     @GetMapping("/list")
-    public List<UserDTO> list () {
+    public List<UserWithCargoDTO> list () {
         return usuarioService.list();
     }
 

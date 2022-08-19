@@ -2,19 +2,22 @@ package br.com.dbc.vemser.dbcompras.service;
 
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraListCotacaoDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraWithValorItensDTO;
-import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoCreateDTO;
-import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoDTO;
-import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoRelatorioDTO;
+import br.com.dbc.vemser.dbcompras.dto.cotacao.*;
+import br.com.dbc.vemser.dbcompras.dto.item.ItemDTO;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemValorizadoDTO;
 import br.com.dbc.vemser.dbcompras.entity.*;
 import br.com.dbc.vemser.dbcompras.entity.CotacaoXItemEntity;
 import br.com.dbc.vemser.dbcompras.entity.pk.CotacaoXItemPK;
 import br.com.dbc.vemser.dbcompras.enums.StatusCotacoes;
 import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
+import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
+import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.repository.CompraRepository;
 import br.com.dbc.vemser.dbcompras.repository.CotacaoRepository;
 import br.com.dbc.vemser.dbcompras.repository.CotacaoXItemRepository;
 import br.com.dbc.vemser.dbcompras.repository.ItemRepository;
+import br.com.dbc.vemser.dbcompras.util.CompraServiceUtil;
+import br.com.dbc.vemser.dbcompras.util.UsuarioServiceUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,8 +40,10 @@ public class CotacaoService {
     private final CompraRepository compraRepository;
     private final CotacaoXItemRepository cotacaoXItemRepository;
 
+    private final CompraServiceUtil compraServiceUtil;
 
-    public void create (Integer idCompra, CotacaoCreateDTO cotacaoDTO) throws EntidadeNaoEncontradaException {
+
+    public void create (Integer idCompra, CotacaoCreateDTO cotacaoDTO) throws EntidadeNaoEncontradaException, UsuarioException {
         CompraEntity compraCotada = compraRepository.findById(idCompra).orElseThrow(() -> new EntidadeNaoEncontradaException("Compra inexistente"));
         CotacaoEntity cotacao = new CotacaoEntity();
 
@@ -71,6 +76,13 @@ public class CotacaoService {
     public List<CotacaoDTO> listarCotacoes(Integer idCotacao) {
         List<CotacaoRelatorioDTO> cotacoes = cotacaoRepository.listCotacoes(idCotacao);
 
+        if(idCotacao == null){
+            return cotacaoRepository.findAll()
+                    .stream()
+                    .map(this::converterCotacaoToCotacaoDTO)
+                    .toList();
+        }
+
         return cotacoes.stream()
                 .map(relatorio -> {
                     CotacaoDTO cotacao = objectMapper.convertValue(relatorio, CotacaoDTO.class);
@@ -92,4 +104,50 @@ public class CotacaoService {
                 .toList();
     }
 
+    public CotacaoEntity findById(Integer idCotacao) throws EntidadeNaoEncontradaException {
+        return cotacaoRepository.findById(idCotacao)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Essa cotação não existe"));
+    }
+
+    public CotacaoDTO aprovarOuReprovarCotacao(Integer idCotacao, StatusCotacoes statusCotacoes) throws EntidadeNaoEncontradaException, RegraDeNegocioException, UsuarioException {
+
+            CotacaoEntity cotacao = findById(idCotacao);
+            CompraEntity compra = compraServiceUtil.findByIDGestor(cotacao.getCompra().getIdCompra());
+
+            if(cotacao.getStatus() == StatusCotacoes.APROVADO.getSituacaoCompra()
+                || cotacao.getStatus() == StatusCotacoes.REPROVADO.getSituacaoCompra()){
+                throw new RegraDeNegocioException("Esta cotação já foi aprovado ou reprovado");
+            }
+
+            if(compra.getCotacoes().size() < 2){
+                throw new RegraDeNegocioException("Este usuario tem menos de duas cotações cadastradas");
+            }
+
+            cotacao.setStatus(statusCotacoes.getSituacaoCompra());
+
+            cotacaoRepository.save(cotacao);
+            return converterCotacaoToCotacaoDTO(cotacao);
+
+    }
+
+    private CotacaoDTO converterCotacaoToCotacaoDTO(CotacaoEntity cotacao) {
+        CompraWithValorItensDTO compra = objectMapper.convertValue(cotacao.getCompra(), CompraWithValorItensDTO.class);
+        List<CotacaoValorItensDTO> itemDTOList = cotacao.getItens().stream()
+                .map(item -> objectMapper.convertValue(item, CotacaoValorItensDTO.class))
+                .toList();
+        CotacaoDTO cotacaoDTO = objectMapper.convertValue(cotacao, CotacaoDTO.class);
+        cotacaoDTO.setCompraDTO(compra);
+        cotacaoDTO.setListaDeValores(itemDTOList);
+        return cotacaoDTO;
+    }
+
+    public List<CotacaoFinanceiroDTO> list() {
+
+        return null;
+
+    }
+
+    public CotacaoDTO cotacaoAprovada(Integer idCotacao, StatusCotacoes statusCotacoes) {
+        return null;
+    }
 }

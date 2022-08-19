@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -59,14 +58,13 @@ public class CompraService {
 
     public List<CompraListDTO> listColaborador(Integer idCompra) throws UsuarioException {
 
-        if (idCompra != null) {
+        if(idCompra != null){
             return compraRepository.findById(idCompra)
-                    .stream()
-                    .map(compraServiceUtil::converterEntityParaListDTO)
-                    .toList();
-        } else {
-            List<CompraEntity> compraEntityList = compraRepository.findAllByUsuarioId(usuarioServiceUtil.getIdLoggedUser());
-            return compraEntityList.stream()
+                   .stream()
+                   .map(compraServiceUtil::converterEntityParaListDTO)
+                   .toList();
+        }else{
+            return compraRepository.findAll().stream()
                     .map(compraServiceUtil::converterEntityParaListDTO)
                     .toList();
         }
@@ -133,7 +131,7 @@ public class CompraService {
     public void removerItensDaCompra(Integer idCompra, Integer idItem) throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
         compraServiceUtil.verificarCompraDoUserLogado(idCompra);
         CompraEntity compra = compraServiceUtil.findByID(idCompra);
-        itemServiceUtil.verificarItensDaCompra(compra, List.of(idItem));
+        itemServiceUtil.verificarItensDaCompra(compra, List.of(idCompra));
 
 
         Set<ItemEntity> itemEntities = compra.getItens();
@@ -145,7 +143,7 @@ public class CompraService {
         compraServiceUtil.converterCompraEntityToCompraDTO(compra);
     }
 
-    public List<CompraRelatorioDTO> relatorioCompras(Integer idCompra) {
+    public List<CompraRelatorioDTO> relatorioCompras (Integer idCompra){
         return compraRepository.findByCompraId(idCompra);
     }
 

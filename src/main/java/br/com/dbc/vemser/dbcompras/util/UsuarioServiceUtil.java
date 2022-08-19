@@ -1,8 +1,8 @@
 package br.com.dbc.vemser.dbcompras.util;
 
-import br.com.dbc.vemser.dbcompras.dto.usuario.UserCreateDTO;
-import br.com.dbc.vemser.dbcompras.dto.usuario.UserDTO;
-import br.com.dbc.vemser.dbcompras.dto.usuario.UserLoginComSucessoDTO;
+import br.com.dbc.vemser.dbcompras.dto.cargo.CargoDTO;
+import br.com.dbc.vemser.dbcompras.dto.usuario.*;
+import br.com.dbc.vemser.dbcompras.entity.CargoEntity;
 import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Base64;
 import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @Component
@@ -95,6 +96,17 @@ public class UsuarioServiceUtil {
         return argon2PasswordEncoder.matches(senha, usuario.getPassword());
     }
 
+    public UserWithCargoDTO retornarUsuarioDTOComCargo (UsuarioEntity usuario){
+
+        CargoEntity cargo = usuario.getCargos().stream()
+                .findFirst()
+                .orElseThrow();
+        CargoDTO cargoDTOS = objectMapper.convertValue(cargo, CargoDTO.class);
+        UserWithCargoDTO user = objectMapper.convertValue(usuario, UserWithCargoDTO.class);
+        user.setCargos(cargoDTOS);
+        return user;
+    }
+
     public UsuarioEntity retornarUsuarioEntity(UserCreateDTO userCreateDTO) {
         return objectMapper.convertValue(userCreateDTO, UsuarioEntity.class);
     }
@@ -102,6 +114,19 @@ public class UsuarioServiceUtil {
     public UserDTO retornarUsuarioDTO(UsuarioEntity usuario) {
         return objectMapper.convertValue(usuario, UserDTO.class);
     }
+
+    public UserCreateByAdminDTO retornarUsuarioCriadoDTO(UsuarioEntity usuario) {
+        CargoEntity cargo = usuario.getCargos().stream()
+                .findFirst()
+                .orElseThrow();
+        CargoDTO cargoDTOS = objectMapper.convertValue(cargo, CargoDTO.class);
+
+        UserCreateByAdminDTO userCriado = objectMapper.convertValue(usuario, UserCreateByAdminDTO.class);
+        userCriado.setCargoDTO(cargoDTOS);
+        return userCriado;
+    }
+
+
 
     public String encodePassword(String password) {
         return new Argon2PasswordEncoder().encode(password);
