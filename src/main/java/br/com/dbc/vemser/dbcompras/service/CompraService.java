@@ -3,6 +3,7 @@ package br.com.dbc.vemser.dbcompras.service;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraListDTO;
+import br.com.dbc.vemser.dbcompras.dto.compra.CompraUpdateDTO;
 import br.com.dbc.vemser.dbcompras.entity.CompraEntity;
 import br.com.dbc.vemser.dbcompras.entity.ItemEntity;
 import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
@@ -59,22 +60,19 @@ public class CompraService {
                 .toList();
     }
 
-    public CompraDTO update(Integer idCompra, CompraCreateDTO compraDTO) throws UsuarioException, EntidadeNaoEncontradaException, RegraDeNegocioException {
+    public CompraDTO update(Integer idCompra, CompraUpdateDTO compraDTO) throws UsuarioException, EntidadeNaoEncontradaException, RegraDeNegocioException {
         compraServiceUtil.verificarCompraDoUserLogado(idCompra);
         CompraEntity compra = compraServiceUtil.findByID(idCompra);
 
-        compra.setIdCompra(idCompra);
-        if (compraDTO.getName() != null) {
-            compra.setName(compraDTO.getName());
-        }
-        if (!compraDTO.getItens().isEmpty()) {
-            Set<ItemEntity> itensAntigos = compra.getItens();
-            itensAntigos.forEach(itemRepository::delete);
-
-            compra.getItens().clear();
-            Set<ItemEntity> novosItens = new HashSet<>(compraServiceUtil.salvarItensDaCompra(compraDTO, compra));
-            compra.setItens(novosItens);
-        }
+        compra.setName(compra.getName());
+        compra.setDescricao(compraDTO.getDescricao());
+        compraDTO.getItens()
+                .forEach(item -> {
+                    ItemEntity itemEntity = itemRepository.findById(item.getIdItem()).get();
+                    itemEntity.setNome(item.getNome());
+                    itemEntity.setQuantidade(item.getQuantidade());
+                    itemRepository.save(itemEntity);
+                });
 
         CompraEntity compraAtualizada = compraRepository.save(compra);
         return compraServiceUtil.converterCompraEntityToCompraDTO(compraAtualizada);

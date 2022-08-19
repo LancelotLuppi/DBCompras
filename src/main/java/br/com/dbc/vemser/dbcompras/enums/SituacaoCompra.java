@@ -2,6 +2,8 @@ package br.com.dbc.vemser.dbcompras.enums;
 
 public enum SituacaoCompra {
     ABERTO("aberto"),
+    EM_COTACAO("Em cotacao"),
+    COTADO("Cotado"),
     APROVADO_GESTOR("aprovado gestor"),
     REPROVADO_GESTOR("reprovado gestor"),
     APROVADO_FINANCEIRO("aprovado financeiro"),

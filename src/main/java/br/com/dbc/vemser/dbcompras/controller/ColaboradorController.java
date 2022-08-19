@@ -3,10 +3,14 @@ package br.com.dbc.vemser.dbcompras.controller;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraListDTO;
+import br.com.dbc.vemser.dbcompras.dto.compra.CompraUpdateDTO;
+import br.com.dbc.vemser.dbcompras.dto.item.ItemCreateDTO;
+import br.com.dbc.vemser.dbcompras.dto.item.ItemDTO;
 import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.service.CompraService;
+import br.com.dbc.vemser.dbcompras.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +26,7 @@ import java.util.List;
 @RequestMapping("/colaborador")
 public class ColaboradorController {
     private final CompraService compraService;
+    private final ItemService itemService;
 
     @PostMapping("/nova-compra")
     public ResponseEntity<CompraDTO> create (@Valid @RequestBody CompraCreateDTO compraCreateDTO) throws UsuarioException {
@@ -29,8 +34,13 @@ public class ColaboradorController {
     }
 
     @PutMapping("/compra/{id}")
-    public ResponseEntity<CompraDTO> update (@PathVariable Integer id , @Valid @RequestBody CompraCreateDTO compraUpdateDTO) throws UsuarioException, EntidadeNaoEncontradaException, RegraDeNegocioException {
+    public ResponseEntity<CompraDTO> update (@PathVariable Integer id , @Valid @RequestBody CompraUpdateDTO compraUpdateDTO) throws UsuarioException, EntidadeNaoEncontradaException, RegraDeNegocioException {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(compraService.update(id, compraUpdateDTO));
+    }
+
+    @PutMapping("/item")
+    public ResponseEntity<ItemDTO> updateItem(Integer idItem, @Valid @RequestBody ItemCreateDTO itemAtualizado) throws EntidadeNaoEncontradaException, RegraDeNegocioException, UsuarioException {
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(itemService.updateItem(idItem, itemAtualizado));
     }
 
     @GetMapping("/compras")
