@@ -17,7 +17,7 @@ public class CompraWithValorItensDTO {
     private String name;
     private String descricao;
     private LocalDateTime dataCompra;
+    private String status;
     private Double valor;
     private List<ItemValorizadoDTO> itens;
-    private String status;
 }

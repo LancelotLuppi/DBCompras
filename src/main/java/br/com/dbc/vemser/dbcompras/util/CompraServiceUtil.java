@@ -3,7 +3,9 @@ package br.com.dbc.vemser.dbcompras.util;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraListDTO;
+import br.com.dbc.vemser.dbcompras.dto.compra.CompraWithValorItensDTO;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemDTO;
+import br.com.dbc.vemser.dbcompras.dto.item.ItemValorizadoDTO;
 import br.com.dbc.vemser.dbcompras.entity.CompraEntity;
 import br.com.dbc.vemser.dbcompras.entity.ItemEntity;
 import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
@@ -70,6 +72,15 @@ public class CompraServiceUtil {
                 .map(item -> objectMapper.convertValue(item, ItemDTO.class))
                 .toList();
         CompraDTO compraDTO = objectMapper.convertValue(compra, CompraDTO.class);
+        compraDTO.setItens(itemDTOList);
+        return compraDTO;
+    }
+
+    public CompraWithValorItensDTO converterCompraEntityToCompraWithValor (CompraEntity compra){
+        List<ItemValorizadoDTO> itemDTOList = compra.getItens().stream()
+                .map(item -> objectMapper.convertValue(item, ItemValorizadoDTO.class))
+                .toList();
+        CompraWithValorItensDTO compraDTO = objectMapper.convertValue(compra, CompraWithValorItensDTO.class);
         compraDTO.setItens(itemDTOList);
         return compraDTO;
     }

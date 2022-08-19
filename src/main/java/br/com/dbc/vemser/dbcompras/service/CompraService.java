@@ -1,15 +1,12 @@
 package br.com.dbc.vemser.dbcompras.service;
 
-import br.com.dbc.vemser.dbcompras.dto.compra.CompraCreateDTO;
-import br.com.dbc.vemser.dbcompras.dto.compra.CompraDTO;
-import br.com.dbc.vemser.dbcompras.dto.compra.CompraListDTO;
-import br.com.dbc.vemser.dbcompras.dto.compra.CompraRelatorioDTO;
-import br.com.dbc.vemser.dbcompras.dto.compra.CompraUpdateDTO;
+import br.com.dbc.vemser.dbcompras.dto.compra.*;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemUpdateDTO;
 import br.com.dbc.vemser.dbcompras.entity.CompraEntity;
 import br.com.dbc.vemser.dbcompras.entity.ItemEntity;
 import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
 import br.com.dbc.vemser.dbcompras.enums.SituacaoCompra;
+import br.com.dbc.vemser.dbcompras.enums.StatusCompra;
 import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
@@ -153,4 +150,39 @@ public class CompraService {
         return compraRepository.findByCompraId(idCompra);
     }
 
+    public CompraWithValorItensDTO aprovarReprovarCompra(Integer idCompra, StatusCompra statusCompra) throws EntidadeNaoEncontradaException, UsuarioException {
+
+        CompraEntity compra = compraRepository.findById(idCompra)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Está compra não existe"));
+
+        if(statusCompra == StatusCompra.APROVADO){
+            compra.setStatus(SituacaoCompra.APROVADO_FINANCEIRO.getSituacao());
+        }else{
+            compra.setStatus(SituacaoCompra.REPROVADO_FINANCEIRO.getSituacao());
+        }
+
+        compraRepository.save(compra);
+        return compraServiceUtil.converterCompraEntityToCompraWithValor(compra);
+
+    }
+
+    public List<CompraWithValorItensDTO> list(Integer idCompra) {
+
+        if(idCompra == null){
+
+            return compraRepository.findAll()
+                    .stream()
+                    .map(compraServiceUtil::converterCompraEntityToCompraWithValor)
+                    .toList();
+
+        }else{
+
+            return compraRepository.findById(idCompra)
+                    .stream()
+                    .map(compraServiceUtil::converterCompraEntityToCompraWithValor)
+                    .toList();
+
+        }
+
+    }
 }
