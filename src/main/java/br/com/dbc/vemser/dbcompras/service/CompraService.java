@@ -4,6 +4,7 @@ import br.com.dbc.vemser.dbcompras.dto.compra.CompraCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraListDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraUpdateDTO;
+import br.com.dbc.vemser.dbcompras.dto.item.ItemUpdateDTO;
 import br.com.dbc.vemser.dbcompras.entity.CompraEntity;
 import br.com.dbc.vemser.dbcompras.entity.ItemEntity;
 import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
@@ -14,6 +15,7 @@ import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.repository.CompraRepository;
 import br.com.dbc.vemser.dbcompras.repository.ItemRepository;
 import br.com.dbc.vemser.dbcompras.util.CompraServiceUtil;
+import br.com.dbc.vemser.dbcompras.util.ItemServiceUtil;
 import br.com.dbc.vemser.dbcompras.util.UsuarioServiceUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +37,7 @@ public class CompraService {
     private final CompraServiceUtil compraServiceUtil;
     private final ItemRepository itemRepository;
     private final UsuarioServiceUtil usuarioServiceUtil;
+    private final ItemServiceUtil itemServiceUtil;
 
 
     public CompraDTO create(CompraCreateDTO compraCreateDTO) throws UsuarioException {
@@ -63,6 +66,12 @@ public class CompraService {
     public CompraDTO update(Integer idCompra, CompraUpdateDTO compraDTO) throws UsuarioException, EntidadeNaoEncontradaException, RegraDeNegocioException {
         compraServiceUtil.verificarCompraDoUserLogado(idCompra);
         CompraEntity compra = compraServiceUtil.findByID(idCompra);
+
+        List<Integer> idItemRecebidoList = compraDTO.getItens().stream()
+                        .map(ItemUpdateDTO::getIdItem)
+                        .toList();
+
+        itemServiceUtil.verificarItensDaCompra(compra, idItemRecebidoList);
 
         compra.setName(compra.getName());
         compra.setDescricao(compraDTO.getDescricao());
