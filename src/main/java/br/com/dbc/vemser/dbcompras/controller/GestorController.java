@@ -1,6 +1,7 @@
 package br.com.dbc.vemser.dbcompras.controller;
 
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoDTO;
+import br.com.dbc.vemser.dbcompras.enums.EnumAprovacao;
 import br.com.dbc.vemser.dbcompras.enums.StatusCotacoes;
 import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
@@ -24,13 +25,13 @@ public class GestorController {
 
 
     @PutMapping("/aprovarReprovar/{idCotacao}/status")
-    public CotacaoDTO aprovarOuReprovarCotacao (@PathVariable("idCotacao") Integer idCotacao,
-                                                @RequestParam(value = "status") StatusCotacoes statusCotacoes) throws EntidadeNaoEncontradaException, RegraDeNegocioException, UsuarioException {
-         return cotacaoService.aprovarOuReprovarCotacao(idCotacao, statusCotacoes);
+    public CotacaoDTO aprovarOuReprovarCotacao(@PathVariable("idCotacao") Integer idCotacao,
+                                                @RequestParam(value = "status") EnumAprovacao aprovacao) throws EntidadeNaoEncontradaException, RegraDeNegocioException {
+         return cotacaoService.aprovarOuReprovarCotacao(idCotacao, aprovacao);
     }
 
     @GetMapping("/listar")
-    public List<CotacaoDTO> cotacoes (@RequestParam(required = false) Integer idCotacao){
+    public List<CotacaoDTO> cotacoes(@RequestParam(required = false) Integer idCotacao){
         return cotacaoService.listarCotacoes(idCotacao);
     }
 

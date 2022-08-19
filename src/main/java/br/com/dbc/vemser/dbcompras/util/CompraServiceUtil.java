@@ -43,7 +43,7 @@ public class CompraServiceUtil {
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Esta não compra não existe"));
     }
 
-    public CompraEntity findByIDGestor(Integer idCompra) throws EntidadeNaoEncontradaException {
+    public CompraEntity findByIDCompra(Integer idCompra) throws EntidadeNaoEncontradaException {
         return compraRepository.findById(idCompra)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Esta não compra não existe"));
     }
