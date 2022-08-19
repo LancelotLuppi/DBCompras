@@ -8,6 +8,7 @@ import br.com.dbc.vemser.dbcompras.dto.item.ItemValorizadoDTO;
 import br.com.dbc.vemser.dbcompras.entity.*;
 import br.com.dbc.vemser.dbcompras.entity.CotacaoXItemEntity;
 import br.com.dbc.vemser.dbcompras.entity.pk.CotacaoXItemPK;
+import br.com.dbc.vemser.dbcompras.enums.StatusCompra;
 import br.com.dbc.vemser.dbcompras.enums.StatusCotacoes;
 import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
@@ -141,15 +142,5 @@ public class CotacaoService {
         cotacaoDTO.setCompraDTO(compra);
         cotacaoDTO.setListaDeValores(itemDTOList);
         return cotacaoDTO;
-    }
-
-    public List<CotacaoFinanceiroDTO> list() {
-
-        return null;
-
-    }
-
-    public CotacaoDTO cotacaoAprovada(Integer idCotacao, StatusCotacoes statusCotacoes) {
-        return null;
     }
 }
