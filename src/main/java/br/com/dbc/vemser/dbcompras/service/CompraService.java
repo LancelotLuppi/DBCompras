@@ -64,8 +64,7 @@ public class CompraService {
                    .map(compraServiceUtil::converterEntityParaListDTO)
                    .toList();
         }else{
-            List<CompraEntity> compraEntityList = compraRepository.findAllByUsuarioId(usuarioServiceUtil.getIdLoggedUser());
-            return compraEntityList.stream()
+            return compraRepository.findAll().stream()
                     .map(compraServiceUtil::converterEntityParaListDTO)
                     .toList();
         }
