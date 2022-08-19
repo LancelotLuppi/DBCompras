@@ -45,7 +45,7 @@ public class CotacaoEntity {
     private UsuarioEntity usuario;
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "item",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<CotacaoXItemEntity> itens;
 
     @JsonIgnore

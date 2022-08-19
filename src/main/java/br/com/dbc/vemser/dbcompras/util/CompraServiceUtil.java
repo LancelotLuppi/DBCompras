@@ -10,6 +10,7 @@ import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
 import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
+import br.com.dbc.vemser.dbcompras.repository.CompraRepository;
 import br.com.dbc.vemser.dbcompras.repository.ItemRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,8 @@ public class CompraServiceUtil {
     private final ObjectMapper objectMapper;
     private final ItemRepository itemRepository;
 
+    private final CompraRepository compraRepository;
+
 
     public CompraEntity findByID(Integer idCompra) throws UsuarioException, EntidadeNaoEncontradaException {
         UsuarioEntity usuario = usuarioServiceUtil.retornarUsuarioEntityLogado();
@@ -37,6 +40,11 @@ public class CompraServiceUtil {
         return compras.stream()
                 .filter(compraEntity -> compraEntity.getIdCompra().equals(idCompra))
                 .findFirst()
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Esta não compra não existe"));
+    }
+
+    public CompraEntity findByIDGestor(Integer idCompra) throws EntidadeNaoEncontradaException {
+        return compraRepository.findById(idCompra)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Esta não compra não existe"));
     }
 

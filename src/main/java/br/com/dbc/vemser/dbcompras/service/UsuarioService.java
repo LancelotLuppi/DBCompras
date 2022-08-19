@@ -81,22 +81,22 @@ public class UsuarioService {
 
     public UserDTO updateLoggedUser(UserUpdateDTO usuarioUpdate) throws UsuarioException, RegraDeNegocioException {
         UsuarioEntity usuarioEntity = usuarioServiceUtil.retornarUsuarioEntityLogado();
-        if (usuarioUpdate.getEmail() != null) {
+        if(usuarioUpdate.getEmail() != null) {
             usuarioServiceUtil.validarEmail(usuarioUpdate.getEmail());
             usuarioServiceUtil.verificarSeEmailTemCadastro(usuarioUpdate.getEmail());
             usuarioEntity.setEmail(usuarioUpdate.getEmail());
         }
-        if (usuarioUpdate.getNome() != null) {
+        if(usuarioUpdate.getNome() != null) {
             usuarioEntity.setNome(usuarioUpdate.getNome());
         }
-        if (usuarioUpdate.getFoto() != null) {
-            usuarioEntity.setPhoto(usuarioUpdate.getFoto() != null ? Base64.getDecoder().decode(usuarioUpdate.getFoto()) : null);
+        if(usuarioUpdate.getFoto() != null) {
+            usuarioEntity.setPhoto(usuarioUpdate.getFoto()!=null ? Base64.getDecoder().decode(usuarioUpdate.getFoto()) : null);
         }
         UsuarioEntity usuarioAtualizado = usuarioRepository.save(usuarioEntity);
         return usuarioServiceUtil.retornarUsuarioDTO(usuarioAtualizado);
     }
 
-    public void desativarContaLogada(UserLoginDTO confirmacao) throws UsuarioException, RegraDeNegocioException {
+    public void desativarContaLogada (UserLoginDTO confirmacao) throws UsuarioException, RegraDeNegocioException {
         UsuarioEntity usuarioEntity = usuarioServiceUtil.retornarUsuarioEntityLogado();
 
         boolean verificacao = usuarioEntity.getEmail().equals(confirmacao.getEmail())
@@ -151,10 +151,10 @@ public class UsuarioService {
         }
     }
 
-    public List<UserDTO> list() {
+    public List<UserWithCargoDTO> list () {
         return usuarioRepository.findAll()
                 .stream()
-                .map(usuarioServiceUtil::retornarUsuarioDTO)
+                .map(usuarioServiceUtil::retornarUsuarioDTOComCargo)
                 .collect(Collectors.toList());
     }
 

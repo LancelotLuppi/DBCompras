@@ -3,6 +3,8 @@ package br.com.dbc.vemser.dbcompras.util;
 import br.com.dbc.vemser.dbcompras.dto.usuario.UserCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.usuario.UserDTO;
 import br.com.dbc.vemser.dbcompras.dto.usuario.UserLoginComSucessoDTO;
+import br.com.dbc.vemser.dbcompras.dto.usuario.UserWithCargoDTO;
+import br.com.dbc.vemser.dbcompras.entity.CargoEntity;
 import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Base64;
 import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @Component
@@ -93,6 +96,13 @@ public class UsuarioServiceUtil {
 
         Argon2PasswordEncoder argon2PasswordEncoder = new Argon2PasswordEncoder();
         return argon2PasswordEncoder.matches(senha, usuario.getPassword());
+    }
+
+    public UserWithCargoDTO retornarUsuarioDTOComCargo (UsuarioEntity usuario){
+        Set<CargoEntity> cargos = usuario.getCargos();
+        UserWithCargoDTO user = objectMapper.convertValue(usuario, UserWithCargoDTO.class);
+        user.setCargos(cargos);
+        return user;
     }
 
     public UsuarioEntity retornarUsuarioEntity(UserCreateDTO userCreateDTO) {
