@@ -13,6 +13,4 @@ public class ItemCreateDTO {
     @NotNull
     @Min(1)
     private Integer quantidade;
-    @NotNull
-    private Double preco;
 }

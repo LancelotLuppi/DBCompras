@@ -34,9 +34,14 @@ public class ColaboradorController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(compraService.create(compraCreateDTO));
     }
 
-    @PutMapping("/compra/{id}")
-    public ResponseEntity<CompraDTO> update (@PathVariable Integer id , @Valid @RequestBody CompraUpdateDTO compraUpdateDTO) throws UsuarioException, EntidadeNaoEncontradaException, RegraDeNegocioException {
+    @PutMapping("/compra/sem-remocao/{id}")
+    public ResponseEntity<CompraDTO> updateCompraSemRemocao (@PathVariable Integer id , @Valid @RequestBody CompraUpdateDTO compraUpdateDTO) throws UsuarioException, EntidadeNaoEncontradaException, RegraDeNegocioException {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(compraService.update(id, compraUpdateDTO));
+    }
+
+    @PutMapping("compra/novos-itens/{idCompra}")
+    public ResponseEntity<CompraDTO> updateNovosItens(@PathVariable Integer idCompra, @Valid @RequestBody CompraCreateDTO compraDTO) throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
+        return ResponseEntity.ok(compraService.updateTeste(idCompra, compraDTO));
     }
 
     @PutMapping("/item")
@@ -47,7 +52,7 @@ public class ColaboradorController {
 
     @GetMapping("/compras")
     public ResponseEntity<List<CompraListDTO>> listCompras (@RequestParam(required = false) Integer idCompra) throws
-            UsuarioException {
+            UsuarioException, RegraDeNegocioException {
         return ResponseEntity.ok(compraService.listColaborador(idCompra));
     }
 
