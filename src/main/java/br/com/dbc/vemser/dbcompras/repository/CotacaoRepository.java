@@ -19,7 +19,6 @@ public interface CotacaoRepository extends JpaRepository<CotacaoEntity, Integer>
     List<CotacaoEntity> findByUsuario(Integer idUser);
 
 
-<<<<<<< HEAD
     @Query(value = """
             select new br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoRelatorioDTO (
                 cot.idCotacao, 
@@ -33,7 +32,4 @@ public interface CotacaoRepository extends JpaRepository<CotacaoEntity, Integer>
             where (cot.idCotacao = :idCotacao or :idCotacao is null)
             """)
     List<CotacaoRelatorioDTO> listCotacoes(@Param("idCotacao") Integer idCotacao);
-
-=======
->>>>>>> 0784fdcb707113f71c232a51a7eba1744aa00d47
 }

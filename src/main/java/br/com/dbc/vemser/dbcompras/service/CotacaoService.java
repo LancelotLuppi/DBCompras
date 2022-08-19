@@ -1,6 +1,6 @@
 package br.com.dbc.vemser.dbcompras.service;
 
-import br.com.dbc.vemser.dbcompras.dto.compra.CompraRelatorioDTO;
+import br.com.dbc.vemser.dbcompras.dto.compra.CompraListCotacaoDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraWithValorItensDTO;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoDTO;
@@ -78,12 +78,12 @@ public class CotacaoService {
                     return cotacao;
                 })
                 .peek(cotacao -> {
-                    CompraRelatorioDTO compraRelatorioDTO = compraRepository.listCompraByIdCotacao(cotacao.getIdCotacao());
+                    CompraListCotacaoDTO compraRelatorioDTO = compraRepository.listCompraByIdCotacao(cotacao.getIdCotacao());
                     CompraWithValorItensDTO compraDTO = new CompraWithValorItensDTO();
                     compraDTO.setIdCompra(compraRelatorioDTO.getIdCompra());
                     compraDTO.setDataCompra(compraRelatorioDTO.getDataCompra());
                     compraDTO.setStatus(compraRelatorioDTO.getStatus());
-                    compraDTO.setValorTotal(compraRelatorioDTO.getValorTotal());
+                    compraDTO.setValor(compraRelatorioDTO.getValorTotal());
                     compraDTO.setDescricao(compraRelatorioDTO.getDescricao());
                     compraDTO.setName(compraRelatorioDTO.getName());
                     List<ItemValorizadoDTO> itensComValorDTO = itemRepository.listItensComValorByIdCompra(compraDTO.getIdCompra());
