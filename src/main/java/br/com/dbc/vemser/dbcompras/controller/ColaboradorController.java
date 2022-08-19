@@ -35,8 +35,8 @@ public class ColaboradorController {
     }
 
     @GetMapping("/compras")
-    public ResponseEntity<List<CompraListDTO>> listCompras() throws UsuarioException {
-        return ResponseEntity.ok(compraService.listColaborador());
+    public ResponseEntity<List<CompraListDTO>> listCompras(@RequestParam(required = false) Integer idCompra) throws UsuarioException {
+        return ResponseEntity.ok(compraService.listColaborador(idCompra));
     }
 
     @DeleteMapping("/compra/{id}")

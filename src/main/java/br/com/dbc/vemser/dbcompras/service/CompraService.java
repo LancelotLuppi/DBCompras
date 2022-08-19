@@ -53,11 +53,19 @@ public class CompraService {
         return compraServiceUtil.converterCompraEntityToCompraDTO(compraSalva);
     }
 
-    public List<CompraListDTO> listColaborador() throws UsuarioException {
-        List<CompraEntity> compraEntityList = compraRepository.findAllByUsuarioId(usuarioServiceUtil.getIdLoggedUser());
-        return compraEntityList.stream()
-                .map(compraServiceUtil::converterEntityParaListDTO)
-                .toList();
+    public List<CompraListDTO> listColaborador(Integer idCompra) throws UsuarioException {
+
+        if(idCompra != null){
+            return compraRepository.findById(idCompra)
+                   .stream()
+                   .map(compraServiceUtil::converterEntityParaListDTO)
+                   .toList();
+        }else{
+            List<CompraEntity> compraEntityList = compraRepository.findAllByUsuarioId(usuarioServiceUtil.getIdLoggedUser());
+            return compraEntityList.stream()
+                    .map(compraServiceUtil::converterEntityParaListDTO)
+                    .toList();
+        }
     }
 
     public CompraDTO update(Integer idCompra, CompraCreateDTO compraDTO) throws UsuarioException, EntidadeNaoEncontradaException, RegraDeNegocioException {
@@ -107,4 +115,5 @@ public class CompraService {
     public List<CompraRelatorioDTO> relatorioCompras (Integer idCompra){
         return compraRepository.findByCompraId(idCompra);
     }
+
 }

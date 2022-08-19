@@ -1,10 +1,13 @@
 package br.com.dbc.vemser.dbcompras.dto.compra;
 
+import br.com.dbc.vemser.dbcompras.dto.item.ItemDTO;
+import br.com.dbc.vemser.dbcompras.entity.ItemEntity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor

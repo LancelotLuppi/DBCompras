@@ -39,7 +39,7 @@ public interface CompraRepository extends JpaRepository<CompraEntity, Integer> {
             "u.nome" +
             ")" +
             " from purchase p " +
-            "inner join p.usuario u" +
+            "left join p.usuario u" +
             " where (:idCompra is null OR p.idCompra = :idCompra)")
     List<CompraRelatorioDTO> findByCompraId(Integer idCompra);
 }
