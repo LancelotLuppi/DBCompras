@@ -1,9 +1,7 @@
 package br.com.dbc.vemser.dbcompras.util;
 
-import br.com.dbc.vemser.dbcompras.dto.usuario.UserCreateDTO;
-import br.com.dbc.vemser.dbcompras.dto.usuario.UserDTO;
-import br.com.dbc.vemser.dbcompras.dto.usuario.UserLoginComSucessoDTO;
-import br.com.dbc.vemser.dbcompras.dto.usuario.UserWithCargoDTO;
+import br.com.dbc.vemser.dbcompras.dto.cargo.CargoDTO;
+import br.com.dbc.vemser.dbcompras.dto.usuario.*;
 import br.com.dbc.vemser.dbcompras.entity.CargoEntity;
 import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
@@ -99,9 +97,13 @@ public class UsuarioServiceUtil {
     }
 
     public UserWithCargoDTO retornarUsuarioDTOComCargo (UsuarioEntity usuario){
-        Set<CargoEntity> cargos = usuario.getCargos();
+
+        CargoEntity cargo = usuario.getCargos().stream()
+                .findFirst()
+                .orElseThrow();
+        CargoDTO cargoDTOS = objectMapper.convertValue(cargo, CargoDTO.class);
         UserWithCargoDTO user = objectMapper.convertValue(usuario, UserWithCargoDTO.class);
-        user.setCargos(cargos);
+        user.setCargos(cargoDTOS);
         return user;
     }
 
@@ -112,6 +114,19 @@ public class UsuarioServiceUtil {
     public UserDTO retornarUsuarioDTO(UsuarioEntity usuario) {
         return objectMapper.convertValue(usuario, UserDTO.class);
     }
+
+    public UserCreateByAdminDTO retornarUsuarioCriadoDTO(UsuarioEntity usuario) {
+        CargoEntity cargo = usuario.getCargos().stream()
+                .findFirst()
+                .orElseThrow();
+        CargoDTO cargoDTOS = objectMapper.convertValue(cargo, CargoDTO.class);
+
+        UserCreateByAdminDTO userCriado = objectMapper.convertValue(usuario, UserCreateByAdminDTO.class);
+        userCriado.setCargoDTO(cargoDTOS);
+        return userCriado;
+    }
+
+
 
     public String encodePassword(String password) {
         return new Argon2PasswordEncoder().encode(password);
