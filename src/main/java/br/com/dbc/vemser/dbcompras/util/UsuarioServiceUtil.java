@@ -19,6 +19,7 @@ import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -90,18 +91,17 @@ public class UsuarioServiceUtil {
         }
     }
 
-    public boolean verificarSenhaUsuario(String senha, UsuarioEntity usuario) throws UsuarioException {
-
+    public boolean verificarSenhaUsuario(String senha, UsuarioEntity usuario) {
         Argon2PasswordEncoder argon2PasswordEncoder = new Argon2PasswordEncoder();
         return argon2PasswordEncoder.matches(senha, usuario.getPassword());
     }
 
     public UserWithCargoDTO retornarUsuarioDTOComCargo (UsuarioEntity usuario){
 
-        CargoEntity cargo = usuario.getCargos().stream()
-                .findFirst()
-                .orElseThrow();
-        CargoDTO cargoDTOS = objectMapper.convertValue(cargo, CargoDTO.class);
+        Set<CargoEntity> cargos = usuario.getCargos();
+        List<CargoDTO> cargoDTOS = cargos.stream()
+                .map(cargo -> objectMapper.convertValue(cargo, CargoDTO.class))
+                .toList() ;
         UserWithCargoDTO user = objectMapper.convertValue(usuario, UserWithCargoDTO.class);
         user.setCargos(cargoDTOS);
         return user;

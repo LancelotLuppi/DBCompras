@@ -6,6 +6,7 @@ import br.com.dbc.vemser.dbcompras.enums.TipoCargo;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
 import br.com.dbc.vemser.dbcompras.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -24,9 +25,9 @@ public class AdminController {
     private final UsuarioService usuarioService;
 
     @PutMapping("/usuario/{idUsuario}/cargos")
-    public UserUpdateByAdminDTO updateUserByAdmin (@PathVariable("idUsuario") Integer idUser,
-                                                   @RequestParam(value = "cargos") Set<TipoCargo> tipoCargo) throws RegraDeNegocioException {
-        return usuarioService.updateUserByAdmin(idUser,tipoCargo);
+    public ResponseEntity<UserWithCargoDTO> updateUserByAdmin (@PathVariable("idUsuario") Integer idUser,
+                                                              @RequestParam(value = "cargos") Set<TipoCargo> tipoCargo) throws RegraDeNegocioException {
+        return ResponseEntity.ok(usuarioService.updateUserByAdmin(idUser,tipoCargo));
     }
 
     @PostMapping("/usuario-criar/cargos")
