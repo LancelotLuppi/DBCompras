@@ -25,25 +25,30 @@ public class AdminController {
     private final UsuarioService usuarioService;
 
     @PutMapping("/usuario/{idUsuario}/cargos")
-    public ResponseEntity<UserWithCargoDTO> updateUserByAdmin (@PathVariable("idUsuario") Integer idUser,
+    public ResponseEntity<UserWithCargoDTO> updateUserByAdmin(@PathVariable("idUsuario") Integer idUser,
                                                               @RequestParam(value = "cargos") Set<TipoCargo> tipoCargo) throws RegraDeNegocioException {
-        return ResponseEntity.ok(usuarioService.updateUserByAdmin(idUser,tipoCargo));
+        return ResponseEntity.ok(usuarioService.updateUserByAdmin(idUser, tipoCargo));
     }
 
     @PostMapping("/usuario-criar/cargos")
-    public ResponseEntity<UserWithCargoDTO> criarUserByAdmin (@RequestBody UserCreateDTO userCreateDTO,
-                                                  @RequestParam(value = "cargos") Set<TipoCargo> tipoCargo) throws RegraDeNegocioException {
+    public ResponseEntity<UserWithCargoDTO> criarUserByAdmin(@RequestBody UserCreateDTO userCreateDTO,
+                                                             @RequestParam(value = "cargos") Set<TipoCargo> tipoCargo) throws RegraDeNegocioException {
         return ResponseEntity.ok(usuarioService.createUserByAdmin(userCreateDTO, tipoCargo));
     }
 
     @GetMapping("/list")
-    public List<UserWithCargoDTO> list () {
+    public List<UserWithCargoDTO> list() {
         return usuarioService.list();
     }
 
     @DeleteMapping("/controlar-acesso-usuario/{idUsuario}")
-    public void controlarAcessoUsuario (@PathVariable Integer idUsuario, ControlarAcesso controlarAcesso) throws RegraDeNegocioException {
+    public void controlarAcessoUsuario(@PathVariable Integer idUsuario, ControlarAcesso controlarAcesso) throws RegraDeNegocioException {
         usuarioService.controlarAcessoUsuario(idUsuario, controlarAcesso);
     }
 
+    @DeleteMapping("/delete/{idUsuario}")
+    public ResponseEntity<Void> deletarUser(@PathVariable("idUsuario") Integer idUsuario) throws RegraDeNegocioException {
+        usuarioService.deletarUsuario(idUsuario);
+        return ResponseEntity.noContent().build();
+    }
 }

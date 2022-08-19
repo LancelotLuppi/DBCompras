@@ -49,10 +49,4 @@ public class UsuarioController implements UsuarioDocumentation {
         usuarioService.desativarContaLogada(confirmacao);
         return ResponseEntity.noContent().build();
     }
-
-    @DeleteMapping("/delete/{idUsuario}")
-    public ResponseEntity<Void> deletarUser(@PathVariable("idUsuario") Integer idUsuario) throws RegraDeNegocioException {
-        usuarioService.deletarUsuario(idUsuario);
-        return ResponseEntity.noContent().build();
-    }
 }
