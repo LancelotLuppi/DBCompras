@@ -1,6 +1,8 @@
 package br.com.dbc.vemser.dbcompras.entity;
 
-import br.com.dbc.vemser.dbcompras.entity.pk.CotacaoItemPk;
+import br.com.dbc.vemser.dbcompras.entity.CotacaoEntity;
+import br.com.dbc.vemser.dbcompras.entity.ItemEntity;
+import br.com.dbc.vemser.dbcompras.entity.pk.CotacaoXItemPK;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,21 +15,24 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "quotation_item")
-public class CotacaoItemEntity {
+public class CotacaoXItemEntity {
 
     @EmbeddedId
-    private CotacaoItemPk cotacaoItemPk;
+    private CotacaoXItemPK cotacaoXItemPK;
+
+    @Column(name = "unitary_value")
+    private Double valorDoItem;
+
+    @Column(name = "total_value")
+    private Double valorTotal;
 
     @ManyToOne
-    @MapsId("id_quotation")
+    @MapsId("idCotacao")
     @JoinColumn(name = "id_quotation")
     CotacaoEntity cotacao;
 
     @ManyToOne
-    @MapsId("id_item")
+    @MapsId("idItem")
     @JoinColumn(name = "id_item")
     ItemEntity item;
-
-    @Column(name = "value")
-    private Double valorDoItem;
 }

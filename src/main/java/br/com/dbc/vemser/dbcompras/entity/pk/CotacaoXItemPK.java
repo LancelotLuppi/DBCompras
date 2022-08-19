@@ -1,8 +1,6 @@
 package br.com.dbc.vemser.dbcompras.entity.pk;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Column;
@@ -11,15 +9,14 @@ import java.io.Serializable;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Embeddable
-public class CotacaoItemPk implements Serializable {
+public class CotacaoXItemPK implements Serializable {
 
     @Column(name = "id_quotation")
     private Integer idCotacao;
-
     @Column(name = "id_item")
     private Integer idItem;
+
+
 
 }

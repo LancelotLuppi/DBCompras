@@ -2,10 +2,16 @@ package br.com.dbc.vemser.dbcompras.service;
 
 import br.com.dbc.vemser.dbcompras.dto.item.ItemCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemDTO;
+import br.com.dbc.vemser.dbcompras.entity.CompraEntity;
 import br.com.dbc.vemser.dbcompras.entity.ItemEntity;
+import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
+import br.com.dbc.vemser.dbcompras.enums.SituacaoCompra;
+import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
+import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
 import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.repository.ItemRepository;
+import br.com.dbc.vemser.dbcompras.util.CompraServiceUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,36 +23,22 @@ import org.springframework.stereotype.Service;
 public class ItemService {
 
     private final ItemRepository itemRepository;
-
+    private final CompraServiceUtil compraServiceUtil;
     private final ObjectMapper objectMapper;
 
-    public ItemDTO create (ItemCreateDTO itemCreateDTO) throws UsuarioException {
+    public ItemDTO updateItem(Integer idItem, ItemCreateDTO itemAtualizadoDTO) throws EntidadeNaoEncontradaException, RegraDeNegocioException, UsuarioException {
+        ItemEntity itemEntity = itemRepository.findById(idItem).orElseThrow(() -> new EntidadeNaoEncontradaException("Item inexistente"));
+        CompraEntity compra = itemEntity.getCompra();
+        compraServiceUtil.verificarCompraDoUserLogado(compra.getIdCompra());
 
-        ItemEntity item = objectMapper.convertValue(itemCreateDTO, ItemEntity.class);
-        itemRepository.save(item);
-        return objectMapper.convertValue(item, ItemDTO.class);
-
-    }
-
-    public ItemEntity findById (Integer idItem) throws EntidadeNaoEncontradaException {
-        return itemRepository.findById(idItem)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Este item não existe"));
-    }
-
-    public ItemDTO update (ItemCreateDTO itemUpdateDTO, Integer idItem) throws EntidadeNaoEncontradaException {
-
-        ItemEntity item = findById(idItem);
-
-        if(itemUpdateDTO.getNome() != null){
-            item.setNome(itemUpdateDTO.getNome());
+        if(!compra.getStatus().equals(SituacaoCompra.ABERTO.getSituacao())){
+            throw new RegraDeNegocioException("Itens de compras sem estar em aberto não podem ser atualizados!");
         }
 
-        if(itemUpdateDTO.getQuantidade() != null){
-            item.setQuantidade(itemUpdateDTO.getQuantidade());
-        }
-
-        itemRepository.save(item);
-        return objectMapper.convertValue(item, ItemDTO.class);
+        itemEntity.setNome(itemAtualizadoDTO.getNome());
+        itemEntity.setQuantidade(itemAtualizadoDTO.getQuantidade());
+        itemRepository.save(itemEntity);
+        return objectMapper.convertValue(itemEntity, ItemDTO.class);
     }
 
 }

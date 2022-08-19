@@ -4,6 +4,8 @@ import br.com.dbc.vemser.dbcompras.dto.compra.CompraCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraListDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraRelatorioDTO;
+import br.com.dbc.vemser.dbcompras.dto.compra.CompraUpdateDTO;
+import br.com.dbc.vemser.dbcompras.dto.item.ItemUpdateDTO;
 import br.com.dbc.vemser.dbcompras.entity.CompraEntity;
 import br.com.dbc.vemser.dbcompras.entity.ItemEntity;
 import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
@@ -14,6 +16,7 @@ import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.repository.CompraRepository;
 import br.com.dbc.vemser.dbcompras.repository.ItemRepository;
 import br.com.dbc.vemser.dbcompras.util.CompraServiceUtil;
+import br.com.dbc.vemser.dbcompras.util.ItemServiceUtil;
 import br.com.dbc.vemser.dbcompras.util.UsuarioServiceUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -35,6 +37,7 @@ public class CompraService {
     private final CompraServiceUtil compraServiceUtil;
     private final ItemRepository itemRepository;
     private final UsuarioServiceUtil usuarioServiceUtil;
+    private final ItemServiceUtil itemServiceUtil;
 
 
     public CompraDTO create(CompraCreateDTO compraCreateDTO) throws UsuarioException, RegraDeNegocioException {
@@ -68,36 +71,35 @@ public class CompraService {
         }
     }
 
-    public CompraDTO update(Integer idCompra, CompraCreateDTO compraDTO) throws UsuarioException, EntidadeNaoEncontradaException, RegraDeNegocioException {
+    public CompraDTO update(Integer idCompra, CompraUpdateDTO compraDTO) throws UsuarioException, EntidadeNaoEncontradaException, RegraDeNegocioException {
         compraServiceUtil.verificarCompraDoUserLogado(idCompra);
         CompraEntity compra = compraServiceUtil.findByID(idCompra);
 
-        compra.setIdCompra(idCompra);
-        if (compraDTO.getName() != null) {
-            compra.setName(compraDTO.getName());
-        }
+        List<Integer> idItemRecebidoList = compraDTO.getItens().stream()
+                .map(ItemUpdateDTO::getIdItem)
+                .toList();
 
-        if(compraDTO.getDescricao() != null){
-            compra.setDescricao(compraDTO.getDescricao());
-        }
+        itemServiceUtil.verificarItensDaCompra(compra, idItemRecebidoList);
 
-        if (!compraDTO.getItens().isEmpty()) {
-            Set<ItemEntity> itensAntigos = compra.getItens();
-            itensAntigos.forEach(itemRepository::delete);
-
-            compra.getItens().clear();
-            Set<ItemEntity> novosItens = new HashSet<>(compraServiceUtil.salvarItensDaCompra(compraDTO, compra));
-            compra.setItens(novosItens);
-        }
+        compra.setName(compra.getName());
+        compra.setDescricao(compraDTO.getDescricao());
+        compraDTO.getItens()
+                .forEach(item -> {
+                    ItemEntity itemEntity = itemRepository.findById(item.getIdItem()).get();
+                    itemEntity.setNome(item.getNome());
+                    itemEntity.setQuantidade(item.getQuantidade());
+                    itemRepository.save(itemEntity);
+                });
 
         CompraEntity compraAtualizada = compraRepository.save(compra);
         return compraServiceUtil.converterCompraEntityToCompraDTO(compraAtualizada);
     }
 
-    public void delete(Integer id) throws UsuarioException, RegraDeNegocioException {
-        compraServiceUtil.verificarCompraDoUserLogado(id);
-        compraRepository.deleteCompra(id);
+    public void delete(Integer idCompra) throws UsuarioException, RegraDeNegocioException {
+        compraServiceUtil.verificarCompraDoUserLogado(idCompra);
+        compraRepository.deleteCompra(idCompra);
     }
+
 
     public void removerItensDaCompra(Integer idCompra, Integer idItem) throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
         compraServiceUtil.verificarCompraDoUserLogado(idCompra);

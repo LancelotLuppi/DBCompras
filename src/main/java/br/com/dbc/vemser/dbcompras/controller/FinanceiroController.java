@@ -13,24 +13,24 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Validated
-@RestController
-@RequiredArgsConstructor
-@RequestMapping("/financeiro")
-public class FinanceiroController {
-
-   private final CotacaoService cotacaoService;
-
-   @GetMapping("/listar-cotacoes")
-   public List<CotacaoFinanceiroDTO> cotacoes () throws UsuarioException {
-       return cotacaoService.list();
-   }
-
-   @PutMapping("aprovar-reprovar-cotacao/{idCotacao}")
-   public CotacaoDTO aprovarCotacaoOuReprovar (@PathVariable("idCotacao") Integer idCotacao , StatusCotacoes statusCotacoes) throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
-
-       return cotacaoService.cotacaoAprovada(idCotacao, statusCotacoes);
-
-    }
-
-}
+//@Validated
+//@RestController
+//@RequiredArgsConstructor
+//@RequestMapping("/financeiro")
+//public class FinanceiroController {
+//
+//   private final CotacaoService cotacaoService;
+//
+////   @GetMapping("/listar-cotacoes")
+////   public List<CotacaoFinanceiroDTO> cotacoes () throws UsuarioException {
+////       return cotacaoService.list();
+////   }
+////
+////   @PutMapping("aprovar-reprovar-cotacao/{idCotacao}")
+////   public CotacaoDTO aprovarCotacaoOuReprovar (@PathVariable("idCotacao") Integer idCotacao , StatusCotacoes statusCotacoes) throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
+////
+////       return cotacaoService.cotacaoAprovada(idCotacao, statusCotacoes);
+////
+////    }
+//
+//}

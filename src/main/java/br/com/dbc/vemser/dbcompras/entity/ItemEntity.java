@@ -35,17 +35,8 @@ public class ItemEntity {
     private CompraEntity compra;
 
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "quotation_item",
-            joinColumns = @JoinColumn(name = "id_item"),
-            inverseJoinColumns = @JoinColumn(name = "id_quotation")
-    )
-    private Set<CotacaoEntity> cotacoes;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "cotacao")
-    Set<CotacaoItemEntity> valores;
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "item")
+    private Set<CotacaoXItemEntity> cotacoes;
 
     @Column(name = "valor")
     private Double preco;
