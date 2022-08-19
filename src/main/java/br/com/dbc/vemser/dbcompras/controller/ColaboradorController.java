@@ -52,7 +52,7 @@ public class ColaboradorController {
 
     @GetMapping("/compras")
     public ResponseEntity<List<CompraListDTO>> listCompras (@RequestParam(required = false) Integer idCompra) throws
-            UsuarioException {
+            UsuarioException, RegraDeNegocioException {
         return ResponseEntity.ok(compraService.listColaborador(idCompra));
     }
 

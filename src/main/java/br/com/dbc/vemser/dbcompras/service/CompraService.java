@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -56,15 +57,16 @@ public class CompraService {
         return compraServiceUtil.converterCompraEntityToCompraDTO(compraSalva);
     }
 
-    public List<CompraListDTO> listColaborador(Integer idCompra) throws UsuarioException {
+    public List<CompraListDTO> listColaborador(Integer idCompra) throws UsuarioException, RegraDeNegocioException {
 
         if(idCompra != null){
+            compraServiceUtil.verificarCompraDoUserLogado(idCompra);
             return compraRepository.findById(idCompra)
                    .stream()
                    .map(compraServiceUtil::converterEntityParaListDTO)
                    .toList();
         }else{
-            return compraRepository.findAll().stream()
+            return compraRepository.findAllByUsuarioId(usuarioServiceUtil.getIdLoggedUser()).stream()
                     .map(compraServiceUtil::converterEntityParaListDTO)
                     .toList();
         }
