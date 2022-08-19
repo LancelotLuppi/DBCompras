@@ -1,5 +1,6 @@
 package br.com.dbc.vemser.dbcompras.repository;
 
+import br.com.dbc.vemser.dbcompras.dto.compra.CompraRelatorioDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraWithValorItensDTO;
 import br.com.dbc.vemser.dbcompras.entity.CompraEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,7 +29,7 @@ public interface CompraRepository extends JpaRepository<CompraEntity, Integer> {
     List<CompraEntity> findAllByUsuarioId(Integer idUsuario);
 
     @Query(value = """
-                select new br.com.dbc.vemser.dbcompras.dto.compra.CompraWithItensDTO(
+                select new br.com.dbc.vemser.dbcompras.dto.compra.CompraRelatorioDTO(
                     c.idCompra, 
                     c.name, 
                     c.descricao, 
@@ -37,8 +38,8 @@ public interface CompraRepository extends JpaRepository<CompraEntity, Integer> {
                     c.status
                 )
                 from purchase c 
-                join c.quotation cot 
-                where (cot.idCotacao = :idCotacao)
+                join c.cotacoes cot 
+                where (:idCotacao is null OR cot.idCotacao = :idCotacao)
             """)
-    CompraWithValorItensDTO listCompraByIdCotacao(@Param("idCotacao") Integer idCotacao);
+    CompraRelatorioDTO listCompraByIdCotacao(@Param("idCotacao") Integer idCotacao);
 }

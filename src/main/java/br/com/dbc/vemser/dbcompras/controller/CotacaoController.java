@@ -29,6 +29,7 @@ public class CotacaoController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/cotacoes")
     public ResponseEntity<List<CotacaoDTO>> list(@RequestParam(name = "idCotacao", required = false) Integer idCotacao) {
         return ResponseEntity.ok(cotacaoService.listarCotacoes(idCotacao));
     }

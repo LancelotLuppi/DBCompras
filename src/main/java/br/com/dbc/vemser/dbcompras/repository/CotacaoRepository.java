@@ -1,6 +1,7 @@
 package br.com.dbc.vemser.dbcompras.repository;
 
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoDTO;
+import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoRelatorioDTO;
 import br.com.dbc.vemser.dbcompras.entity.CotacaoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -19,7 +20,7 @@ public interface CotacaoRepository extends JpaRepository<CotacaoEntity, Integer>
 
 
     @Query(value = """
-            select new br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoDTO (
+            select new br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoRelatorioDTO (
                 cot.idCotacao, 
                 cot.nome, 
                 cot.localDate, 
@@ -30,6 +31,6 @@ public interface CotacaoRepository extends JpaRepository<CotacaoEntity, Integer>
             from quotation cot 
             where (cot.idCotacao = :idCotacao or :idCotacao is null)
             """)
-    List<CotacaoDTO> listCotacoes(@Param("idCotacao") Integer idCotacao);
+    List<CotacaoRelatorioDTO> listCotacoes(@Param("idCotacao") Integer idCotacao);
 
 }

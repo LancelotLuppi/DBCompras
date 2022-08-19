@@ -1,8 +1,10 @@
 package br.com.dbc.vemser.dbcompras.service;
 
+import br.com.dbc.vemser.dbcompras.dto.compra.CompraRelatorioDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraWithValorItensDTO;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoDTO;
+import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoRelatorioDTO;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoValorItensDTO;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemDTO;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemValorizadoDTO;
@@ -53,7 +55,7 @@ public class CotacaoService {
         CotacaoEntity cotacao = new CotacaoEntity();
 
         cotacao.setNome(cotacaoDTO.getNome());
-        cotacao.setStatus(false);
+        cotacao.setStatus(StatusCotacoes.APROVADO.name());
         cotacao.setLocalDate(LocalDateTime.now());
         cotacao.setAnexo(Base64.getDecoder().decode(cotacaoDTO.getAnexo()));
         cotacao.setValor(0.0);
@@ -79,17 +81,29 @@ public class CotacaoService {
     }
 
     public List<CotacaoDTO> listarCotacoes(Integer idCotacao) {
-        List<CotacaoDTO> cotacoes = cotacaoRepository.listCotacoes(idCotacao);
+        List<CotacaoRelatorioDTO> cotacoes = cotacaoRepository.listCotacoes(idCotacao);
 
-        List<CotacaoDTO> listCotacaoPopulada = cotacoes.stream()
+        return cotacoes.stream()
+                .map(relatorio -> {
+                    CotacaoDTO cotacao = objectMapper.convertValue(relatorio, CotacaoDTO.class);
+                    cotacao.setAnexo(Base64.getEncoder().encodeToString(relatorio.getAnexo()));
+                    return cotacao;
+                })
                 .peek(cotacao -> {
-                    CompraWithValorItensDTO compraDTO = compraRepository.listCompraByIdCotacao(cotacao.getIdCotacao());
-                    List<ItemValorizadoDTO> itensComValor = itemRepository.listItensComValorByIdCompra(compraDTO.getIdCompra());
-                    compraDTO.setItens(itensComValor);
+                    CompraRelatorioDTO compraRelatorioDTO = compraRepository.listCompraByIdCotacao(cotacao.getIdCotacao());
+                    CompraWithValorItensDTO compraDTO = new CompraWithValorItensDTO();
+                    compraDTO.setIdCompra(compraRelatorioDTO.getIdCompra());
+                    compraDTO.setDataCompra(compraRelatorioDTO.getDataCompra());
+                    compraDTO.setStatus(compraRelatorioDTO.getStatus());
+                    compraDTO.setValorTotal(compraRelatorioDTO.getValorTotal());
+                    compraDTO.setDescricao(compraRelatorioDTO.getDescricao());
+                    compraDTO.setName(compraRelatorioDTO.getName());
+                    List<ItemValorizadoDTO> itensComValorDTO = itemRepository.listItensComValorByIdCompra(compraDTO.getIdCompra());
+
+                    compraDTO.setItens(itensComValorDTO);
                     cotacao.setCompraDTO(compraDTO);
                 })
                 .toList();
-        return cotacoes;
     }
 
 }

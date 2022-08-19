@@ -10,12 +10,11 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CotacaoDTO extends CotacaoCreateDTO{
+public class CotacaoRelatorioDTO {
     private Integer idCotacao;
     private String nome;
     private LocalDateTime localDate;
-    private String anexo;
+    private byte[] anexo;
     private String status;
     private Double Valor;
-    private CompraWithValorItensDTO compraDTO;
 }

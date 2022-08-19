@@ -16,11 +16,12 @@ public interface ItemRepository extends JpaRepository<ItemEntity, Integer> {
                 select new br.com.dbc.vemser.dbcompras.dto.item.ItemValorizadoDTO(
                     i.idItem, 
                     i.nome, 
-                    i.valorUnitario, 
+                    iXcot.valorDoItem, 
                     i.quantidade, 
-                    i.valorTotal
+                    iXcot.valorTotal
                 )
-                from item i 
+                from item i
+                join i.cotacoes iXcot 
                 join i.compra c 
                 where (c.idCompra = :idCompra)
             """)
