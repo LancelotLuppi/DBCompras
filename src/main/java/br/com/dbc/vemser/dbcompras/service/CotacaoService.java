@@ -1,9 +1,11 @@
 package br.com.dbc.vemser.dbcompras.service;
 
+import br.com.dbc.vemser.dbcompras.dto.compra.CompraWithValorItensDTO;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoDTO;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoValorItensDTO;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemDTO;
+import br.com.dbc.vemser.dbcompras.dto.item.ItemValorizadoDTO;
 import br.com.dbc.vemser.dbcompras.entity.*;
 import br.com.dbc.vemser.dbcompras.entity.pk.CotacaoXItemPK;
 import br.com.dbc.vemser.dbcompras.enums.StatusCotacoes;
@@ -74,6 +76,20 @@ public class CotacaoService {
                     cotacaoSalva.setValor(cotacaoSalva.getValor() + cotacaoXItem.getValorTotal());
                 });
         cotacaoRepository.save(cotacaoSalva);
+    }
+
+    public List<CotacaoDTO> listarCotacoes(Integer idCotacao) {
+        List<CotacaoDTO> cotacoes = cotacaoRepository.listCotacoes(idCotacao);
+
+        List<CotacaoDTO> listCotacaoPopulada = cotacoes.stream()
+                .peek(cotacao -> {
+                    CompraWithValorItensDTO compraDTO = compraRepository.listCompraByIdCotacao(cotacao.getIdCotacao());
+                    List<ItemValorizadoDTO> itensComValor = itemRepository.listItensComValorByIdCompra(compraDTO.getIdCompra());
+                    compraDTO.setItens(itensComValor);
+                    cotacao.setCompraDTO(compraDTO);
+                })
+                .toList();
+        return cotacoes;
     }
 
 }

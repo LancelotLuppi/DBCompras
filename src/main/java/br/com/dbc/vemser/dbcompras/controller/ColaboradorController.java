@@ -29,7 +29,7 @@ public class ColaboradorController {
     private final ItemService itemService;
 
     @PostMapping("/nova-compra")
-    public ResponseEntity<CompraDTO> create (@Valid @RequestBody CompraCreateDTO compraCreateDTO) throws UsuarioException {
+    public ResponseEntity<CompraDTO> create (@RequestBody @Valid  CompraCreateDTO compraCreateDTO) throws UsuarioException {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(compraService.create(compraCreateDTO));
     }
 

@@ -28,6 +28,10 @@ public class CotacaoController {
         cotacaoService.create(idCompra, cotacaoCreateDTO);
         return ResponseEntity.noContent().build();
     }
+
+    public ResponseEntity<List<CotacaoDTO>> list(@RequestParam(name = "idCotacao", required = false) Integer idCotacao) {
+        return ResponseEntity.ok(cotacaoService.listarCotacoes(idCotacao));
+    }
 //
 //    @GetMapping
 //    public ResponseEntity<List<CotacaoDTO>> list() throws UsuarioException {
