@@ -38,15 +38,13 @@ public class UsuarioService {
         usuarioServiceUtil.validarEmail(login.getEmail());
         usuarioServiceUtil.verificarSeEmailTemCadastro(login.getEmail());
         usuarioServiceUtil.validarFormatacaoSenha(login.getSenha());
-        if(login.getNome().isEmpty() && login.getNome().isBlank()){
-            throw new RegraDeNegocioException("O nome do usuario é obrigatorio");
-        }
+//        }
 
         UsuarioEntity usuarioEntity = usuarioServiceUtil.retornarUsuarioEntity(login);
 
         usuarioEntity.setCargos(Set.of(cargoRepository.findById(TipoCargo.COLABORADOR.getCargo()).get()));
         usuarioEntity.setPassword(usuarioServiceUtil.encodePassword(login.getSenha()));
-        usuarioEntity.setPhoto(login.getFoto()!=null ? Base64.getDecoder().decode(login.getFoto()) : null);
+        usuarioEntity.setPhoto(login.getFoto() != null ? Base64.getDecoder().decode(login.getFoto()) : null);
         usuarioEntity.setEnable(StatusUsuario.ATIVAR.getStatus());
 
         usuarioEntity = usuarioRepository.save(usuarioEntity);
@@ -54,7 +52,7 @@ public class UsuarioService {
         return usuarioServiceUtil.generateUserLoginComSucessoDTO(usuarioEntity, login.getEmail(), login.getSenha());
     }
 
-    public UserUpdateByAdminDTO updateUserByAdmin (Integer idUsuario, Set<TipoCargo> tipoCargos) throws RegraDeNegocioException {
+    public UserUpdateByAdminDTO updateUserByAdmin(Integer idUsuario, Set<TipoCargo> tipoCargos) throws RegraDeNegocioException {
 
         Set<CargoEntity> cargosUsuario = new HashSet<>();
         UsuarioEntity usuarioEntity = usuarioServiceUtil.findById(idUsuario);
@@ -122,7 +120,7 @@ public class UsuarioService {
         usuarioRepository.save(usuarioEntity);
     }
 
-    public void deletarUsuario (Integer idUsuario) throws RegraDeNegocioException {
+    public void deletarUsuario(Integer idUsuario) throws RegraDeNegocioException {
         UsuarioEntity usuarioEntity = usuarioServiceUtil.findById(idUsuario);
         usuarioRepository.delete(usuarioEntity);
     }
