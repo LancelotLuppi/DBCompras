@@ -39,14 +39,9 @@ public class CotacaoService {
 
     private final ObjectMapper objectMapper;
     private final CotacaoRepository cotacaoRepository;
-
-    private final UsuarioService usuarioService;
     private final ItemRepository itemRepository;
-    private final UsuarioServiceUtil usuarioServiceUtil;
 
     private final CompraRepository compraRepository;
-
-    private final CompraServiceUtil compraServiceUtil;
     private final CotacaoXItemRepository cotacaoXItemRepository;
 
 
