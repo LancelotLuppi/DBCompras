@@ -2,10 +2,7 @@ package br.com.dbc.vemser.dbcompras.service;
 
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraListCotacaoDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraWithValorItensDTO;
-import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoCreateDTO;
-import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoDTO;
-import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoRelatorioDTO;
-import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoValorItensDTO;
+import br.com.dbc.vemser.dbcompras.dto.cotacao.*;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemDTO;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemValorizadoDTO;
 import br.com.dbc.vemser.dbcompras.entity.*;
@@ -144,5 +141,15 @@ public class CotacaoService {
         cotacaoDTO.setCompraDTO(compra);
         cotacaoDTO.setListaDeValores(itemDTOList);
         return cotacaoDTO;
+    }
+
+    public List<CotacaoFinanceiroDTO> list() {
+
+        return null;
+
+    }
+
+    public CotacaoDTO cotacaoAprovada(Integer idCotacao, StatusCotacoes statusCotacoes) {
+        return null;
     }
 }

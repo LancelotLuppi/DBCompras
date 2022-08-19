@@ -1,5 +1,6 @@
 package br.com.dbc.vemser.dbcompras.service;
 
+import br.com.dbc.vemser.dbcompras.dto.cargo.CargoDTO;
 import br.com.dbc.vemser.dbcompras.dto.usuario.*;
 import br.com.dbc.vemser.dbcompras.entity.CargoEntity;
 import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
@@ -67,7 +68,17 @@ public class UsuarioService {
         System.out.println(usuarioEntity);
 
 
-        return objectMapper.convertValue(usuarioEntity, UserUpdateByAdminDTO.class);
+        return converterUsuarioEntitieTOUpdateByAdminDTO(usuarioEntity);
+    }
+
+    private UserUpdateByAdminDTO converterUsuarioEntitieTOUpdateByAdminDTO(UsuarioEntity usuarioEntity) {
+        CargoEntity cargo = usuarioEntity.getCargos().stream()
+                .findFirst()
+                .orElseThrow();
+        CargoDTO cargoDTOS = objectMapper.convertValue(cargo, CargoDTO.class);
+        UserUpdateByAdminDTO userUpdateByAdminDTO =  objectMapper.convertValue(usuarioEntity, UserUpdateByAdminDTO.class);
+        userUpdateByAdminDTO.setTipoCargo(cargoDTOS);
+        return userUpdateByAdminDTO;
     }
 
     public void /*UserWithRoleDTO*/ updateRoleUser(Integer idUsuario, Set<TipoCargo> cargos) throws EntidadeNaoEncontradaException {
@@ -116,7 +127,7 @@ public class UsuarioService {
         usuarioRepository.delete(usuarioEntity);
     }
 
-    public UserDTO createUserByAdmin (UserCreateDTO userCreateDTO, Set < TipoCargo > tipoCargo) throws
+    public UserCreateByAdminDTO createUserByAdmin (UserCreateDTO userCreateDTO, Set < TipoCargo > tipoCargo) throws
             RegraDeNegocioException {
         usuarioServiceUtil.validarEmail(userCreateDTO.getEmail());
         usuarioServiceUtil.verificarSeEmailTemCadastro(userCreateDTO.getEmail());
@@ -131,13 +142,13 @@ public class UsuarioService {
 
         usuarioEntity = usuarioRepository.save(usuarioEntity);
         updateUserByAdmin(usuarioEntity.getIdUser(), tipoCargo);
-        return usuarioServiceUtil.retornarUsuarioDTO(usuarioEntity);
+        return usuarioServiceUtil.retornarUsuarioCriadoDTO(usuarioEntity);
 
     }
 
-    public UserWithProfileImageDTO getLoggedUser () throws UsuarioException {
+    public UserWithCargoDTO getLoggedUser () throws UsuarioException {
         UsuarioEntity usuarioEntity = usuarioServiceUtil.retornarUsuarioEntityLogado();
-        UserWithProfileImageDTO userWithProfileImageDTO = objectMapper.convertValue(usuarioEntity, UserWithProfileImageDTO.class);
+        UserWithCargoDTO userWithProfileImageDTO = usuarioServiceUtil.retornarUsuarioDTOComCargo(usuarioEntity);
 
         byte[] byteFoto = usuarioEntity.getPhoto();
         userWithProfileImageDTO.setImagemPerfilB64(usuarioEntity.getPhoto() != null ? Optional.of(Base64.getEncoder().encodeToString(byteFoto)) : null);
