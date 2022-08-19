@@ -3,6 +3,7 @@ package br.com.dbc.vemser.dbcompras.service;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraListDTO;
+import br.com.dbc.vemser.dbcompras.dto.compra.CompraRelatorioDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraUpdateDTO;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemUpdateDTO;
 import br.com.dbc.vemser.dbcompras.entity.CompraEntity;
@@ -23,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -40,7 +40,7 @@ public class CompraService {
     private final ItemServiceUtil itemServiceUtil;
 
 
-    public CompraDTO create(CompraCreateDTO compraCreateDTO) throws UsuarioException {
+    public CompraDTO create(CompraCreateDTO compraCreateDTO) throws UsuarioException, RegraDeNegocioException {
 
         UsuarioEntity usuario = usuarioServiceUtil.retornarUsuarioEntityLogado();
 
@@ -56,11 +56,19 @@ public class CompraService {
         return compraServiceUtil.converterCompraEntityToCompraDTO(compraSalva);
     }
 
-    public List<CompraListDTO> listColaborador() throws UsuarioException {
-        List<CompraEntity> compraEntityList = compraRepository.findAllByUsuarioId(usuarioServiceUtil.getIdLoggedUser());
-        return compraEntityList.stream()
-                .map(compraServiceUtil::converterEntityParaListDTO)
-                .toList();
+    public List<CompraListDTO> listColaborador(Integer idCompra) throws UsuarioException {
+
+        if(idCompra != null){
+            return compraRepository.findById(idCompra)
+                   .stream()
+                   .map(compraServiceUtil::converterEntityParaListDTO)
+                   .toList();
+        }else{
+            List<CompraEntity> compraEntityList = compraRepository.findAllByUsuarioId(usuarioServiceUtil.getIdLoggedUser());
+            return compraEntityList.stream()
+                    .map(compraServiceUtil::converterEntityParaListDTO)
+                    .toList();
+        }
     }
 
     public CompraDTO update(Integer idCompra, CompraUpdateDTO compraDTO) throws UsuarioException, EntidadeNaoEncontradaException, RegraDeNegocioException {
@@ -68,8 +76,8 @@ public class CompraService {
         CompraEntity compra = compraServiceUtil.findByID(idCompra);
 
         List<Integer> idItemRecebidoList = compraDTO.getItens().stream()
-                        .map(ItemUpdateDTO::getIdItem)
-                        .toList();
+                .map(ItemUpdateDTO::getIdItem)
+                .toList();
 
         itemServiceUtil.verificarItensDaCompra(compra, idItemRecebidoList);
 
@@ -87,14 +95,11 @@ public class CompraService {
         return compraServiceUtil.converterCompraEntityToCompraDTO(compraAtualizada);
     }
 
-    public void delete(Integer id) throws UsuarioException, RegraDeNegocioException {
-        compraServiceUtil.verificarCompraDoUserLogado(id);
-        CompraEntity compra = compraRepository.findById(id).get();
-        Set<ItemEntity> itensAntigos = compra.getItens();
-        itensAntigos.forEach(itemRepository::delete);
-        compra.getItens().clear();
-        compraRepository.delete(compra);
+    public void delete(Integer idCompra) throws UsuarioException, RegraDeNegocioException {
+        compraServiceUtil.verificarCompraDoUserLogado(idCompra);
+        compraRepository.deleteCompra(idCompra);
     }
+
 
     public void removerItensDaCompra(Integer idCompra, Integer idItem) throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
         compraServiceUtil.verificarCompraDoUserLogado(idCompra);
@@ -108,4 +113,9 @@ public class CompraService {
         compraRepository.save(compra);
         compraServiceUtil.converterCompraEntityToCompraDTO(compra);
     }
+
+    public List<CompraRelatorioDTO> relatorioCompras (Integer idCompra){
+        return compraRepository.findByCompraId(idCompra);
+    }
+
 }

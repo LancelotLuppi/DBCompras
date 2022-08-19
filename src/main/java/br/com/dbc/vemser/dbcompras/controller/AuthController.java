@@ -1,8 +1,8 @@
 package br.com.dbc.vemser.dbcompras.controller;
 
+import br.com.dbc.vemser.dbcompras.documentation.AuthDocumentation;
 import br.com.dbc.vemser.dbcompras.dto.usuario.UserLoginDTO;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
-import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-public class AuthController {
+public class AuthController implements AuthDocumentation {
 
     private final UsuarioService usuarioService;
 

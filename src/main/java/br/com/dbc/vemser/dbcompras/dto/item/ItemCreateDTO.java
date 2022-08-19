@@ -5,6 +5,9 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+
+import javax.validation.constraints.*;
+
 @Data
 public class ItemCreateDTO {
     @NotBlank
@@ -12,4 +15,6 @@ public class ItemCreateDTO {
     @NotNull
     @Min(1)
     private Integer quantidade;
+    @NotNull
+    private Double preco;
 }

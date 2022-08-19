@@ -5,21 +5,16 @@ import br.com.dbc.vemser.dbcompras.dto.compra.CompraWithValorItensDTO;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoDTO;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoRelatorioDTO;
-import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoValorItensDTO;
-import br.com.dbc.vemser.dbcompras.dto.item.ItemDTO;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemValorizadoDTO;
 import br.com.dbc.vemser.dbcompras.entity.*;
+import br.com.dbc.vemser.dbcompras.entity.CotacaoXItemEntity;
 import br.com.dbc.vemser.dbcompras.entity.pk.CotacaoXItemPK;
 import br.com.dbc.vemser.dbcompras.enums.StatusCotacoes;
 import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
-import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
-import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.repository.CompraRepository;
 import br.com.dbc.vemser.dbcompras.repository.CotacaoRepository;
 import br.com.dbc.vemser.dbcompras.repository.CotacaoXItemRepository;
 import br.com.dbc.vemser.dbcompras.repository.ItemRepository;
-import br.com.dbc.vemser.dbcompras.util.CompraServiceUtil;
-import br.com.dbc.vemser.dbcompras.util.UsuarioServiceUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,8 +23,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -50,7 +43,7 @@ public class CotacaoService {
         CotacaoEntity cotacao = new CotacaoEntity();
 
         cotacao.setNome(cotacaoDTO.getNome());
-        cotacao.setStatus(StatusCotacoes.APROVADO.name());
+        cotacao.setStatus(StatusCotacoes.EM_ABERTO.getSituacaoCompra());
         cotacao.setLocalDate(LocalDateTime.now());
         cotacao.setAnexo(Base64.getDecoder().decode(cotacaoDTO.getAnexo()));
         cotacao.setValor(0.0);

@@ -6,16 +6,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 @Entity(name = "purchase")
-public class CompraEntity {
+public class CompraEntity implements java.io.Serializable{
 
 
     @Id
@@ -56,4 +57,7 @@ public class CompraEntity {
     @JoinColumn(name = "id_purchase",
             referencedColumnName = "id_purchase")
     private Set<CotacaoEntity> cotacoes;
+
+
+
 }

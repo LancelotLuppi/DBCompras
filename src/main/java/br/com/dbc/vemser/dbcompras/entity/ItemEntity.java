@@ -9,17 +9,17 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.Set;
 
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 @Entity(name = "item")
 public class ItemEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_ITEM")
     @SequenceGenerator(name = "SEQ_ITEM", sequenceName = "seq_id_item", allocationSize = 1)
-    @Column(name = "id_item", insertable = false, updatable = false)
+    @Column(name = "id_item")
     private Integer idItem;
 
     @Column(name = "name")
@@ -37,4 +37,8 @@ public class ItemEntity {
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "item")
     private Set<CotacaoXItemEntity> cotacoes;
+
+    @Column(name = "valor")
+    private Double preco;
+
 }

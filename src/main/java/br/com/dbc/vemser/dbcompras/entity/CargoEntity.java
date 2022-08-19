@@ -39,5 +39,12 @@ public class CargoEntity implements GrantedAuthority {
         return name;
     }
 
-
+    @Override
+    public String toString() {
+        return "CargoEntity{" +
+                "idCargo=" + idCargo +
+                ", name='" + name + '\'' +
+                ", usuarios=" + usuarios +
+                '}';
+    }
 }

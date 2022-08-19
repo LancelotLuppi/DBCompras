@@ -6,6 +6,7 @@ import br.com.dbc.vemser.dbcompras.dto.compra.CompraListDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraUpdateDTO;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemDTO;
+import br.com.dbc.vemser.dbcompras.dto.compra.CompraRelatorioDTO;
 import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
@@ -29,7 +30,7 @@ public class ColaboradorController {
     private final ItemService itemService;
 
     @PostMapping("/nova-compra")
-    public ResponseEntity<CompraDTO> create (@RequestBody @Valid  CompraCreateDTO compraCreateDTO) throws UsuarioException {
+    public ResponseEntity<CompraDTO> create (@RequestBody @Valid  CompraCreateDTO compraCreateDTO) throws UsuarioException, RegraDeNegocioException {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(compraService.create(compraCreateDTO));
     }
 
@@ -39,26 +40,36 @@ public class ColaboradorController {
     }
 
     @PutMapping("/item")
-    public ResponseEntity<ItemDTO> updateItem(Integer idItem, @Valid @RequestBody ItemCreateDTO itemAtualizado) throws EntidadeNaoEncontradaException, RegraDeNegocioException, UsuarioException {
+    public ResponseEntity<ItemDTO> updateItem (Integer idItem, @Valid @RequestBody ItemCreateDTO itemAtualizado) throws
+            EntidadeNaoEncontradaException, RegraDeNegocioException, UsuarioException {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(itemService.updateItem(idItem, itemAtualizado));
     }
 
     @GetMapping("/compras")
-    public ResponseEntity<List<CompraListDTO>> listCompras() throws UsuarioException {
-        return ResponseEntity.ok(compraService.listColaborador());
+    public ResponseEntity<List<CompraListDTO>> listCompras (@RequestParam(required = false) Integer idCompra) throws
+            UsuarioException {
+        return ResponseEntity.ok(compraService.listColaborador(idCompra));
     }
 
     @DeleteMapping("/compra/{id}")
-    public ResponseEntity<Void> delete (@PathVariable("id") Integer idCompra) throws UsuarioException, RegraDeNegocioException {
+    public ResponseEntity<Void> delete (@PathVariable("id") Integer idCompra) throws
+            UsuarioException, RegraDeNegocioException {
         compraService.delete(idCompra);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/item/{idCompra}/{idItem}")
     public ResponseEntity<Void> deleteItem (@PathVariable("idCompra") Integer idCompra,
-                                             @PathVariable("idItem") Integer idItem) throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException, RegraDeNegocioException {
+                                            @PathVariable("idItem") Integer idItem) throws
+            EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException, RegraDeNegocioException {
         compraService.removerItensDaCompra(idCompra, idItem);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/compras-id")
+    public ResponseEntity<List<CompraRelatorioDTO>> listarComprasPorId (@RequestParam(required = false) Integer
+                                                                                idCompra){
+        return ResponseEntity.ok(compraService.relatorioCompras(idCompra));
     }
 
 }

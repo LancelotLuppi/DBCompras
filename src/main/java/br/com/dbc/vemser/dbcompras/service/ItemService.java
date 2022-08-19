@@ -8,6 +8,7 @@ import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
 import br.com.dbc.vemser.dbcompras.enums.SituacaoCompra;
 import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
+import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.repository.ItemRepository;
 import br.com.dbc.vemser.dbcompras.util.CompraServiceUtil;
@@ -15,8 +16,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -26,7 +25,6 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final CompraServiceUtil compraServiceUtil;
     private final ObjectMapper objectMapper;
-
 
     public ItemDTO updateItem(Integer idItem, ItemCreateDTO itemAtualizadoDTO) throws EntidadeNaoEncontradaException, RegraDeNegocioException, UsuarioException {
         ItemEntity itemEntity = itemRepository.findById(idItem).orElseThrow(() -> new EntidadeNaoEncontradaException("Item inexistente"));
@@ -42,4 +40,5 @@ public class ItemService {
         itemRepository.save(itemEntity);
         return objectMapper.convertValue(itemEntity, ItemDTO.class);
     }
+
 }
