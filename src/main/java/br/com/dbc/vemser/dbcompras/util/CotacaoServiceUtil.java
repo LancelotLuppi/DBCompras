@@ -2,8 +2,8 @@ package br.com.dbc.vemser.dbcompras.util;
 
 import br.com.dbc.vemser.dbcompras.entity.CompraEntity;
 import br.com.dbc.vemser.dbcompras.entity.CotacaoEntity;
-import br.com.dbc.vemser.dbcompras.enums.SituacaoCompra;
-import br.com.dbc.vemser.dbcompras.enums.StatusCotacoes;
+import br.com.dbc.vemser.dbcompras.enums.StatusCompra;
+import br.com.dbc.vemser.dbcompras.enums.StatusCotacao;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -13,10 +13,10 @@ import org.springframework.stereotype.Component;
 public class CotacaoServiceUtil {
 
     public void verificarStatusDaCompraAndCotacao(CompraEntity compra, CotacaoEntity cotacao) throws RegraDeNegocioException {
-        if(!compra.getStatus().equals(SituacaoCompra.COTADO.getSituacao())) {
+        if(!compra.getStatus().equals(StatusCompra.COTADO)) {
             throw new RegraDeNegocioException("Essa compra não está permitida a ser aprovada!");
         }
-        if (!cotacao.getStatus().equals(StatusCotacoes.EM_ABERTO.getSituacaoCompra())) {
+        if (!cotacao.getStatus().equals(StatusCotacao.EM_ABERTO)) {
             throw new RegraDeNegocioException("Esta cotação já foi aprovada");
         }
         if (compra.getCotacoes().size() < 2) {

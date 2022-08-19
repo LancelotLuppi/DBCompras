@@ -8,8 +8,8 @@ import br.com.dbc.vemser.dbcompras.entity.*;
 import br.com.dbc.vemser.dbcompras.entity.CotacaoXItemEntity;
 import br.com.dbc.vemser.dbcompras.entity.pk.CotacaoXItemPK;
 import br.com.dbc.vemser.dbcompras.enums.EnumAprovacao;
-import br.com.dbc.vemser.dbcompras.enums.SituacaoCompra;
-import br.com.dbc.vemser.dbcompras.enums.StatusCotacoes;
+import br.com.dbc.vemser.dbcompras.enums.StatusCompra;
+import br.com.dbc.vemser.dbcompras.enums.StatusCotacao;
 import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
@@ -46,7 +46,7 @@ public class CotacaoService {
         CotacaoEntity cotacao = new CotacaoEntity();
 
         cotacao.setNome(cotacaoDTO.getNome());
-        cotacao.setStatus(StatusCotacoes.EM_ABERTO.getSituacaoCompra());
+        cotacao.setStatus(StatusCotacao.EM_ABERTO);
         cotacao.setLocalDate(LocalDateTime.now());
         cotacao.setAnexo(Base64.getDecoder().decode(cotacaoDTO.getAnexo()));
         cotacao.setValor(0.0);
@@ -73,13 +73,6 @@ public class CotacaoService {
 
     public List<CotacaoDTO> listarCotacoes(Integer idCotacao) {
         List<CotacaoRelatorioDTO> cotacoes = cotacaoRepository.listCotacoes(idCotacao);
-
-        if (idCotacao == null) {
-            return cotacaoRepository.findAll()
-                    .stream()
-                    .map(this::converterCotacaoToCotacaoDTO)
-                    .toList();
-        }
 
         return cotacoes.stream()
                 .map(relatorio -> {
@@ -114,8 +107,8 @@ public class CotacaoService {
 
         cotacaoServiceUtil.verificarStatusDaCompraAndCotacao(compra, cotacao);
 
-        cotacao.setStatus(enumAprovacao.equals(EnumAprovacao.APROVAR) ? StatusCotacoes.APROVADO.name() : StatusCotacoes.REPROVADO.name());
-        compra.setStatus(SituacaoCompra.APROVADO_GESTOR.getSituacao());
+        cotacao.setStatus(enumAprovacao.equals(EnumAprovacao.APROVAR) ? StatusCotacao.APROVADO : StatusCotacao.REPROVADO);
+        compra.setStatus(StatusCompra.APROVADO_GESTOR);
         compra.setValorTotal(cotacao.getValor());
 
         cotacaoRepository.save(cotacao);
