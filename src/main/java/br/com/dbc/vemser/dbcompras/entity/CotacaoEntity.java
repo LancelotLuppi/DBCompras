@@ -38,7 +38,7 @@ public class CotacaoEntity {
     private String anexo;
 
     @Column(name = "status")
-    private Boolean status;
+    private String status;
 
     @Column(name = "valor")
     private Double valorTotal;

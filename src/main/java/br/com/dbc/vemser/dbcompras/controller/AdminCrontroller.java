@@ -25,8 +25,8 @@ public class AdminCrontroller {
 
     private final UsuarioService usuarioService;
 
-    @PutMapping("/usuario/{id}/cargos")
-    public UserUpdateByAdminDTO updateUserByAdmin (@PathVariable("id") Integer idUser,
+    @PutMapping("/usuario/{idUsuario}/cargos")
+    public UserUpdateByAdminDTO updateUserByAdmin (@PathVariable("idUsuario") Integer idUser,
                                                    @RequestParam(value = "cargos") Set<TipoCargo> tipoCargo) throws RegraDeNegocioException {
         return usuarioService.updateUserByAdmin(idUser,tipoCargo);
     }
@@ -46,6 +46,5 @@ public class AdminCrontroller {
     public void controlarAcessoUsuario (@PathVariable Integer idUsuario, ControlarAcesso controlarAcesso) throws RegraDeNegocioException {
         usuarioService.controlarAcessoUsuario(idUsuario, controlarAcesso);
     }
-
 
 }

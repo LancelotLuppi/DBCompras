@@ -3,6 +3,7 @@ package br.com.dbc.vemser.dbcompras.service;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraListDTO;
+import br.com.dbc.vemser.dbcompras.dto.compra.CompraRelatorioDTO;
 import br.com.dbc.vemser.dbcompras.entity.CompraEntity;
 import br.com.dbc.vemser.dbcompras.entity.ItemEntity;
 import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
@@ -101,5 +102,9 @@ public class CompraService {
         compra.setItens(itemEntities);
         compraRepository.save(compra);
         compraServiceUtil.converterCompraEntityToCompraDTO(compra);
+    }
+
+    public List<CompraRelatorioDTO> relatorioCompras (Integer idCompra){
+        return compraRepository.findByCompraId(idCompra);
     }
 }

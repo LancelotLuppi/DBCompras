@@ -2,6 +2,7 @@ package br.com.dbc.vemser.dbcompras.controller;
 
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoDTO;
+import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoFinanceiroDTO;
 import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
@@ -30,7 +31,7 @@ public class CotacaoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CotacaoDTO>> list() throws UsuarioException {
+    public ResponseEntity<List<CotacaoFinanceiroDTO>> list() throws UsuarioException {
         return ResponseEntity.ok(cotacaoService.list());
     }
 

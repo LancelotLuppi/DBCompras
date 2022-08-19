@@ -3,6 +3,7 @@ package br.com.dbc.vemser.dbcompras.controller;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraListDTO;
+import br.com.dbc.vemser.dbcompras.dto.compra.CompraRelatorioDTO;
 import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
@@ -49,6 +50,11 @@ public class ColaboradorController {
                                              @PathVariable("idItem") Integer idItem) throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException, RegraDeNegocioException {
         compraService.removerItensDaCompra(idCompra, idItem);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/compras-id")
+    public ResponseEntity<List<CompraRelatorioDTO>> listarComprasPorId (@RequestParam(required = false) Integer idCompra){
+        return ResponseEntity.ok(compraService.relatorioCompras(idCompra));
     }
 
 }

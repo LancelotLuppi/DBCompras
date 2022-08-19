@@ -16,7 +16,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity(name = "purchase")
-public class CompraEntity {
+public class CompraEntity implements java.io.Serializable{
 
 
     @Id
@@ -57,5 +57,7 @@ public class CompraEntity {
     @JoinColumn(name = "id_purchase",
             referencedColumnName = "id_purchase")
     private Set<CotacaoEntity> cotacoes;
+
+
 
 }

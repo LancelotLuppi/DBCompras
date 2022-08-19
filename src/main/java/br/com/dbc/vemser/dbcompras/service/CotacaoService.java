@@ -2,6 +2,7 @@ package br.com.dbc.vemser.dbcompras.service;
 
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoDTO;
+import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoFinanceiroDTO;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemDTO;
 import br.com.dbc.vemser.dbcompras.entity.*;
@@ -55,12 +56,20 @@ public class CotacaoService {
         return cotacaoDTO;
     }
 
+    private CotacaoFinanceiroDTO converterCotacaoEntityToCotacaoFinanceiroDTO(CotacaoEntity cotacao) {
+        CotacaoFinanceiroDTO cotacaoDTO = objectMapper.convertValue(cotacao, CotacaoFinanceiroDTO.class);
+        cotacaoDTO.setItens(cotacao.getItens()
+                .stream()
+                .map(itemEntity -> objectMapper.convertValue(itemEntity, ItemDTO.class)).collect(Collectors.toSet()));
+        return cotacaoDTO;
+    }
+
     public CotacaoDTO create (CotacaoCreateDTO cotacaoDTO, Integer idCompra) throws UsuarioException, RegraDeNegocioException {
 
         UsuarioEntity usuario = usuarioServiceUtil.retornarUsuarioEntityLogado();
         compraServiceUtil.verificarCompraDoUserLogado(idCompra);
         CotacaoEntity cotacao = converterCotacaoCreateDTOToCotacaoEntity(cotacaoDTO);
-        cotacao.setStatus(false);
+        cotacao.setStatus(StatusCotacoes.EM_ABERTO.getSituacaoCompra());
         cotacao.setUsuario(usuario);
         cotacao.setLocalDate(LocalDateTime.now());
         Set<ItemEntity> itens = cotacaoDTO.getItens().stream()
@@ -95,13 +104,13 @@ public class CotacaoService {
         return cotacaoItem;
     }
 
-    public List<CotacaoDTO> list() throws UsuarioException {
+    public List<CotacaoFinanceiroDTO> list() throws UsuarioException {
 
         UsuarioEntity usuario = usuarioServiceUtil.retornarUsuarioEntityLogado();
 
         return cotacaoRepository.findByUsuario(usuario.getIdUser())
                 .stream()
-                .map(this::converterCotacaoEntityToCotacaoDTO)
+                .map(this::converterCotacaoEntityToCotacaoFinanceiroDTO)
                 .toList();
 
     }
@@ -216,7 +225,7 @@ public class CotacaoService {
 
     }
 
-    public CotacaoDTO cotacaoAprovada(Integer idCotacao, StatusCotacoes status) throws EntidadeNaoEncontradaException, UsuarioException {
+    public CotacaoDTO cotacaoAprovada(Integer idCotacao, StatusCotacoes status) throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
 
         CotacaoEntity cotacao = findById(idCotacao);
         cotacao.setStatus(status.getSituacaoCompra());

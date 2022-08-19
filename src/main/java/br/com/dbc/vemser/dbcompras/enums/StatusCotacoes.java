@@ -2,16 +2,17 @@ package br.com.dbc.vemser.dbcompras.enums;
 
 public enum StatusCotacoes {
 
-    APROVADO(true),
-    REPROVADO(false);
+    APROVADO("APROVADO"),
+    REPROVADO("REPROVADO"),
+    EM_ABERTO("EM_ABERTO");
 
-    private Boolean situacaoCompra;
+    private String situacaoCompra;
 
-    public Boolean getSituacaoCompra() {
+    public String getSituacaoCompra() {
         return situacaoCompra;
     }
 
-    StatusCotacoes(Boolean situacaoCompra) {
+    StatusCotacoes(String situacaoCompra) {
         this.situacaoCompra = situacaoCompra;
     }
 }
