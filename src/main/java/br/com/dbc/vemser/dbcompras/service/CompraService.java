@@ -76,6 +76,10 @@ public class CompraService {
         compraServiceUtil.verificarCompraDoUserLogado(idCompra);
         CompraEntity compra = compraServiceUtil.findByID(idCompra);
 
+        if(!compra.getStatus().equalsIgnoreCase(SituacaoCompra.ABERTO.getSituacao())) {
+            throw new RegraDeNegocioException("Apenas itens em ABERTO podem ser atualizados!");
+        }
+
         List<Integer> idsAntigosItens = compra.getItens().stream()
                 .map(ItemEntity::getIdItem).toList();
 
