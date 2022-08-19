@@ -103,6 +103,8 @@ public class CompraService {
     public void removerItensDaCompra(Integer idCompra, Integer idItem) throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
         compraServiceUtil.verificarCompraDoUserLogado(idCompra);
         CompraEntity compra = compraServiceUtil.findByID(idCompra);
+        itemServiceUtil.verificarItensDaCompra(compra, List.of(idCompra));
+
 
         Set<ItemEntity> itemEntities = compra.getItens();
 

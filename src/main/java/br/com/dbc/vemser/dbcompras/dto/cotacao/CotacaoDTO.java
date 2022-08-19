@@ -16,6 +16,6 @@ public class CotacaoDTO extends CotacaoCreateDTO{
     private LocalDateTime localDate;
     private String anexo;
     private String status;
-    private Double Valor;
+    private Double valor;
     private CompraWithValorItensDTO compraDTO;
 }

@@ -75,9 +75,6 @@ public class CotacaoService {
                 .map(relatorio -> {
                     CotacaoDTO cotacao = objectMapper.convertValue(relatorio, CotacaoDTO.class);
                     cotacao.setAnexo(Base64.getEncoder().encodeToString(relatorio.getAnexo()));
-                    return cotacao;
-                })
-                .peek(cotacao -> {
                     CompraListCotacaoDTO compraRelatorioDTO = compraRepository.listCompraByIdCotacao(cotacao.getIdCotacao());
                     CompraWithValorItensDTO compraDTO = new CompraWithValorItensDTO();
                     compraDTO.setIdCompra(compraRelatorioDTO.getIdCompra());
@@ -90,6 +87,7 @@ public class CotacaoService {
 
                     compraDTO.setItens(itensComValorDTO);
                     cotacao.setCompraDTO(compraDTO);
+                    return cotacao;
                 })
                 .toList();
     }
