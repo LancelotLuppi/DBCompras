@@ -14,7 +14,7 @@ import java.util.List;
 public class ItemServiceUtil {
     private final UsuarioServiceUtil usuarioServiceUtil;
 
-    public void verificarItensDaCompra(CompraEntity compra, List<Integer> idItensRecebido) throws UsuarioException, RegraDeNegocioException {
+    public void verificarItensDaCompra(CompraEntity compra, List<Integer> idItensRecebido) throws RegraDeNegocioException {
         List<Integer> idItensDaCompra = compra.getItens().stream()
                 .map(ItemEntity::getIdItem)
                 .toList();

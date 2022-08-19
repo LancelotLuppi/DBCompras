@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -58,17 +59,41 @@ public class CompraService {
 
     public List<CompraListDTO> listColaborador(Integer idCompra) throws UsuarioException {
 
-        if(idCompra != null){
+        if (idCompra != null) {
             return compraRepository.findById(idCompra)
-                   .stream()
-                   .map(compraServiceUtil::converterEntityParaListDTO)
-                   .toList();
-        }else{
+                    .stream()
+                    .map(compraServiceUtil::converterEntityParaListDTO)
+                    .toList();
+        } else {
             List<CompraEntity> compraEntityList = compraRepository.findAllByUsuarioId(usuarioServiceUtil.getIdLoggedUser());
             return compraEntityList.stream()
                     .map(compraServiceUtil::converterEntityParaListDTO)
                     .toList();
         }
+    }
+
+    public CompraDTO updateTeste(Integer idCompra, CompraCreateDTO compraUpdate) throws UsuarioException, RegraDeNegocioException, EntidadeNaoEncontradaException {
+        compraServiceUtil.verificarCompraDoUserLogado(idCompra);
+        CompraEntity compra = compraServiceUtil.findByID(idCompra);
+
+        List<Integer> idsAntigosItens = compra.getItens().stream()
+                .map(ItemEntity::getIdItem).toList();
+
+        Set<ItemEntity> novosItens = compraUpdate.getItens().stream()
+                .map(itemUpdated -> {
+                    ItemEntity novoItem = objectMapper.convertValue(itemUpdated, ItemEntity.class);
+                    novoItem.setCompra(compra);
+                    return itemRepository.save(novoItem);
+                })
+                .collect(Collectors.toSet());
+        compra.setItens(novosItens);
+        compra.setName(compraUpdate.getName());
+        compra.setDescricao(compraUpdate.getDescricao());
+        CompraEntity compraAtualizada = compraRepository.save(compra);
+
+        itemRepository.deleteAllById(idsAntigosItens);
+
+        return compraServiceUtil.converterCompraEntityToCompraDTO(compraAtualizada);
     }
 
     public CompraDTO update(Integer idCompra, CompraUpdateDTO compraDTO) throws UsuarioException, EntidadeNaoEncontradaException, RegraDeNegocioException {
@@ -104,7 +129,7 @@ public class CompraService {
     public void removerItensDaCompra(Integer idCompra, Integer idItem) throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
         compraServiceUtil.verificarCompraDoUserLogado(idCompra);
         CompraEntity compra = compraServiceUtil.findByID(idCompra);
-        itemServiceUtil.verificarItensDaCompra(compra, List.of(idCompra));
+        itemServiceUtil.verificarItensDaCompra(compra, List.of(idItem));
 
 
         Set<ItemEntity> itemEntities = compra.getItens();
@@ -116,7 +141,7 @@ public class CompraService {
         compraServiceUtil.converterCompraEntityToCompraDTO(compra);
     }
 
-    public List<CompraRelatorioDTO> relatorioCompras (Integer idCompra){
+    public List<CompraRelatorioDTO> relatorioCompras(Integer idCompra) {
         return compraRepository.findByCompraId(idCompra);
     }
 

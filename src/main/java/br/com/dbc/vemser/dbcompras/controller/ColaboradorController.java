@@ -39,6 +39,11 @@ public class ColaboradorController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(compraService.update(id, compraUpdateDTO));
     }
 
+    @PutMapping("compra/teste/{idCompra}")
+    public ResponseEntity<CompraDTO> updateTest(@PathVariable Integer idCompra, @Valid @RequestBody CompraCreateDTO compraDTO) throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
+        return ResponseEntity.ok(compraService.updateTeste(idCompra, compraDTO));
+    }
+
     @PutMapping("/item")
     public ResponseEntity<ItemDTO> updateItem (Integer idItem, @Valid @RequestBody ItemCreateDTO itemAtualizado) throws
             EntidadeNaoEncontradaException, RegraDeNegocioException, UsuarioException {
