@@ -3,6 +3,7 @@ package br.com.dbc.vemser.dbcompras.controller;
 import br.com.dbc.vemser.dbcompras.dto.usuario.UserCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.usuario.UserDTO;
 import br.com.dbc.vemser.dbcompras.dto.usuario.UserUpdateByAdminDTO;
+import br.com.dbc.vemser.dbcompras.dto.usuario.UserWithCargoDTO;
 import br.com.dbc.vemser.dbcompras.enums.ControlarAcesso;
 import br.com.dbc.vemser.dbcompras.enums.TipoCargo;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
@@ -38,7 +39,7 @@ public class AdminCrontroller {
     }
 
     @GetMapping("/list")
-    public List<UserDTO> list () {
+    public List<UserWithCargoDTO> list () {
         return usuarioService.list();
     }
 

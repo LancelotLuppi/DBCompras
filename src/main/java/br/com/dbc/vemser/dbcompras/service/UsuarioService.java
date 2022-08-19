@@ -153,10 +153,10 @@ public class UsuarioService {
         }
     }
 
-    public List<UserDTO> list () {
+    public List<UserWithCargoDTO> list () {
         return usuarioRepository.findAll()
                 .stream()
-                .map(usuarioServiceUtil::retornarUsuarioDTO)
+                .map(usuarioServiceUtil::retornarUsuarioDTOComCargo)
                 .collect(Collectors.toList());
     }
 

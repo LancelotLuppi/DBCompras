@@ -6,9 +6,8 @@ import lombok.Data;
 
 import java.util.Set;
 
-
 @Data
-public class UserDTO {
+public class UserWithCargoDTO {
 
     @Schema(description = "Identificador único do usuário")
     private Integer idUser;
@@ -19,4 +18,6 @@ public class UserDTO {
     @Schema(description = "Email de login do usuário", example = "meuteste@teste.com")
     private String email;
 
+    @Schema(description = "Cargos do usuário", example = "COLABORADOR")
+    private Set<CargoEntity> cargos;
 }

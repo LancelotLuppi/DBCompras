@@ -3,6 +3,7 @@ package br.com.dbc.vemser.dbcompras.controller;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoDTO;
 import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
+import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.service.CotacaoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class CompradorController {
     private final CotacaoService cotacaoService;
 
     @PostMapping("/cotar")
-    public ResponseEntity<Void> create(Integer idCompra, @Valid @RequestBody CotacaoCreateDTO cotacaoCreateDTO) throws EntidadeNaoEncontradaException {
+    public ResponseEntity<Void> create(Integer idCompra, @Valid @RequestBody CotacaoCreateDTO cotacaoCreateDTO) throws EntidadeNaoEncontradaException, UsuarioException {
         cotacaoService.create(idCompra, cotacaoCreateDTO);
         return ResponseEntity.noContent().build();
     }
