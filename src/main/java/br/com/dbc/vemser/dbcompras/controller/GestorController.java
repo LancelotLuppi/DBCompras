@@ -22,7 +22,7 @@ public class GestorController {
 
 
 
-    @PutMapping("/aprovarReprovar/{idCotacao}/status")
+    @PostMapping("/aprovarReprovar/{idCotacao}/status")
     public CotacaoDTO aprovarOuReprovarCotacao(@PathVariable("idCotacao") Integer idCotacao,
                                                 @RequestParam(value = "status") EnumAprovacao aprovacao) throws EntidadeNaoEncontradaException, RegraDeNegocioException {
          return cotacaoService.aprovarOuReprovarCotacao(idCotacao, aprovacao);

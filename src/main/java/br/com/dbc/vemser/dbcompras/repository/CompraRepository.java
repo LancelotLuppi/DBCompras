@@ -20,7 +20,7 @@ public interface CompraRepository extends JpaRepository<CompraEntity, Integer> {
             "from purchase p " +
             "where p.idCompra = :idCompra")
     @Transactional
-    Integer deleteCompra(Integer idCompra);
+    void deleteCompra(Integer idCompra);
 
     @Query("select p " +
             "from purchase p " +

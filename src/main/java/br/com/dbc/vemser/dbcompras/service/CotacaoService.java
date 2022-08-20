@@ -1,5 +1,6 @@
 package br.com.dbc.vemser.dbcompras.service;
 
+import br.com.dbc.vemser.dbcompras.dto.compra.CompraDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraListCotacaoDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraWithValorItensDTO;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.*;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
@@ -43,6 +45,8 @@ public class CotacaoService {
 
     public void create(Integer idCompra, CotacaoCreateDTO cotacaoDTO) throws EntidadeNaoEncontradaException, UsuarioException {
         CompraEntity compraCotada = compraRepository.findById(idCompra).orElseThrow(() -> new EntidadeNaoEncontradaException("Compra inexistente"));
+        compraCotada.setStatus(StatusCompra.EM_COTACAO);
+
         CotacaoEntity cotacao = new CotacaoEntity();
 
         cotacao.setNome(cotacaoDTO.getNome());
@@ -76,6 +80,8 @@ public class CotacaoService {
 
         return cotacoes.stream()
                 .map(relatorio -> {
+                    CotacaoEntity cotacaoEntity = cotacaoRepository.findById(relatorio.getIdCotacao()).get();
+                    Set<ItemEntity> itemEntityList = cotacaoEntity.getCompra().getItens();
                     CotacaoDTO cotacao = objectMapper.convertValue(relatorio, CotacaoDTO.class);
                     cotacao.setAnexo(Base64.getEncoder().encodeToString(relatorio.getAnexo()));
                     CompraListCotacaoDTO compraRelatorioDTO = compraRepository.listCompraByIdCotacao(cotacao.getIdCotacao());
@@ -86,7 +92,26 @@ public class CotacaoService {
                     compraDTO.setValor(compraRelatorioDTO.getValorTotal());
                     compraDTO.setDescricao(compraRelatorioDTO.getDescricao());
                     compraDTO.setName(compraRelatorioDTO.getName());
-                    List<ItemValorizadoDTO> itensComValorDTO = itemRepository.listItensComValorByIdCompra(compraDTO.getIdCompra());
+
+                    List<ItemValorizadoDTO> itensComValorDTO = itemEntityList.stream()
+                            .map(item -> {
+                                ItemValorizadoDTO itemComValor = new ItemValorizadoDTO();
+
+                                CotacaoXItemPK cotacaoXItemPK = new CotacaoXItemPK();
+                                cotacaoXItemPK.setIdCotacao(relatorio.getIdCotacao());
+                                cotacaoXItemPK.setIdItem(item.getIdItem());
+
+                                CotacaoXItemEntity cotacaoXItem = cotacaoXItemRepository.findById(cotacaoXItemPK).get();
+
+                                itemComValor.setIdItem(item.getIdItem());
+                                itemComValor.setNome(item.getNome());
+                                itemComValor.setValorUnitario(cotacaoXItem.getValorDoItem());
+                                itemComValor.setQuantidade(item.getQuantidade());
+                                itemComValor.setValorTotal(cotacaoXItem.getValorTotal());
+                                return itemComValor;
+                            })
+                            .toList();
+
 
                     compraDTO.setItens(itensComValorDTO);
                     cotacao.setCompraDTO(compraDTO);
@@ -95,14 +120,10 @@ public class CotacaoService {
                 .toList();
     }
 
-    public CotacaoEntity findById(Integer idCotacao) throws EntidadeNaoEncontradaException {
-        return cotacaoRepository.findById(idCotacao)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Essa cotação não existe"));
-    }
 
     public CotacaoDTO aprovarOuReprovarCotacao(Integer idCotacao, EnumAprovacao enumAprovacao) throws EntidadeNaoEncontradaException, RegraDeNegocioException {
 
-        CotacaoEntity cotacao = findById(idCotacao);
+        CotacaoEntity cotacao = cotacaoServiceUtil.findById(idCotacao);
         CompraEntity compra = compraServiceUtil.findByIDCompra(cotacao.getCompra().getIdCompra());
 
         cotacaoServiceUtil.verificarStatusDaCompraAndCotacao(compra, cotacao);
@@ -113,18 +134,15 @@ public class CotacaoService {
 
         cotacaoRepository.save(cotacao);
         compraRepository.save(compra);
-        return converterCotacaoToCotacaoDTO(cotacao);
-
+        return cotacaoServiceUtil.converterCotacaoToCotacaoDTO(cotacao);
     }
 
-    private CotacaoDTO converterCotacaoToCotacaoDTO(CotacaoEntity cotacao) {
-        CompraWithValorItensDTO compra = objectMapper.convertValue(cotacao.getCompra(), CompraWithValorItensDTO.class);
-        List<CotacaoValorItensDTO> itemDTOList = cotacao.getItens().stream()
-                .map(item -> objectMapper.convertValue(item, CotacaoValorItensDTO.class))
-                .toList();
-        CotacaoDTO cotacaoDTO = objectMapper.convertValue(cotacao, CotacaoDTO.class);
-        cotacaoDTO.setCompraDTO(compra);
-        cotacaoDTO.setListaDeValores(itemDTOList);
-        return cotacaoDTO;
+    public CompraDTO finalizarCotacao(Integer idCompra) throws EntidadeNaoEncontradaException, RegraDeNegocioException {
+        CompraEntity compra = compraRepository.findById(idCompra).orElseThrow(() -> new EntidadeNaoEncontradaException("Compra inexistente"));
+        if (compra.getCotacoes().size() < 2) {
+            throw new RegraDeNegocioException("A compra deve ter ao menos duas cotações registradas para ser finalizada");
+        }
+        compra.setStatus(StatusCompra.COTADO);
+        return compraServiceUtil.converterCompraEntityToCompraDTO(compraRepository.save(compra));
     }
 }
