@@ -1,5 +1,6 @@
 package br.com.dbc.vemser.dbcompras.entity;
 
+import br.com.dbc.vemser.dbcompras.enums.StatusCompra;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,8 +35,9 @@ public class CompraEntity implements java.io.Serializable{
     @Column(name = "data")
     private LocalDateTime dataCompra;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private String status;
+    private StatusCompra status;
 
     @Column(name = "total_value")
     private Double valorTotal;

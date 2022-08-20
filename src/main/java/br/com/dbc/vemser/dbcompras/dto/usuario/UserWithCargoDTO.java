@@ -5,6 +5,7 @@ import br.com.dbc.vemser.dbcompras.entity.CargoEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -21,7 +22,7 @@ public class UserWithCargoDTO {
     private String email;
 
     @Schema(description = "Cargos do usuário", example = "COLABORADOR")
-    private CargoDTO cargos;
+    private List<CargoDTO> cargos;
 
     private Optional<String> imagemPerfilB64;
 

@@ -1,17 +1,12 @@
 package br.com.dbc.vemser.dbcompras.enums;
 
 public enum StatusCompra {
-
-    APROVADO("APROVADO"),
-    REPROVADO("REPROVADO");
-
-    private String statusCompra;
-
-    public String getSituacaoCompra() {
-        return statusCompra;
-    }
-
-    StatusCompra(String statusCompra) {
-        this.statusCompra = statusCompra;
-    }
+    ABERTO,
+    EM_COTACAO,
+    COTADO,
+    APROVADO_GESTOR,
+    REPROVADO_GESTOR,
+    APROVADO_FINANCEIRO,
+    REPROVADO_FINANCEIRO,
+    FECHADO
 }

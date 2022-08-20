@@ -5,7 +5,7 @@ import br.com.dbc.vemser.dbcompras.dto.item.ItemUpdateDTO;
 import br.com.dbc.vemser.dbcompras.entity.CompraEntity;
 import br.com.dbc.vemser.dbcompras.entity.ItemEntity;
 import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
-import br.com.dbc.vemser.dbcompras.enums.SituacaoCompra;
+import br.com.dbc.vemser.dbcompras.enums.EnumAprovacao;
 import br.com.dbc.vemser.dbcompras.enums.StatusCompra;
 import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
@@ -48,7 +48,7 @@ public class CompraService {
 
         CompraEntity compra = objectMapper.convertValue(compraCreateDTO, CompraEntity.class);
         compra.setDataCompra(LocalDateTime.now());
-        compra.setStatus(SituacaoCompra.ABERTO.getSituacao());
+        compra.setStatus(StatusCompra.ABERTO);
         compra.setUsuario(usuario);
         CompraEntity compraSalva = compraRepository.save(compra);
 
@@ -77,7 +77,7 @@ public class CompraService {
         compraServiceUtil.verificarCompraDoUserLogado(idCompra);
         CompraEntity compra = compraServiceUtil.findByID(idCompra);
 
-        if(!compra.getStatus().equalsIgnoreCase(SituacaoCompra.ABERTO.getSituacao())) {
+        if(!compra.getStatus().equals(StatusCompra.ABERTO)) {
             throw new RegraDeNegocioException("Apenas itens em ABERTO podem ser atualizados!");
         }
 
@@ -150,15 +150,15 @@ public class CompraService {
         return compraRepository.findByCompraId(idCompra);
     }
 
-    public CompraWithValorItensDTO aprovarReprovarCompra(Integer idCompra, StatusCompra statusCompra) throws EntidadeNaoEncontradaException, UsuarioException {
+    public CompraWithValorItensDTO aprovarReprovarCompra(Integer idCompra, EnumAprovacao aprovacao) throws EntidadeNaoEncontradaException, UsuarioException {
 
         CompraEntity compra = compraRepository.findById(idCompra)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Está compra não existe"));
 
-        if(statusCompra == StatusCompra.APROVADO){
-            compra.setStatus(SituacaoCompra.APROVADO_FINANCEIRO.getSituacao());
+        if(aprovacao == EnumAprovacao.APROVAR){
+            compra.setStatus(StatusCompra.APROVADO_FINANCEIRO);
         }else{
-            compra.setStatus(SituacaoCompra.REPROVADO_FINANCEIRO.getSituacao());
+            compra.setStatus(StatusCompra.REPROVADO_FINANCEIRO);
         }
 
         compraRepository.save(compra);
@@ -166,6 +166,14 @@ public class CompraService {
 
     }
 
+    public CompraDTO finalizarCotacao(Integer idCompra) throws EntidadeNaoEncontradaException, RegraDeNegocioException {
+        CompraEntity compra = compraRepository.findById(idCompra).orElseThrow(() -> new EntidadeNaoEncontradaException("Compra inexistente"));
+        if (compra.getCotacoes().size() < 2) {
+            throw new RegraDeNegocioException("A compra deve ter ao menos duas cotações registradas para ser finalizada");
+        }
+        compra.setStatus(StatusCompra.COTADO);
+        return compraServiceUtil.converterCompraEntityToCompraDTO(compraRepository.save(compra));
+    }
     public List<CompraWithValorItensDTO> list(Integer idCompra) {
 
         if(idCompra == null){

@@ -1,5 +1,6 @@
 package br.com.dbc.vemser.dbcompras.entity;
 
+import br.com.dbc.vemser.dbcompras.enums.StatusCotacao;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,8 +33,9 @@ public class CotacaoEntity {
     @Column(name = "file")
     private byte[] anexo;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private String status;
+    private StatusCotacao status;
 
     @Column(name = "valor")
     private Double valor;

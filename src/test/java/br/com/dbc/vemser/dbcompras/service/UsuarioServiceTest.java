@@ -4,14 +4,13 @@ import br.com.dbc.vemser.dbcompras.dto.usuario.*;
 import br.com.dbc.vemser.dbcompras.entity.*;
 import br.com.dbc.vemser.dbcompras.entity.pk.CotacaoXItemPK;
 import br.com.dbc.vemser.dbcompras.enums.ControlarAcesso;
-import br.com.dbc.vemser.dbcompras.enums.SituacaoCompra;
-import br.com.dbc.vemser.dbcompras.enums.StatusCotacoes;
+import br.com.dbc.vemser.dbcompras.enums.StatusCompra;
+import br.com.dbc.vemser.dbcompras.enums.StatusCotacao;
 import br.com.dbc.vemser.dbcompras.enums.TipoCargo;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.repository.CargoRepository;
 import br.com.dbc.vemser.dbcompras.repository.UsuarioRepository;
-import br.com.dbc.vemser.dbcompras.security.TokenService;
 import br.com.dbc.vemser.dbcompras.util.UsuarioServiceUtil;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -185,7 +184,7 @@ public class UsuarioServiceTest {
     }
 
     @Test
-    public void deveTestarCriarUsuarioByAdminComSucesso() throws UsuarioException, RegraDeNegocioException {
+    public void deveTestarCriarUsuarioByAdminComSucesso() throws RegraDeNegocioException {
 
         // setup
         UsuarioEntity usuario = getUsuarioEntity();
@@ -205,7 +204,7 @@ public class UsuarioServiceTest {
         when(usuarioServiceUtil.findById(anyInt())).thenReturn(usuario);
         when(usuarioServiceUtil.retornarUsuarioCriadoDTO(any(UsuarioEntity.class))).thenReturn(user);
 
-        UserCreateByAdminDTO usuarioDTO = usuarioService.createUserByAdmin(userCreateDTO, tipoCargos);
+        UserWithCargoDTO usuarioDTO = usuarioService.createUserByAdmin(userCreateDTO, tipoCargos);
         // assert
         assertNotNull(usuarioDTO);
         assertEquals(usuarioDTO.getNome(), usuario.getNome());
@@ -395,7 +394,7 @@ public class UsuarioServiceTest {
         compra.setIdCompra(10);
         compra.setDataCompra(LocalDateTime.of(1991, 9, 8,10,20));
         compra.setUsuario(getUsuarioEntity());
-        compra.setStatus(SituacaoCompra.ABERTO.getSituacao());
+        compra.setStatus(StatusCompra.ABERTO);
         compra.setName("compra");
         compra.setDescricao("compra");
         compra.setValorTotal(10.0);
@@ -421,7 +420,7 @@ public class UsuarioServiceTest {
         cotacao.setItens(Set.of(getCotacaoXItem()));
         cotacao.setCompra(getCompraEntity());
         cotacao.setLocalDate(LocalDateTime.now());
-        cotacao.setStatus(StatusCotacoes.EM_ABERTO.getSituacaoCompra());
+        cotacao.setStatus(StatusCotacao.EM_ABERTO);
         cotacao.setValor(10.0);
         cotacao.setAnexo(getUsuarioEntity().getPhoto());
         return cotacao;

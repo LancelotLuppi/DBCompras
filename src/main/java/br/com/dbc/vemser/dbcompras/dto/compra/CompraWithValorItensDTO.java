@@ -1,6 +1,7 @@
 package br.com.dbc.vemser.dbcompras.dto.compra;
 
 import br.com.dbc.vemser.dbcompras.dto.item.ItemValorizadoDTO;
+import br.com.dbc.vemser.dbcompras.enums.StatusCompra;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,7 @@ public class CompraWithValorItensDTO {
     private String name;
     private String descricao;
     private LocalDateTime dataCompra;
-    private String status;
+    private StatusCompra status;
     private Double valor;
     private List<ItemValorizadoDTO> itens;
 }

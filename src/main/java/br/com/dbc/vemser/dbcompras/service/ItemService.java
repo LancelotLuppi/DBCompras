@@ -4,11 +4,9 @@ import br.com.dbc.vemser.dbcompras.dto.item.ItemCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemDTO;
 import br.com.dbc.vemser.dbcompras.entity.CompraEntity;
 import br.com.dbc.vemser.dbcompras.entity.ItemEntity;
-import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
-import br.com.dbc.vemser.dbcompras.enums.SituacaoCompra;
+import br.com.dbc.vemser.dbcompras.enums.StatusCompra;
 import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
-import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.repository.ItemRepository;
 import br.com.dbc.vemser.dbcompras.util.CompraServiceUtil;
@@ -31,7 +29,7 @@ public class ItemService {
         CompraEntity compra = itemEntity.getCompra();
         compraServiceUtil.verificarCompraDoUserLogado(compra.getIdCompra());
 
-        if(!compra.getStatus().equals(SituacaoCompra.ABERTO.getSituacao())){
+        if(!compra.getStatus().equals(StatusCompra.ABERTO)){
             throw new RegraDeNegocioException("Itens de compras sem estar em aberto não podem ser atualizados!");
         }
 

@@ -19,8 +19,8 @@ import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Slf4j
 @Component
@@ -104,7 +104,7 @@ public class UsuarioServiceUtil {
                 .orElseThrow();
         CargoDTO cargoDTOS = objectMapper.convertValue(cargo, CargoDTO.class);
         UserWithCargoDTO user = objectMapper.convertValue(usuario, UserWithCargoDTO.class);
-        user.setCargos(cargoDTOS);
+        user.setCargos(List.of(cargoDTOS));
         return user;
     }
 
