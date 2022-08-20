@@ -166,6 +166,14 @@ public class CompraService {
 
     }
 
+    public CompraDTO finalizarCotacao(Integer idCompra) throws EntidadeNaoEncontradaException, RegraDeNegocioException {
+        CompraEntity compra = compraRepository.findById(idCompra).orElseThrow(() -> new EntidadeNaoEncontradaException("Compra inexistente"));
+        if (compra.getCotacoes().size() < 2) {
+            throw new RegraDeNegocioException("A compra deve ter ao menos duas cotações registradas para ser finalizada");
+        }
+        compra.setStatus(StatusCompra.COTADO);
+        return compraServiceUtil.converterCompraEntityToCompraDTO(compraRepository.save(compra));
+    }
     public List<CompraWithValorItensDTO> list(Integer idCompra) {
 
         if(idCompra == null){

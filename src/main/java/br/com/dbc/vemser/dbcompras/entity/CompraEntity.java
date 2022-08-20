@@ -35,6 +35,7 @@ public class CompraEntity implements java.io.Serializable{
     @Column(name = "data")
     private LocalDateTime dataCompra;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private StatusCompra status;
 

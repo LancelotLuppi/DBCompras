@@ -6,6 +6,7 @@ import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoDTO;
 import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
+import br.com.dbc.vemser.dbcompras.service.CompraService;
 import br.com.dbc.vemser.dbcompras.service.CotacaoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ import java.util.List;
 public class CompradorController {
 
     private final CotacaoService cotacaoService;
+    private final CompraService compraService;
 
     @PostMapping("/cotar")
     public ResponseEntity<Void> create(Integer idCompra, @Valid @RequestBody CotacaoCreateDTO cotacaoCreateDTO) throws EntidadeNaoEncontradaException, UsuarioException {
@@ -36,6 +38,6 @@ public class CompradorController {
 
     @PutMapping("/concluir-cotacao")
     public ResponseEntity<CompraDTO> finalizarCotacao(Integer idCompra) throws EntidadeNaoEncontradaException, RegraDeNegocioException {
-        return ResponseEntity.ok(cotacaoService.finalizarCotacao(idCompra));
+        return ResponseEntity.ok(compraService.finalizarCotacao(idCompra));
     }
 }
