@@ -7,7 +7,6 @@ import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
 import br.com.dbc.vemser.dbcompras.enums.ControlarAcesso;
 import br.com.dbc.vemser.dbcompras.enums.StatusUsuario;
 import br.com.dbc.vemser.dbcompras.enums.TipoCargo;
-import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.repository.CargoRepository;
@@ -16,7 +15,6 @@ import br.com.dbc.vemser.dbcompras.util.UsuarioServiceUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Service;
 
