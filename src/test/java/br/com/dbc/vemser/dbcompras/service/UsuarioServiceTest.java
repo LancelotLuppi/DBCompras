@@ -431,7 +431,6 @@ public class UsuarioServiceTest {
         item.setCompra(getCompraEntity());
         item.setNome("item");
         item.setCotacoes(Set.of(getCotacaoXItem()));
-        item.setPreco(10.0);
         return item;
     }
 
