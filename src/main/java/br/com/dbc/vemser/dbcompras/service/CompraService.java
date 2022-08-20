@@ -40,7 +40,7 @@ public class CompraService {
 
     public CompraDTO create(CompraCreateDTO compraCreateDTO) throws UsuarioException, RegraDeNegocioException {
 
-        if(compraCreateDTO.getItens().isEmpty()) {
+        if (compraCreateDTO.getItens().isEmpty()) {
             throw new RegraDeNegocioException("Não é possível cadastrar uma compra sem itens");
         }
 
@@ -60,13 +60,13 @@ public class CompraService {
 
     public List<CompraListDTO> listColaborador(Integer idCompra) throws UsuarioException, RegraDeNegocioException {
 
-        if(idCompra != null){
+        if (idCompra != null) {
             compraServiceUtil.verificarCompraDoUserLogado(idCompra);
             return compraRepository.findById(idCompra)
-                   .stream()
-                   .map(compraServiceUtil::converterEntityParaListDTO)
-                   .toList();
-        }else{
+                    .stream()
+                    .map(compraServiceUtil::converterEntityParaListDTO)
+                    .toList();
+        } else {
             return compraRepository.findAllByUsuarioId(usuarioServiceUtil.getIdLoggedUser()).stream()
                     .map(compraServiceUtil::converterEntityParaListDTO)
                     .toList();
@@ -77,7 +77,7 @@ public class CompraService {
         compraServiceUtil.verificarCompraDoUserLogado(idCompra);
         CompraEntity compra = compraServiceUtil.findByID(idCompra);
 
-        if(!compra.getStatus().equals(StatusCompra.ABERTO)) {
+        if (!compra.getStatus().equals(StatusCompra.ABERTO)) {
             throw new RegraDeNegocioException("Apenas itens em ABERTO podem ser atualizados!");
         }
 
@@ -146,7 +146,7 @@ public class CompraService {
         compraServiceUtil.converterCompraEntityToCompraDTO(compra);
     }
 
-    public List<CompraRelatorioDTO> relatorioCompras (Integer idCompra){
+    public List<CompraRelatorioDTO> relatorioCompras(Integer idCompra) {
         return compraRepository.findByCompraId(idCompra);
     }
 
@@ -155,9 +155,9 @@ public class CompraService {
         CompraEntity compra = compraRepository.findById(idCompra)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Está compra não existe"));
 
-        if(aprovacao == EnumAprovacao.APROVAR){
+        if (aprovacao == EnumAprovacao.APROVAR) {
             compra.setStatus(StatusCompra.APROVADO_FINANCEIRO);
-        }else{
+        } else {
             compra.setStatus(StatusCompra.REPROVADO_FINANCEIRO);
         }
 
@@ -174,23 +174,29 @@ public class CompraService {
         compra.setStatus(StatusCompra.COTADO);
         return compraServiceUtil.converterCompraEntityToCompraDTO(compraRepository.save(compra));
     }
+
     public List<CompraWithValorItensDTO> list(Integer idCompra) {
 
-        if(idCompra == null){
+        if (idCompra == null) {
 
             return compraRepository.findAll()
                     .stream()
                     .map(compraServiceUtil::converterCompraEntityToCompraWithValor)
                     .toList();
-
-        }else{
+        } else {
 
             return compraRepository.findById(idCompra)
                     .stream()
                     .map(compraServiceUtil::converterCompraEntityToCompraWithValor)
                     .toList();
-
         }
 
     }
+
+//    public List<CompraWithValorItensDTO> listFinanceiro(String nomeUsuario, String nomeCompra) {
+////        return compraRepository.listByNomeUsuario(nomeUsuario, nomeCompra)
+////                .stream()
+////                .map(compraServiceUtil::converterCompraEntityToCompraWithValor)
+////                .toList();
+//    }
 }

@@ -81,7 +81,7 @@ public class UsuarioService {
         UsuarioEntity usuarioEntity = usuarioServiceUtil.retornarUsuarioEntityLogado();
         if (usuarioUpdate.getEmail() != null) {
             usuarioServiceUtil.validarEmail(usuarioUpdate.getEmail());
-            if(!usuarioUpdate.getEmail().equals(usuarioEntity.getEmail())){
+            if (!usuarioUpdate.getEmail().equals(usuarioEntity.getEmail())) {
                 usuarioServiceUtil.verificarSeEmailTemCadastro(usuarioUpdate.getEmail());
                 usuarioEntity.setEmail(usuarioUpdate.getEmail());
             }
@@ -144,8 +144,11 @@ public class UsuarioService {
     }
 
     public String validarLogin(UserLoginDTO login) throws RegraDeNegocioException {
+        try {
             return usuarioServiceUtil.recuperarToken(login.getEmail(), login.getPassword());
-
+        } catch (BadCredentialsException ex) {
+            throw new RegraDeNegocioException("Senha ou usuário inválidos!");
+        }
     }
 
     public List<UserWithCargoDTO> list() {

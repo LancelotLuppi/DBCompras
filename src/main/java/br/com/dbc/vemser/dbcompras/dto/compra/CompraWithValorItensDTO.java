@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 public class CompraWithValorItensDTO {
     private Integer idCompra;
+    private String nomeDoUsuario;
     private String name;
     private String descricao;
     private LocalDateTime dataCompra;
