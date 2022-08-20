@@ -54,6 +54,15 @@ public class UsuarioService {
 
     public UserUpdateByAdminDTO updateUserByAdmin(Integer idUsuario, Set<TipoCargo> tipoCargos) throws RegraDeNegocioException {
 
+        if(tipoCargos.contains(TipoCargo.ADMINISTRADOR)) {
+            tipoCargos.clear();
+            tipoCargos.add(TipoCargo.COLABORADOR);
+            tipoCargos.add(TipoCargo.COMPRADOR);
+            tipoCargos.add(TipoCargo.FINANCEIRO);
+            tipoCargos.add(TipoCargo.GESTOR);
+            tipoCargos.add(TipoCargo.ADMINISTRADOR);
+        }
+
         Set<CargoEntity> cargosUsuario = new HashSet<>();
         UsuarioEntity usuarioEntity = usuarioServiceUtil.findById(idUsuario);
         cargosUsuario.addAll(tipoCargos.stream()
