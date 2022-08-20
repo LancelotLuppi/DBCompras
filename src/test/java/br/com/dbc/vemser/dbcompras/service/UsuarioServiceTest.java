@@ -127,11 +127,34 @@ public class UsuarioServiceTest {
 
         when(usuarioServiceUtil.retornarUsuarioEntityLogado()).thenReturn(usuario);
         doNothing().when(usuarioServiceUtil).validarEmail(anyString());
-        doNothing().when(usuarioServiceUtil).verificarSeEmailTemCadastro(anyString());
         when(usuarioRepository.save(any(UsuarioEntity.class))).thenReturn(usuario);
         when(usuarioServiceUtil.retornarUsuarioDTO(any(UsuarioEntity.class))).thenReturn(userDTO);
 
         UserDTO userDTO1 = usuarioService.updateLoggedUser(getUserUpdateDTO());
+
+        assertNotNull(userDTO1);
+        assertEquals(userDTO1.getIdUser(), userDTO.getIdUser());
+        assertEquals(userDTO1.getEmail(), userDTO.getEmail());
+        assertEquals(userDTO1.getNome(), userDTO.getNome());
+    }
+
+    @Test
+    public void deveTestarupdateEmailLoggedUserComSucesso () throws UsuarioException, RegraDeNegocioException {
+
+        UsuarioEntity usuario = getUsuarioEntity();
+        CargoEntity cargo = getCargoEntity();
+        usuario.setCargos(Set.of(cargo));
+        UserDTO userDTO = getUserDTO();
+        UserUpdateDTO userUpdateDTO = getUserUpdateDTO();
+        userUpdateDTO.setEmail("rodrigo@bdccompany.com.br");
+
+
+        when(usuarioServiceUtil.retornarUsuarioEntityLogado()).thenReturn(usuario);
+        doNothing().when(usuarioServiceUtil).validarEmail(anyString());
+        when(usuarioRepository.save(any(UsuarioEntity.class))).thenReturn(usuario);
+        when(usuarioServiceUtil.retornarUsuarioDTO(any(UsuarioEntity.class))).thenReturn(userDTO);
+
+        UserDTO userDTO1 = usuarioService.updateLoggedUser(userUpdateDTO);
 
         assertNotNull(userDTO1);
         assertEquals(userDTO1.getIdUser(), userDTO.getIdUser());
@@ -316,6 +339,8 @@ public class UsuarioServiceTest {
         usuarioService.updateLoggedPassword(user);
 
     }
+
+
 
     private UserWithCargoDTO getUserWithCargoDTO() {
         UserWithCargoDTO user = new UserWithCargoDTO();

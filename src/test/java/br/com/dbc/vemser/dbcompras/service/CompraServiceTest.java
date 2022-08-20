@@ -1,13 +1,16 @@
 package br.com.dbc.vemser.dbcompras.service;
 
-import br.com.dbc.vemser.dbcompras.dto.compra.CompraCreateDTO;
-import br.com.dbc.vemser.dbcompras.dto.compra.CompraDTO;
+import br.com.dbc.vemser.dbcompras.dto.compra.*;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemDTO;
+import br.com.dbc.vemser.dbcompras.dto.item.ItemUpdateDTO;
+import br.com.dbc.vemser.dbcompras.dto.item.ItemValorizadoDTO;
 import br.com.dbc.vemser.dbcompras.entity.*;
 import br.com.dbc.vemser.dbcompras.entity.pk.CotacaoXItemPK;
+import br.com.dbc.vemser.dbcompras.enums.EnumAprovacao;
 import br.com.dbc.vemser.dbcompras.enums.StatusCompra;
 import br.com.dbc.vemser.dbcompras.enums.StatusCotacao;
+import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.repository.CompraRepository;
@@ -28,9 +31,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -108,13 +109,375 @@ public class CompraServiceTest {
         List<ItemCreateDTO> itemCreateDTOS = new ArrayList<>();
         compraCreateDTO.setItens(itemCreateDTOS);
 
-        when(usuarioServiceUtil.retornarUsuarioEntityLogado()).thenReturn(usuario);
+        compraService.create(compraCreateDTO);
+
+    }
+
+    @Test
+    public void deveListarComprasDoColaboradorComSucesso () throws UsuarioException, RegraDeNegocioException {
+        List<CompraEntity> compras = new ArrayList<>();
+        CompraEntity compra = getCompraEntity();
+        ItemEntity item = getItemEntity();
+        compra.setItens(Set.of(item));
+        compras.add(compra);
+        CompraListDTO compraListDTO = getCompraListDTO();
+        Integer id = 10;
+        ItemDTO itemDTO = getItemDTO();
+        compraListDTO.setItens(List.of(itemDTO));
+
+
+        doNothing().when(compraServiceUtil).verificarCompraDoUserLogado(anyInt());
+        when(compraRepository.findById(anyInt())).thenReturn(Optional.of(compra));
+        when(compraServiceUtil.converterEntityParaListDTO(any(CompraEntity.class))).thenReturn(compraListDTO);
+
+        List<CompraListDTO> compraListDTOS = compraService.listColaborador(id);
+
+        assertNotNull(compraListDTOS);
+        assertFalse(compraListDTOS.isEmpty());
+    }
+
+    @Test
+    public void deveListarTodasAsComprasDosColaboradoresComSucesso () throws UsuarioException, RegraDeNegocioException {
+        List<CompraEntity> compras = new ArrayList<>();
+        CompraEntity compra = getCompraEntity();
+        ItemEntity item = getItemEntity();
+        compra.setItens(Set.of(item));
+        compras.add(compra);
+        CompraListDTO compraListDTO = getCompraListDTO();
+        Integer id = null;
+        Integer numero = 10;
+        ItemDTO itemDTO = getItemDTO();
+        compraListDTO.setItens(List.of(itemDTO));
+
+        when(compraRepository.findAllByUsuarioId(anyInt())).thenReturn(compras);
+        when(usuarioServiceUtil.getIdLoggedUser()).thenReturn(numero);
+        when(compraServiceUtil.converterEntityParaListDTO(any(CompraEntity.class))).thenReturn(compraListDTO);
+
+        List<CompraListDTO> compraListDTOS = compraService.listColaborador(id);
+
+        assertNotNull(compraListDTOS);
+        assertFalse(compraListDTOS.isEmpty());
+    }
+
+    @Test
+    public void deveAtualizarCompraComItensComSucesso () throws UsuarioException, RegraDeNegocioException, EntidadeNaoEncontradaException {
+
+
+        CompraEntity compra = getCompraEntity();
+        ItemEntity item = getItemEntity();
+        compra.setItens(Set.of(item));
+        CompraCreateDTO compraCreateDTO = getCompraCreateDTO();
+        ItemCreateDTO itemCreateDTO = getItemCreateDTO();
+        List<ItemCreateDTO> itemCreateDTOS = new ArrayList<>();
+        itemCreateDTOS.add(itemCreateDTO);
+        compraCreateDTO.setItens(itemCreateDTOS);
+        List<Integer> idsItens = new ArrayList<>();
+        CompraDTO compraDTO = getCompraDTO();
+        Integer idCompra = 10;
+
+        doNothing().when(compraServiceUtil).verificarCompraDoUserLogado(anyInt());
+        when(compraServiceUtil.findByID(anyInt())).thenReturn(compra);
+        when(itemRepository.save(any(ItemEntity.class))).thenReturn(item);
         when(compraRepository.save(any(CompraEntity.class))).thenReturn(compra);
-        when(compraServiceUtil.salvarItensDaCompra(eq(compraCreateDTO), eq(compra))).thenReturn(itens);
         when(compraServiceUtil.converterCompraEntityToCompraDTO(any(CompraEntity.class))).thenReturn(compraDTO);
 
-        CompraDTO compraDTO1 = compraService.create(compraCreateDTO);
+        CompraDTO compraDTO1 = compraService.updateTeste(idCompra, compraCreateDTO);
 
+        assertNotNull(compraDTO1);
+        assertEquals(compraDTO.getName(), compraDTO1.getName());
+        assertEquals(compraDTO.getIdCompra(), compraDTO1.getIdCompra());
+        assertEquals(compraDTO.getDescricao(), compraDTO1.getDescricao());
+        assertEquals(compraDTO.getItens(), compraDTO1.getItens());
+    }
+
+    @Test
+    public void deveAtualizarCompraSemDeletarItensComSucesso () throws UsuarioException, RegraDeNegocioException, EntidadeNaoEncontradaException {
+
+
+        CompraEntity compra = getCompraEntity();
+        ItemEntity item = getItemEntity();
+        compra.setItens(Set.of(item));
+        CompraUpdateDTO compraUpdateDTO = getCompraUpdateDTO();
+        ItemUpdateDTO itemUpdateDTO = getItemUpdateDTO();
+        List<ItemUpdateDTO> itemCreateDTOS = new ArrayList<>();
+        itemCreateDTOS.add(itemUpdateDTO);
+        compraUpdateDTO.setItens(itemCreateDTOS);
+        List<Integer> idsItens = new ArrayList<>();
+        CompraDTO compraDTO = getCompraDTO();
+        Integer idCompra = 10;
+
+        doNothing().when(compraServiceUtil).verificarCompraDoUserLogado(anyInt());
+        when(compraServiceUtil.findByID(anyInt())).thenReturn(compra);
+        doNothing().when(itemServiceUtil).verificarItensDaCompra(eq(compra), anyList());
+        when(itemRepository.save(any(ItemEntity.class))).thenReturn(item);
+        when(itemRepository.findById(anyInt())).thenReturn(Optional.of(item));
+        when(compraRepository.save(any(CompraEntity.class))).thenReturn(compra);
+        when(compraServiceUtil.converterCompraEntityToCompraDTO(any(CompraEntity.class))).thenReturn(compraDTO);
+
+        CompraDTO compraDTO1 = compraService.update(idCompra, compraUpdateDTO);
+
+        assertNotNull(compraDTO1);
+        assertEquals(compraDTO.getName(), compraDTO1.getName());
+        assertEquals(compraDTO.getIdCompra(), compraDTO1.getIdCompra());
+        assertEquals(compraDTO.getDescricao(), compraDTO1.getDescricao());
+        assertEquals(compraDTO.getItens(), compraDTO1.getItens());
+    }
+
+    @Test(expected = RegraDeNegocioException.class)
+    public void deveNaoAtualizarCompraComItensComSucesso () throws UsuarioException, RegraDeNegocioException, EntidadeNaoEncontradaException {
+
+
+        CompraEntity compra = getCompraEntity();
+        ItemEntity item = getItemEntity();
+        compra.setItens(Set.of(item));
+        CompraCreateDTO compraCreateDTO = getCompraCreateDTO();
+        ItemCreateDTO itemCreateDTO = getItemCreateDTO();
+        List<ItemCreateDTO> itemCreateDTOS = new ArrayList<>();
+        itemCreateDTOS.add(itemCreateDTO);
+        compraCreateDTO.setItens(itemCreateDTOS);
+        List<Integer> idsItens = new ArrayList<>();
+        CompraDTO compraDTO = getCompraDTO();
+        Integer idCompra = 10;
+        StatusCompra statusCompra = StatusCompra.FECHADO;
+        compra.setStatus(statusCompra);
+
+        doNothing().when(compraServiceUtil).verificarCompraDoUserLogado(anyInt());
+        when(compraServiceUtil.findByID(anyInt())).thenReturn(compra);
+
+        CompraDTO compraDTO1 = compraService.updateTeste(idCompra, compraCreateDTO);
+
+    }
+
+
+    @Test
+    public void deveDeletarCompraComSucesso () throws UsuarioException, RegraDeNegocioException {
+
+        Integer idCompra = 10;
+
+        doNothing().when(compraServiceUtil).verificarCompraDoUserLogado(anyInt());
+        doNothing().when(compraRepository).deleteCompra(eq(idCompra));
+
+        compraService.delete(idCompra);
+
+        verify(compraRepository ,times(1)).deleteCompra(anyInt());
+
+    }
+
+    @Test
+    public void deveRemoverItensDaCompraComSucesso () throws UsuarioException, RegraDeNegocioException, EntidadeNaoEncontradaException {
+
+        CompraEntity compra = getCompraEntity();
+        ItemEntity item = getItemEntity();
+        Set<ItemEntity> itemEntities = new HashSet<>();
+        itemEntities.add(item);
+        compra.setItens(itemEntities);
+        CompraDTO compraDTO = getCompraDTO();
+        Integer idCompra = 10;
+        Integer idItem = 10;
+
+        doNothing().when(compraServiceUtil).verificarCompraDoUserLogado(anyInt());
+        when(compraServiceUtil.findByID(anyInt())).thenReturn(compra);
+        doNothing().when(itemServiceUtil).verificarItensDaCompra(eq(compra), anyList());
+        doNothing().when(itemRepository).delete(any(ItemEntity.class));
+        when(itemRepository.findById(anyInt())).thenReturn(Optional.of(item));
+        when(compraRepository.save(any(CompraEntity.class))).thenReturn(compra);
+        when(compraServiceUtil.converterCompraEntityToCompraDTO(any(CompraEntity.class))).thenReturn(compraDTO);
+
+        compraService.removerItensDaCompra(idCompra, idItem);
+
+        verify(itemRepository, times(1)).delete(any(ItemEntity.class));
+    }
+
+    @Test
+    public void deveRetornarCompraRelatorioDTOComSucesso () {
+
+        List<CompraRelatorioDTO> compraRelatorioDTOList = new ArrayList<>();
+        CompraRelatorioDTO compraRelatorioDTO = new CompraRelatorioDTO();
+        compraRelatorioDTO.setIdCompra(10);
+        compraRelatorioDTOList.add(compraRelatorioDTO);
+        Integer idCompra = 10;
+
+        when(compraRepository.findByCompraId(anyInt())).thenReturn(compraRelatorioDTOList);
+
+        List<CompraRelatorioDTO> dtoList = compraService.relatorioCompras(idCompra);
+
+        assertNotNull(compraRelatorioDTOList);
+        assertFalse(compraRelatorioDTOList.isEmpty());
+
+    }
+
+    @Test
+    public void deveTestarAprovarCompraFinanceiro () throws EntidadeNaoEncontradaException, UsuarioException {
+
+        CompraEntity compra = getCompraEntity();
+        compra.setStatus(StatusCompra.APROVADO_FINANCEIRO);
+        EnumAprovacao aprovacao = EnumAprovacao.APROVAR;
+        CompraWithValorItensDTO compraWithValorItensDTO = getCompraWithValorItensDTO();
+        compraWithValorItensDTO.setStatus(StatusCompra.APROVADO_FINANCEIRO);
+        Integer idCompra = 10;
+
+
+        when(compraRepository.findById(anyInt())).thenReturn(Optional.of(compra));
+        when(compraRepository.save(any(CompraEntity.class))).thenReturn(compra);
+        when(compraServiceUtil.converterCompraEntityToCompraWithValor(any(CompraEntity.class))).thenReturn(compraWithValorItensDTO);
+
+        CompraWithValorItensDTO compra1 = compraService.aprovarReprovarCompra(idCompra , aprovacao);
+
+        verify(compraRepository, times(1)).save(any(CompraEntity.class));
+        assertEquals(compra1.getStatus(), compra.getStatus());
+
+
+    }
+
+    @Test
+    public void deveTestarReprovarCompraFinanceiro  () throws EntidadeNaoEncontradaException, UsuarioException {
+
+        CompraEntity compra = getCompraEntity();
+        StatusCompra statusCompra = StatusCompra.REPROVADO_FINANCEIRO;
+        EnumAprovacao aprovacao = EnumAprovacao.REPROVAR;
+        CompraWithValorItensDTO compraWithValorItensDTO = getCompraWithValorItensDTO();
+        compraWithValorItensDTO.setStatus(statusCompra);
+        Integer idCompra = 10;
+
+
+        when(compraRepository.findById(anyInt())).thenReturn(Optional.of(compra));
+        when(compraRepository.save(any(CompraEntity.class))).thenReturn(compra);
+        when(compraServiceUtil.converterCompraEntityToCompraWithValor(any(CompraEntity.class))).thenReturn(compraWithValorItensDTO);
+
+        CompraWithValorItensDTO compra1 = compraService.aprovarReprovarCompra(idCompra , aprovacao);
+
+        verify(compraRepository, times(1)).save(any(CompraEntity.class));
+        assertEquals(compra1.getStatus(), compra.getStatus());
+
+    }
+
+    @Test
+    public void deveTestarFinalizarCotacoComSucesso () throws EntidadeNaoEncontradaException, RegraDeNegocioException {
+        CompraEntity compra = getCompraEntity();
+        CotacaoEntity cotacao = getCotacaoEntity();
+        CotacaoEntity cotacao1 = getCotacaoEntity();
+        Set<CotacaoEntity> cotacaoEntities = new HashSet<>();
+        cotacaoEntities.add(cotacao1);
+        cotacaoEntities.add(cotacao);
+        compra.setCotacoes(cotacaoEntities);
+        StatusCompra statusCompra = StatusCompra.COTADO;
+        Integer idCompra = 10;
+        CompraDTO compraDTO = getCompraDTO();
+
+        when(compraRepository.findById(anyInt())).thenReturn(Optional.of(compra));
+        when(compraServiceUtil.converterCompraEntityToCompraDTO(any(CompraEntity.class))).thenReturn(compraDTO);
+        when(compraRepository.save(any(CompraEntity.class))).thenReturn(compra);
+
+        CompraDTO compraDTO1 = compraService.finalizarCotacao(idCompra);
+
+        assertNotNull(compraDTO1);
+        assertEquals(compra.getStatus(), statusCompra);
+
+    }
+
+    @Test(expected = RegraDeNegocioException.class)
+    public void deveTestarNaoFinalizarCotacoComSucesso () throws EntidadeNaoEncontradaException, RegraDeNegocioException {
+        CompraEntity compra = getCompraEntity();
+        CotacaoEntity cotacao = getCotacaoEntity();
+        Set<CotacaoEntity> cotacaoEntities = new HashSet<>();
+        cotacaoEntities.add(cotacao);
+        compra.setCotacoes(cotacaoEntities);
+        StatusCompra statusCompra = StatusCompra.COTADO;
+        Integer idCompra = 10;
+        CompraDTO compraDTO = getCompraDTO();
+
+        when(compraRepository.findById(anyInt())).thenReturn(Optional.of(compra));
+
+        CompraDTO compraDTO1 = compraService.finalizarCotacao(idCompra);
+
+    }
+
+    @Test
+    public void deveListarComprasDoColaboradorComValorComSucesso () throws UsuarioException, RegraDeNegocioException {
+        List<CompraEntity> compras = new ArrayList<>();
+        CompraEntity compra = getCompraEntity();
+        ItemEntity item = getItemEntity();
+        compra.setItens(Set.of(item));
+        compras.add(compra);
+        CompraWithValorItensDTO compraDTO = getCompraWithValorItensDTO();
+        Integer id = 10;
+        ItemValorizadoDTO itemValorizadoDTO = getItemValorizadoDTO();
+        compraDTO.setItens(List.of(itemValorizadoDTO));
+
+
+        when(compraRepository.findById(anyInt())).thenReturn(Optional.of(compra));
+        when(compraServiceUtil.converterCompraEntityToCompraWithValor(any(CompraEntity.class))).thenReturn(compraDTO);
+
+        List<CompraWithValorItensDTO> compraListDTOS = compraService.list(id);
+
+        assertNotNull(compraListDTOS);
+        assertFalse(compraListDTOS.isEmpty());
+    }
+
+    @Test
+    public void deveListarTodasComprasDoColaboradorComValorComSucesso () throws UsuarioException, RegraDeNegocioException {
+        List<CompraEntity> compras = new ArrayList<>();
+        CompraEntity compra = getCompraEntity();
+        ItemEntity item = getItemEntity();
+        compra.setItens(Set.of(item));
+        compras.add(compra);
+        CompraWithValorItensDTO compraDTO = getCompraWithValorItensDTO();
+        Integer id = null;
+        ItemValorizadoDTO itemValorizadoDTO = getItemValorizadoDTO();
+        compraDTO.setItens(List.of(itemValorizadoDTO));
+
+
+        when(compraRepository.findAll()).thenReturn(compras);
+        when(compraServiceUtil.converterCompraEntityToCompraWithValor(any(CompraEntity.class))).thenReturn(compraDTO);
+
+        List<CompraWithValorItensDTO> compraListDTOS = compraService.list(id);
+
+        assertNotNull(compraListDTOS);
+        assertFalse(compraListDTOS.isEmpty());
+    }
+
+    private static ItemUpdateDTO getItemUpdateDTO () {
+        ItemUpdateDTO itemUpdateDTO = new ItemUpdateDTO();
+        itemUpdateDTO.setIdItem(10);
+        itemUpdateDTO.setNome("teste");
+        itemUpdateDTO.setQuantidade(3);
+        return itemUpdateDTO;
+    }
+
+    private static CompraUpdateDTO getCompraUpdateDTO () {
+        CompraUpdateDTO compraUpdateDTO = new CompraUpdateDTO();
+        compraUpdateDTO.setDescricao("teste");
+        compraUpdateDTO.setName("teste");
+        return compraUpdateDTO;
+    }
+
+    private static ItemValorizadoDTO getItemValorizadoDTO () {
+        ItemValorizadoDTO itemValorizadoDTO = new ItemValorizadoDTO();
+        itemValorizadoDTO.setIdItem(10);
+        itemValorizadoDTO.setValorTotal(100.0);
+        itemValorizadoDTO.setQuantidade(3);
+        itemValorizadoDTO.setValorUnitario(10.0);
+        itemValorizadoDTO.setNome("teste");
+        return itemValorizadoDTO;
+    }
+
+    private static CompraWithValorItensDTO getCompraWithValorItensDTO () {
+        CompraWithValorItensDTO compra1 = new CompraWithValorItensDTO();
+        compra1.setIdCompra(10);
+        compra1.setName("teste");
+        compra1.setValor(10.0);
+        compra1.setDescricao("teste");
+        compra1.setStatus(StatusCompra.COTADO);
+        return compra1;
+    }
+
+    private static CompraListDTO getCompraListDTO () {
+        CompraListDTO compraListDTO = new CompraListDTO();
+        compraListDTO.setIdCompra(10);
+        compraListDTO.setStatus("teste");
+        compraListDTO.setName("teste");
+        compraListDTO.setValorTotal(100.0);
+        return compraListDTO;
     }
 
     private static CompraCreateDTO getCompraCreateDTO () {
