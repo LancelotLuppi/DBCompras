@@ -90,6 +90,7 @@ public class CompraServiceUtil {
                 .map(item -> objectMapper.convertValue(item, ItemDTO.class))
                 .toList();
         CompraListDTO listDTO = objectMapper.convertValue(compra, CompraListDTO.class);
+        listDTO.setStatus(compra.getStatus().name());
         listDTO.setItens(itemDTOList);
         return listDTO;
     }
