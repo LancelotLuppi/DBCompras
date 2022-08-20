@@ -32,7 +32,8 @@ public class UsuarioService {
     private final CargoRepository cargoRepository;
     private final UsuarioServiceUtil usuarioServiceUtil;
 
-    private final CargoService cargoService;
+    private final Argon2PasswordEncoder passwordEncoder;
+
 
     public UserLoginComSucessoDTO create(UserCreateDTO login) throws RegraDeNegocioException {
         usuarioServiceUtil.validarEmail(login.getEmail());
@@ -52,7 +53,7 @@ public class UsuarioService {
         return usuarioServiceUtil.generateUserLoginComSucessoDTO(usuarioEntity, login.getEmail(), login.getSenha());
     }
 
-    public UserWithCargoDTO updateUserByAdmin(Integer idUsuario, Set<TipoCargo> tipoCargos) throws RegraDeNegocioException {
+    public UserUpdateByAdminDTO updateUserByAdmin(Integer idUsuario, Set<TipoCargo> tipoCargos) throws RegraDeNegocioException {
 
         Set<CargoEntity> cargosUsuario = new HashSet<>();
         UsuarioEntity usuarioEntity = usuarioServiceUtil.findById(idUsuario);
@@ -63,10 +64,7 @@ public class UsuarioService {
         usuarioEntity.setIdUser(idUsuario);
         usuarioRepository.save(usuarioEntity);
 
-        System.out.println(usuarioEntity);
-
-
-        return usuarioServiceUtil.retornarUsuarioDTOComCargo(usuarioEntity);
+        return converterUsuarioEntitieTOUpdateByAdminDTO(usuarioEntity);
     }
 
     private UserUpdateByAdminDTO converterUsuarioEntitieTOUpdateByAdminDTO(UsuarioEntity usuarioEntity) {
@@ -77,17 +75,6 @@ public class UsuarioService {
         UserUpdateByAdminDTO userUpdateByAdminDTO = objectMapper.convertValue(usuarioEntity, UserUpdateByAdminDTO.class);
         userUpdateByAdminDTO.setTipoCargo(cargoDTOS);
         return userUpdateByAdminDTO;
-    }
-
-    public void /*UserWithRoleDTO*/ updateRoleUser(Integer idUsuario, Set<TipoCargo> cargos) throws EntidadeNaoEncontradaException {
-        UsuarioEntity usuarioRecuperado = usuarioRepository.findById(idUsuario).orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não existe"));
-        Set<CargoEntity> novosCargos = new HashSet<>();
-        novosCargos.addAll(cargos.stream()
-                .map(cargo -> cargoRepository.findById(cargo.getCargo()).get())
-                .toList());
-        usuarioRecuperado.setCargos(novosCargos);
-        usuarioRepository.save(usuarioRecuperado);
-
     }
 
     public UserDTO updateLoggedUser(UserUpdateDTO usuarioUpdate) throws UsuarioException, RegraDeNegocioException {
@@ -111,7 +98,7 @@ public class UsuarioService {
         UsuarioEntity usuarioEntity = usuarioServiceUtil.retornarUsuarioEntityLogado();
 
         boolean verificacao = usuarioEntity.getEmail().equals(confirmacao.getEmail())
-                && new Argon2PasswordEncoder().matches(confirmacao.getPassword(), usuarioEntity.getPassword());
+                && passwordEncoder.matches(confirmacao.getPassword(), usuarioEntity.getPassword());
 
         if (!verificacao) {
             throw new RegraDeNegocioException("Usuario ou senha inválidos");
@@ -125,7 +112,7 @@ public class UsuarioService {
         usuarioRepository.delete(usuarioEntity);
     }
 
-    public UserWithCargoDTO createUserByAdmin(UserCreateDTO userCreateDTO, Set<TipoCargo> tipoCargo) throws
+    public UserCreateByAdminDTO createUserByAdmin(UserCreateDTO userCreateDTO, Set<TipoCargo> tipoCargo) throws
             RegraDeNegocioException {
         usuarioServiceUtil.validarEmail(userCreateDTO.getEmail());
         usuarioServiceUtil.verificarSeEmailTemCadastro(userCreateDTO.getEmail());
@@ -140,7 +127,7 @@ public class UsuarioService {
 
         usuarioEntity = usuarioRepository.save(usuarioEntity);
         updateUserByAdmin(usuarioEntity.getIdUser(), tipoCargo);
-        return usuarioServiceUtil.retornarUsuarioDTOComCargo(usuarioEntity);
+        return usuarioServiceUtil.retornarUsuarioCriadoDTO(usuarioEntity);
 
     }
 
@@ -155,11 +142,8 @@ public class UsuarioService {
     }
 
     public String validarLogin(UserLoginDTO login) throws RegraDeNegocioException {
-        try {
             return usuarioServiceUtil.recuperarToken(login.getEmail(), login.getPassword());
-        } catch (BadCredentialsException ex) {
-            throw new RegraDeNegocioException("Usuário ou senha inválido!");
-        }
+
     }
 
     public List<UserWithCargoDTO> list() {
@@ -190,6 +174,7 @@ public class UsuarioService {
         } else {
             throw new RegraDeNegocioException("Senha inválida");
         }
+
     }
 }
 

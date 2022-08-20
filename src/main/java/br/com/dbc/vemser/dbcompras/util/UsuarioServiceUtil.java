@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Slf4j
 @Component
@@ -31,6 +30,8 @@ public class UsuarioServiceUtil {
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
     private final ObjectMapper objectMapper;
+
+    private final Argon2PasswordEncoder passwordEncoder;
 
 
     public UsuarioEntity findById(Integer idUsuario) throws RegraDeNegocioException {
@@ -91,19 +92,19 @@ public class UsuarioServiceUtil {
         }
     }
 
-    public boolean verificarSenhaUsuario(String senha, UsuarioEntity usuario) {
-        Argon2PasswordEncoder argon2PasswordEncoder = new Argon2PasswordEncoder();
-        return argon2PasswordEncoder.matches(senha, usuario.getPassword());
+    public boolean verificarSenhaUsuario(String senha, UsuarioEntity usuario) throws UsuarioException {
+
+        return passwordEncoder.matches(senha, usuario.getPassword());
     }
 
     public UserWithCargoDTO retornarUsuarioDTOComCargo (UsuarioEntity usuario){
 
-        Set<CargoEntity> cargos = usuario.getCargos();
-        List<CargoDTO> cargoDTOS = cargos.stream()
-                .map(cargo -> objectMapper.convertValue(cargo, CargoDTO.class))
-                .toList() ;
+        CargoEntity cargo = usuario.getCargos().stream()
+                .findFirst()
+                .orElseThrow();
+        CargoDTO cargoDTOS = objectMapper.convertValue(cargo, CargoDTO.class);
         UserWithCargoDTO user = objectMapper.convertValue(usuario, UserWithCargoDTO.class);
-        user.setCargos(cargoDTOS);
+        user.setCargos(List.of(cargoDTOS));
         return user;
     }
 
@@ -129,7 +130,7 @@ public class UsuarioServiceUtil {
 
 
     public String encodePassword(String password) {
-        return new Argon2PasswordEncoder().encode(password);
+        return passwordEncoder.encode(password);
     }
 
     public UserLoginComSucessoDTO generateUserLoginComSucessoDTO(UsuarioEntity usuarioEntity, String email, String senha){
