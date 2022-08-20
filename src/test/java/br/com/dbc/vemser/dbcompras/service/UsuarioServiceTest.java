@@ -73,7 +73,7 @@ public class UsuarioServiceTest {
     }
 
     @Test
-    public void deveTestarCriarUsuarioComSucesso() throws UsuarioException, RegraDeNegocioException {
+    public void deveTestarCriarUsuarioComSucesso() throws RegraDeNegocioException {
 
         // setup
         UsuarioEntity usuario = getUsuarioEntity();

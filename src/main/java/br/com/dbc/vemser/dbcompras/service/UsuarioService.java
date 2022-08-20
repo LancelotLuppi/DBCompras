@@ -81,8 +81,10 @@ public class UsuarioService {
         UsuarioEntity usuarioEntity = usuarioServiceUtil.retornarUsuarioEntityLogado();
         if (usuarioUpdate.getEmail() != null) {
             usuarioServiceUtil.validarEmail(usuarioUpdate.getEmail());
-            usuarioServiceUtil.verificarSeEmailTemCadastro(usuarioUpdate.getEmail());
-            usuarioEntity.setEmail(usuarioUpdate.getEmail());
+            if(!usuarioUpdate.getEmail().equals(usuarioEntity.getEmail())){
+                usuarioServiceUtil.verificarSeEmailTemCadastro(usuarioUpdate.getEmail());
+                usuarioEntity.setEmail(usuarioUpdate.getEmail());
+            }
         }
         if (usuarioUpdate.getNome() != null) {
             usuarioEntity.setNome(usuarioUpdate.getNome());
