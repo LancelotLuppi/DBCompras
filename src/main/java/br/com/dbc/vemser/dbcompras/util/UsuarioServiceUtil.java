@@ -31,6 +31,8 @@ public class UsuarioServiceUtil {
     private final TokenService tokenService;
     private final ObjectMapper objectMapper;
 
+    private final Argon2PasswordEncoder passwordEncoder;
+
 
     public UsuarioEntity findById(Integer idUsuario) throws RegraDeNegocioException {
         return usuarioRepository.findById(idUsuario)
@@ -92,8 +94,7 @@ public class UsuarioServiceUtil {
 
     public boolean verificarSenhaUsuario(String senha, UsuarioEntity usuario) throws UsuarioException {
 
-        Argon2PasswordEncoder argon2PasswordEncoder = new Argon2PasswordEncoder();
-        return argon2PasswordEncoder.matches(senha, usuario.getPassword());
+        return passwordEncoder.matches(senha, usuario.getPassword());
     }
 
     public UserWithCargoDTO retornarUsuarioDTOComCargo (UsuarioEntity usuario){
@@ -129,7 +130,7 @@ public class UsuarioServiceUtil {
 
 
     public String encodePassword(String password) {
-        return new Argon2PasswordEncoder().encode(password);
+        return passwordEncoder.encode(password);
     }
 
     public UserLoginComSucessoDTO generateUserLoginComSucessoDTO(UsuarioEntity usuarioEntity, String email, String senha){

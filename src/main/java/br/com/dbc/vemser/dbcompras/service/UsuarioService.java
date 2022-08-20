@@ -32,13 +32,13 @@ public class UsuarioService {
     private final CargoRepository cargoRepository;
     private final UsuarioServiceUtil usuarioServiceUtil;
 
-    private final CargoService cargoService;
+    private final Argon2PasswordEncoder passwordEncoder;
+
 
     public UserLoginComSucessoDTO create(UserCreateDTO login) throws RegraDeNegocioException {
         usuarioServiceUtil.validarEmail(login.getEmail());
         usuarioServiceUtil.verificarSeEmailTemCadastro(login.getEmail());
         usuarioServiceUtil.validarFormatacaoSenha(login.getSenha());
-//        }
 
         UsuarioEntity usuarioEntity = usuarioServiceUtil.retornarUsuarioEntity(login);
 
@@ -63,9 +63,6 @@ public class UsuarioService {
         usuarioEntity.setIdUser(idUsuario);
         usuarioRepository.save(usuarioEntity);
 
-        System.out.println(usuarioEntity);
-
-
         return converterUsuarioEntitieTOUpdateByAdminDTO(usuarioEntity);
     }
 
@@ -77,17 +74,6 @@ public class UsuarioService {
         UserUpdateByAdminDTO userUpdateByAdminDTO =  objectMapper.convertValue(usuarioEntity, UserUpdateByAdminDTO.class);
         userUpdateByAdminDTO.setTipoCargo(cargoDTOS);
         return userUpdateByAdminDTO;
-    }
-
-    public void /*UserWithRoleDTO*/ updateRoleUser(Integer idUsuario, Set<TipoCargo> cargos) throws EntidadeNaoEncontradaException {
-        UsuarioEntity usuarioRecuperado = usuarioRepository.findById(idUsuario).orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não existe"));
-        Set<CargoEntity> novosCargos = new HashSet<>();
-        novosCargos.addAll(cargos.stream()
-                .map(cargo -> cargoRepository.findById(cargo.getCargo()).get())
-                .toList());
-        usuarioRecuperado.setCargos(novosCargos);
-        usuarioRepository.save(usuarioRecuperado);
-
     }
 
     public UserDTO updateLoggedUser(UserUpdateDTO usuarioUpdate) throws UsuarioException, RegraDeNegocioException {
@@ -111,7 +97,7 @@ public class UsuarioService {
         UsuarioEntity usuarioEntity = usuarioServiceUtil.retornarUsuarioEntityLogado();
 
         boolean verificacao = usuarioEntity.getEmail().equals(confirmacao.getEmail())
-                && new Argon2PasswordEncoder().matches(confirmacao.getPassword(), usuarioEntity.getPassword());
+                && passwordEncoder.matches(confirmacao.getPassword(), usuarioEntity.getPassword());
 
         if (!verificacao) {
             throw new RegraDeNegocioException("Usuario ou senha inválidos");
@@ -155,11 +141,7 @@ public class UsuarioService {
     }
 
     public String validarLogin (UserLoginDTO login) throws RegraDeNegocioException {
-        try {
             return usuarioServiceUtil.recuperarToken(login.getEmail(), login.getPassword());
-        } catch (BadCredentialsException ex) {
-            throw new RegraDeNegocioException("Usuário ou senha inválido!");
-        }
     }
 
     public List<UserWithCargoDTO> list () {
@@ -181,13 +163,12 @@ public class UsuarioService {
         UsuarioEntity usuarioEntity = usuarioServiceUtil.retornarUsuarioEntityLogado();
         if (usuarioServiceUtil.verificarSenhaUsuario(userUpdatePasswordDTO.getNovaSenha(), usuarioEntity)) {
             usuarioServiceUtil.validarFormatacaoSenha(userUpdatePasswordDTO.getNovaSenha());
-            if (usuarioServiceUtil.verificarSenhaUsuario(userUpdatePasswordDTO.getSenhaAtual(), usuarioEntity)) {
-                usuarioEntity.setPassword(usuarioServiceUtil.encodePassword(userUpdatePasswordDTO.getNovaSenha()));
-                usuarioRepository.save(usuarioEntity);
-                usuarioServiceUtil.retornarUsuarioDTO(usuarioEntity);
-            } else {
-                throw new RegraDeNegocioException("Senha inválida");
-            }
+            usuarioEntity.setPassword(usuarioServiceUtil.encodePassword(userUpdatePasswordDTO.getNovaSenha()));
+            usuarioRepository.save(usuarioEntity);
+            usuarioServiceUtil.retornarUsuarioDTO(usuarioEntity);
+        }else {
+            throw new RegraDeNegocioException("Senha inválida");
+
         }
 
     }
