@@ -108,11 +108,6 @@ public class CompraServiceTest {
         List<ItemCreateDTO> itemCreateDTOS = new ArrayList<>();
         compraCreateDTO.setItens(itemCreateDTOS);
 
-        when(usuarioServiceUtil.retornarUsuarioEntityLogado()).thenReturn(usuario);
-        when(compraRepository.save(any(CompraEntity.class))).thenReturn(compra);
-        when(compraServiceUtil.salvarItensDaCompra(eq(compraCreateDTO), eq(compra))).thenReturn(itens);
-        when(compraServiceUtil.converterCompraEntityToCompraDTO(any(CompraEntity.class))).thenReturn(compraDTO);
-
         CompraDTO compraDTO1 = compraService.create(compraCreateDTO);
 
     }
