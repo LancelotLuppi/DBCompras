@@ -69,11 +69,11 @@ public interface CompraRepository extends JpaRepository<CompraEntity, Integer> {
 //            """)
 //    List<CompraEntity> listByNomeUsuarioAndCompraNome(@Param("nomeUsuario") String nomeUsuario, @Param("nomeCompra") String nomeCompra);
 
-    @Query("""
-            select c
-            from purchase c
-            where (c.name LIKE CONCAT('%',:nomeCompra, '%'))
-            order by case LIKE CONCAT('%', APROVADO_GESTOR ,'%')
-            """)
-    List<CompraEntity> listByNomeCompra(@Param("nomeCompra") String nomeCompra);
+//    @Query("""
+//            select c
+//            from purchase c
+//            where (c.name LIKE CONCAT('%',:nomeCompra, '%'))
+//            order by case LIKE CONCAT('%', APROVADO_GESTOR ,'%')
+//            """)
+//    List<CompraEntity> listByNomeCompra(@Param("nomeCompra") String nomeCompra);
 }

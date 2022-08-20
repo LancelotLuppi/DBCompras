@@ -29,8 +29,8 @@ public class GestorController {
     }
 
     @GetMapping("/listar")
-    public List<CotacaoDTO> cotacoes(@RequestParam(required = false) Integer idCotacao){
-        return cotacaoService.listarCotacoes(idCotacao);
+    public List<CotacaoDTO> cotacoes(@RequestParam(required = false) Integer idCotacao, @RequestParam(name = "idCompra", required = false) Integer idCompra){
+        return cotacaoService.listarCotacoes(idCotacao, idCompra);
     }
 
 
