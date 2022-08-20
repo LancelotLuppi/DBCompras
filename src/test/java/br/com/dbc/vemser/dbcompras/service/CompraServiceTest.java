@@ -541,7 +541,6 @@ public class CompraServiceTest {
         item.setCompra(null);
         item.setNome("item");
         item.setCotacoes(null);
-        item.setPreco(10.0);
         return item;
     }
 
