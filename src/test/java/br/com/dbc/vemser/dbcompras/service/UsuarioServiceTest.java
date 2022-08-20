@@ -204,7 +204,7 @@ public class UsuarioServiceTest {
         when(usuarioServiceUtil.findById(anyInt())).thenReturn(usuario);
         when(usuarioServiceUtil.retornarUsuarioCriadoDTO(any(UsuarioEntity.class))).thenReturn(user);
 
-        UserWithCargoDTO usuarioDTO = usuarioService.createUserByAdmin(userCreateDTO, tipoCargos);
+        UserCreateByAdminDTO usuarioDTO = usuarioService.createUserByAdmin(userCreateDTO, tipoCargos);
         // assert
         assertNotNull(usuarioDTO);
         assertEquals(usuarioDTO.getNome(), usuario.getNome());
