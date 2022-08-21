@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @Component
@@ -71,7 +72,7 @@ public class UsuarioServiceUtil {
     }
 
     public void validarEmail(String emailParaValidar) throws RegraDeNegocioException {
-        if(emailParaValidar.matches("^(.+)@dbccompany.com.br")){
+        if (emailParaValidar.matches("^(.+)@dbccompany.com.br")) {
             log.info("Email validado");
         } else {
             throw new RegraDeNegocioException("Insira um email DBC válido");
@@ -79,13 +80,13 @@ public class UsuarioServiceUtil {
     }
 
     public void verificarSeEmailTemCadastro(String email) throws RegraDeNegocioException {
-        if(usuarioRepository.findByEmail(email).isPresent()){
+        if (usuarioRepository.findByEmail(email).isPresent()) {
             throw new RegraDeNegocioException("Email já está possui cadastrado");
         }
     }
 
     public void validarFormatacaoSenha(String senhaParaValidar) throws RegraDeNegocioException {
-        if(senhaParaValidar.matches("^(?=.*[A-Z])(?=.*[.!@$%^&(){}:;<>,?/~_+-=|])(?=.*[0-9])(?=.*[a-z]).{8,16}$")){
+        if (senhaParaValidar.matches("^(?=.*[A-Z])(?=.*[.!@$%^&(){}:;<>,?/~_+-=|])(?=.*[0-9])(?=.*[a-z]).{8,16}$")) {
             log.info("Senha válida");
         } else {
             throw new RegraDeNegocioException("A senha deve ter entre 8 e 16 caracteres, com letras, números e caracteres especiais");
@@ -97,14 +98,13 @@ public class UsuarioServiceUtil {
         return passwordEncoder.matches(senha, usuario.getPassword());
     }
 
-    public UserWithCargoDTO retornarUsuarioDTOComCargo (UsuarioEntity usuario){
-
-        CargoEntity cargo = usuario.getCargos().stream()
-                .findFirst()
-                .orElseThrow();
-        CargoDTO cargoDTOS = objectMapper.convertValue(cargo, CargoDTO.class);
+    public UserWithCargoDTO retornarUsuarioDTOComCargo(UsuarioEntity usuario) {
+        Set<CargoEntity> cargos = usuario.getCargos();
+        List<CargoDTO> cargoDTOS = cargos.stream()
+                .map(cargo -> objectMapper.convertValue(cargo, CargoDTO.class))
+                .toList();
         UserWithCargoDTO user = objectMapper.convertValue(usuario, UserWithCargoDTO.class);
-        user.setCargos(List.of(cargoDTOS));
+        user.setCargos(cargoDTOS);
         return user;
     }
 
@@ -128,12 +128,11 @@ public class UsuarioServiceUtil {
     }
 
 
-
     public String encodePassword(String password) {
         return passwordEncoder.encode(password);
     }
 
-    public UserLoginComSucessoDTO generateUserLoginComSucessoDTO(UsuarioEntity usuarioEntity, String email, String senha){
+    public UserLoginComSucessoDTO generateUserLoginComSucessoDTO(UsuarioEntity usuarioEntity, String email, String senha) {
 
         UserLoginComSucessoDTO userLoginComSucessoDTO = new UserLoginComSucessoDTO();
         userLoginComSucessoDTO.setIdUser(usuarioEntity.getIdUser());
@@ -143,7 +142,7 @@ public class UsuarioServiceUtil {
 
         byte[] byteFoto = usuarioEntity.getPhoto();
 
-        userLoginComSucessoDTO.setImagemPerfilB64(usuarioEntity.getPhoto()!=null ? Optional.of(Base64.getEncoder().encodeToString(byteFoto)) : Optional.empty());
+        userLoginComSucessoDTO.setImagemPerfilB64(usuarioEntity.getPhoto() != null ? Optional.of(Base64.getEncoder().encodeToString(byteFoto)) : Optional.empty());
 
         return userLoginComSucessoDTO;
     }

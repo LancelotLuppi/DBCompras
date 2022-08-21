@@ -25,7 +25,7 @@ public class AdminController {
     private final UsuarioService usuarioService;
 
     @PutMapping("/usuario/{idUsuario}/cargos")
-    public ResponseEntity<UserUpdateByAdminDTO> updateUserByAdmin(@PathVariable("idUsuario") Integer idUser,
+    public ResponseEntity<UserWithCargoDTO> updateUserByAdmin(@PathVariable("idUsuario") Integer idUser,
                                                               @RequestParam(value = "cargos") Set<TipoCargo> tipoCargo) throws RegraDeNegocioException {
         return ResponseEntity.ok(usuarioService.updateUserByAdmin(idUser, tipoCargo));
     }

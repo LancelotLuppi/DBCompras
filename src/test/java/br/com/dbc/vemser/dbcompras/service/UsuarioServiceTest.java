@@ -105,7 +105,7 @@ public class UsuarioServiceTest {
         when(cargoRepository.findById(anyInt())).thenReturn(Optional.of(cargo));
         when(usuarioRepository.save(any(UsuarioEntity.class))).thenReturn(usuario);
 
-        UserUpdateByAdminDTO userDTO = usuarioService.updateUserByAdmin(usuario.getIdUser(), tipoCargos);
+        UserWithCargoDTO userDTO = usuarioService.updateUserByAdmin(usuario.getIdUser(), tipoCargos);
 
         assertNotNull(userDTO);
         assertEquals(userDTO.getIdUser(), usuario.getIdUser());
