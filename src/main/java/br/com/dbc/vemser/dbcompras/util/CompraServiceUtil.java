@@ -4,16 +4,19 @@ import br.com.dbc.vemser.dbcompras.dto.compra.CompraCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraListDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraWithValorItensDTO;
+import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoDTO;
+import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoRelatorioDTO;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemDTO;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemValorizadoDTO;
-import br.com.dbc.vemser.dbcompras.entity.CompraEntity;
-import br.com.dbc.vemser.dbcompras.entity.ItemEntity;
-import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
+import br.com.dbc.vemser.dbcompras.entity.*;
+import br.com.dbc.vemser.dbcompras.entity.pk.CotacaoXItemPK;
 import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
 import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.repository.CompraRepository;
+import br.com.dbc.vemser.dbcompras.repository.CotacaoXItemRepository;
 import br.com.dbc.vemser.dbcompras.repository.ItemRepository;
+import br.com.dbc.vemser.dbcompras.service.CotacaoXItemService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +35,8 @@ public class CompraServiceUtil {
     private final ItemRepository itemRepository;
 
     private final CompraRepository compraRepository;
+
+    private final CotacaoXItemService cotacaoXItemService;
 
 
     public CompraEntity findByID(Integer idCompra) throws UsuarioException, EntidadeNaoEncontradaException {
@@ -76,13 +81,62 @@ public class CompraServiceUtil {
         return compraDTO;
     }
 
-    public CompraWithValorItensDTO converterCompraEntityToCompraWithValor (CompraEntity compra){
-        List<ItemValorizadoDTO> itemDTOList = compra.getItens().stream()
-                .map(item -> objectMapper.convertValue(item, ItemValorizadoDTO.class))
-                .toList();
+    public CompraWithValorItensDTO converterCompraEntityToCompraWithValor (CompraEntity compra) throws RegraDeNegocioException {
+
+        CotacaoDTO cotacaoDTOList = compra.getCotacoes()
+                .stream()
+                .map(cotacaoEntity -> {
+                    Set<ItemEntity> itemEntityList = cotacaoEntity.getCompra().getItens();
+                    CompraWithValorItensDTO compraDTO = new CompraWithValorItensDTO();
+                    CotacaoDTO cotacaoDTO = new CotacaoDTO();
+                    List<ItemValorizadoDTO> itensComValorDTO = itemEntityList.stream()
+                            .map(item -> {
+
+                                ItemValorizadoDTO itemComValor = new ItemValorizadoDTO();
+
+                                CotacaoXItemPK cotacaoXItemPK = new CotacaoXItemPK();
+                                cotacaoXItemPK.setIdCotacao(cotacaoEntity.getIdCotacao());
+                                cotacaoXItemPK.setIdItem(item.getIdItem());
+
+                                CotacaoXItemEntity cotacaoXItem = new CotacaoXItemEntity();
+
+
+                                try {
+                                    cotacaoXItem = cotacaoXItemService.findById(cotacaoXItemPK);
+                                } catch (EntidadeNaoEncontradaException e) {
+                                    throw new RuntimeException(e);
+                                }
+                                itemComValor.setIdItem(item.getIdItem());
+                                itemComValor.setNome(item.getNome());
+                                itemComValor.setValorUnitario(cotacaoXItem.getValorDoItem());
+                                itemComValor.setQuantidade(item.getQuantidade());
+                                itemComValor.setValorTotal(cotacaoXItem.getValorTotal());
+                                return itemComValor;
+
+                            }).toList();
+
+                    compraDTO.setItens(itensComValorDTO);
+                    cotacaoDTO.setCompraDTO(compraDTO);
+                    return cotacaoDTO;
+
+                })
+                .findFirst()
+                .orElseThrow(()-> new RegraDeNegocioException("está compra não tem uma cotação"));
+
+        List<ItemValorizadoDTO> itemValorizadoDTOS = cotacaoDTOList
+                .getCompraDTO().getItens();
+
+        Double valorCompra = 0.0;
+
+        for(ItemValorizadoDTO itemValorizadoDTO : itemValorizadoDTOS){
+            valorCompra += itemValorizadoDTO.getValorUnitario() * itemValorizadoDTO.getQuantidade();
+        }
+
         CompraWithValorItensDTO compraDTO = objectMapper.convertValue(compra, CompraWithValorItensDTO.class);
+        compraDTO.setValor(valorCompra);
+        compraDTO.setItens(itemValorizadoDTOS);
         compraDTO.setNomeDoUsuario(compra.getUsuario().getNome());
-        compraDTO.setItens(itemDTOList);
+
         return compraDTO;
     }
 
