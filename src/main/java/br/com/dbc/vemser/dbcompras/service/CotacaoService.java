@@ -1,6 +1,5 @@
 package br.com.dbc.vemser.dbcompras.service;
 
-import br.com.dbc.vemser.dbcompras.dto.compra.CompraDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraListCotacaoDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraWithValorItensDTO;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.*;
@@ -123,6 +122,12 @@ public class CotacaoService {
                                 return itemComValor;
                             })
                             .toList();
+                    Double valorCompra = 0.0;
+
+                    for(ItemValorizadoDTO itemValorizadoDTO : itensComValorDTO){
+                        valorCompra += itemValorizadoDTO.getValorUnitario() * itemValorizadoDTO.getQuantidade();
+                    }
+                    compraDTO.setValor(valorCompra);
                     compraDTO.setItens(itensComValorDTO);
                     cotacao.setCompraDTO(compraDTO);
                     return cotacao;
