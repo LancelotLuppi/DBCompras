@@ -41,12 +41,6 @@ public class CotacaoEntity {
     private Double valor;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_user",
-            referencedColumnName = "id_user")
-    private UsuarioEntity usuario;
-
-    @JsonIgnore
     @OneToMany(mappedBy = "item",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<CotacaoXItemEntity> itens;
 

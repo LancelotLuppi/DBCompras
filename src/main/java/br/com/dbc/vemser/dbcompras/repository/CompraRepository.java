@@ -41,6 +41,7 @@ public interface CompraRepository extends JpaRepository<CompraEntity, Integer> {
                 from purchase c 
                 join c.cotacoes cot 
                 where (:idCotacao is null OR cot.idCotacao = :idCotacao)
+                order by c.dataCompra desc
             """)
     CompraListCotacaoDTO listCompraByIdCotacao(@Param("idCotacao") Integer idCotacao);
 

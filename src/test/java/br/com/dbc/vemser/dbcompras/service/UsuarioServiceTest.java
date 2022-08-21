@@ -406,7 +406,6 @@ public class UsuarioServiceTest {
         usuario.setEnable(true);
         usuario.setPhoto(array);
         usuario.setCompras(Set.of(compra));
-        usuario.setCotacoes(Set.of(cotacao));
         usuario.setIdUser(10);
         usuario.setEmail("teste@bdccompany.com.br");
         return usuario;
@@ -439,7 +438,6 @@ public class UsuarioServiceTest {
     private static CotacaoEntity getCotacaoEntity () {
         CotacaoEntity cotacao = new CotacaoEntity();
         cotacao.setIdCotacao(10);
-        cotacao.setUsuario(getUsuarioEntity());
         cotacao.setItens(Set.of(getCotacaoXItem()));
         cotacao.setCompra(getCompraEntity());
         cotacao.setLocalDate(LocalDateTime.now());

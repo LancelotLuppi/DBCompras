@@ -488,7 +488,6 @@ public class CompraServiceTest {
         cotacao.setStatus(StatusCotacao.EM_ABERTO);
         cotacao.setValor(10.0);
         cotacao.setAnexo(null);
-        cotacao.setUsuario(null);
         return cotacao;
     }
 
@@ -528,7 +527,6 @@ public class CompraServiceTest {
         usuario.setEnable(true);
         usuario.setPhoto(array);
         usuario.setCompras(Set.of(compra));
-        usuario.setCotacoes(Set.of(cotacao));
         usuario.setIdUser(10);
         usuario.setEmail("teste@bdccompany.com.br");
         return usuario;
