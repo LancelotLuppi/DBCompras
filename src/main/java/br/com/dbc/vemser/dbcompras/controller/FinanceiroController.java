@@ -27,7 +27,7 @@ public class FinanceiroController {
 
     @GetMapping("/listar-compras")
     public ResponseEntity<List<CotacaoDTO>> compras(@RequestParam(name = "idCotacao", required = false) Integer idCotacao, @RequestParam(name = "idCompra", required = false) Integer idCompra)  {
-        return ResponseEntity.ok(cotacaoService.listarCotacoes(idCompra,idCotacao));
+        return ResponseEntity.ok(cotacaoService.listarCotacoes(idCotacao, idCompra));
     }
 
     @PutMapping("aprovar-reprovar-compra/{idCompra}")
