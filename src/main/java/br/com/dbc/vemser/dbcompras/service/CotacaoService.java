@@ -1,5 +1,6 @@
 package br.com.dbc.vemser.dbcompras.service;
 
+import br.com.dbc.vemser.dbcompras.dto.compra.CompraDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraListCotacaoDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraWithValorItensDTO;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.*;
@@ -96,6 +97,7 @@ public class CotacaoService {
                     CotacaoDTO cotacao = objectMapper.convertValue(relatorio, CotacaoDTO.class);
                     cotacao.setAnexo(Base64.getEncoder().encodeToString(relatorio.getAnexo()));
                     CompraListCotacaoDTO compraRelatorioDTO = compraRepository.listCompraByIdCotacao(cotacao.getIdCotacao());
+
                     CompraWithValorItensDTO compraDTO = new CompraWithValorItensDTO();
                     compraDTO.setIdCompra(compraRelatorioDTO.getIdCompra());
                     compraDTO.setDataCompra(compraRelatorioDTO.getDataCompra());
@@ -103,6 +105,7 @@ public class CotacaoService {
                     compraDTO.setValor(compraRelatorioDTO.getValorTotal());
                     compraDTO.setDescricao(compraRelatorioDTO.getDescricao());
                     compraDTO.setName(compraRelatorioDTO.getName());
+                    compraDTO.setNomeDoUsuario(cotacaoEntity.getCompra().getUsuario().getNome());
 
                     List<ItemValorizadoDTO> itensComValorDTO = itemEntityList.stream()
                             .map(item -> {
@@ -120,8 +123,6 @@ public class CotacaoService {
                                 return itemComValor;
                             })
                             .toList();
-
-
                     compraDTO.setItens(itensComValorDTO);
                     cotacao.setCompraDTO(compraDTO);
                     return cotacao;

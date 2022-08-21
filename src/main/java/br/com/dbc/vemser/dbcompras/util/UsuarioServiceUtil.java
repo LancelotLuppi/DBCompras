@@ -104,6 +104,8 @@ public class UsuarioServiceUtil {
                 .map(cargo -> objectMapper.convertValue(cargo, CargoDTO.class))
                 .toList();
         UserWithCargoDTO user = objectMapper.convertValue(usuario, UserWithCargoDTO.class);
+        byte[] byteFoto = usuario.getPhoto();
+        user.setImagemPerfilB64(usuario.getPhoto() != null ? Optional.of(Base64.getEncoder().encodeToString(byteFoto)) : null);
         user.setCargos(cargoDTOS);
         return user;
     }
