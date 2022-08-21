@@ -38,7 +38,7 @@ public class SecurityConfiguration {
         return (authz) ->
                 authz.antMatchers("/", "/auth/**", "/usuario").permitAll()
                         .antMatchers("/colaborador/**")
-                        .hasAnyRole("COLABORADOR", "COMPRADOR")
+                        .hasAnyRole("COLABORADOR", "COMPRADOR","GESTOR")
                         .anyRequest()
                         .authenticated();
     }
