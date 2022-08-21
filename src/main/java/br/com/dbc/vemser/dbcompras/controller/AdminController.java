@@ -31,7 +31,7 @@ public class AdminController {
     }
 
     @PostMapping("/usuario-criar/cargos")
-    public ResponseEntity<UserCreateByAdminDTO> criarUserByAdmin(@RequestBody UserCreateDTO userCreateDTO,
+    public ResponseEntity<UserWithCargoDTO> criarUserByAdmin(@RequestBody UserCreateDTO userCreateDTO,
                                                              @RequestParam(value = "cargos") Set<TipoCargo> tipoCargo) throws RegraDeNegocioException {
         return ResponseEntity.ok(usuarioService.createUserByAdmin(userCreateDTO, tipoCargo));
     }

@@ -307,7 +307,7 @@ public class CompraServiceTest {
     }
 
     @Test
-    public void deveTestarAprovarCompraFinanceiro () throws EntidadeNaoEncontradaException, UsuarioException {
+    public void deveTestarAprovarCompraFinanceiro () throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
 
         CompraEntity compra = getCompraEntity();
         compra.setStatus(StatusCompra.APROVADO_FINANCEIRO);
@@ -330,7 +330,7 @@ public class CompraServiceTest {
     }
 
     @Test
-    public void deveTestarReprovarCompraFinanceiro  () throws EntidadeNaoEncontradaException, UsuarioException {
+    public void deveTestarReprovarCompraFinanceiro  () throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
 
         CompraEntity compra = getCompraEntity();
         StatusCompra statusCompra = StatusCompra.REPROVADO_FINANCEIRO;

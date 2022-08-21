@@ -101,15 +101,7 @@ public class CotacaoService {
                                 CotacaoXItemPK cotacaoXItemPK = new CotacaoXItemPK();
                                 cotacaoXItemPK.setIdCotacao(relatorio.getIdCotacao());
                                 cotacaoXItemPK.setIdItem(item.getIdItem());
-
-                                CotacaoXItemEntity cotacaoXItem = new CotacaoXItemEntity();
-
-                                try {
-                                    cotacaoXItem = findById(cotacaoXItemPK);
-                                } catch (EntidadeNaoEncontradaException e) {
-                                    throw new RuntimeException(e);
-                                }
-
+                                CotacaoXItemEntity cotacaoXItem = cotacaoXItemRepository.findById(cotacaoXItemPK).get();
                                 itemComValor.setIdItem(item.getIdItem());
                                 itemComValor.setNome(item.getNome());
                                 itemComValor.setValorUnitario(cotacaoXItem.getValorDoItem());
@@ -130,7 +122,7 @@ public class CotacaoService {
 
     public CotacaoXItemEntity findById(CotacaoXItemPK cotacaoXItemPK) throws EntidadeNaoEncontradaException {
         return cotacaoXItemRepository.findById(cotacaoXItemPK)
-                .orElseThrow(()-> new EntidadeNaoEncontradaException("Este item não existe"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Este item não existe"));
     }
 
 
