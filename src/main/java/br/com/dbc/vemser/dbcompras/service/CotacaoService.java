@@ -19,6 +19,7 @@ import br.com.dbc.vemser.dbcompras.repository.CotacaoXItemRepository;
 import br.com.dbc.vemser.dbcompras.repository.ItemRepository;
 import br.com.dbc.vemser.dbcompras.util.CompraServiceUtil;
 import br.com.dbc.vemser.dbcompras.util.CotacaoServiceUtil;
+import br.com.dbc.vemser.dbcompras.util.ItemServiceUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,10 +42,20 @@ public class CotacaoService {
     private final CotacaoXItemRepository cotacaoXItemRepository;
     private final CompraServiceUtil compraServiceUtil;
     private final CotacaoServiceUtil cotacaoServiceUtil;
+    private final ItemServiceUtil itemServiceUtil;
 
 
-    public void create(Integer idCompra, CotacaoCreateDTO cotacaoDTO) throws EntidadeNaoEncontradaException, UsuarioException {
+    public void create(Integer idCompra, CotacaoCreateDTO cotacaoDTO) throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
         CompraEntity compraCotada = compraRepository.findById(idCompra).orElseThrow(() -> new EntidadeNaoEncontradaException("Compra inexistente"));
+        List<Integer> idsCotados = cotacaoDTO.getListaDeValores().stream()
+                .map(CotacaoValorItensDTO::getIdItem)
+                .toList();
+
+        itemServiceUtil.verificarItensDaCompra(compraCotada, idsCotados);
+        if (cotacaoDTO.getListaDeValores().size() != compraCotada.getItens().size()) {
+            throw new RegraDeNegocioException("Todos os itens desse compra devem ser cotados");
+        }
+
         compraCotada.setStatus(StatusCompra.EM_COTACAO);
 
         CotacaoEntity cotacao = new CotacaoEntity();
@@ -101,15 +112,7 @@ public class CotacaoService {
                                 CotacaoXItemPK cotacaoXItemPK = new CotacaoXItemPK();
                                 cotacaoXItemPK.setIdCotacao(relatorio.getIdCotacao());
                                 cotacaoXItemPK.setIdItem(item.getIdItem());
-
-                                CotacaoXItemEntity cotacaoXItem = new CotacaoXItemEntity();
-
-                                try {
-                                    cotacaoXItem = findById(cotacaoXItemPK);
-                                } catch (EntidadeNaoEncontradaException e) {
-                                    throw new RuntimeException(e);
-                                }
-
+                                CotacaoXItemEntity cotacaoXItem = cotacaoXItemRepository.findById(cotacaoXItemPK).get();
                                 itemComValor.setIdItem(item.getIdItem());
                                 itemComValor.setNome(item.getNome());
                                 itemComValor.setValorUnitario(cotacaoXItem.getValorDoItem());
@@ -130,7 +133,7 @@ public class CotacaoService {
 
     public CotacaoXItemEntity findById(CotacaoXItemPK cotacaoXItemPK) throws EntidadeNaoEncontradaException {
         return cotacaoXItemRepository.findById(cotacaoXItemPK)
-                .orElseThrow(()-> new EntidadeNaoEncontradaException("Este item não existe"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Este item não existe"));
     }
 
 

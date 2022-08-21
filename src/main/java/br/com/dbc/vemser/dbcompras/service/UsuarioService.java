@@ -52,7 +52,7 @@ public class UsuarioService {
         return usuarioServiceUtil.generateUserLoginComSucessoDTO(usuarioEntity, login.getEmail(), login.getSenha());
     }
 
-    public UserUpdateByAdminDTO updateUserByAdmin(Integer idUsuario, Set<TipoCargo> tipoCargos) throws RegraDeNegocioException {
+    public UserWithCargoDTO updateUserByAdmin(Integer idUsuario, Set<TipoCargo> tipoCargos) throws RegraDeNegocioException {
 
         if(tipoCargos.contains(TipoCargo.ADMINISTRADOR)) {
             tipoCargos.clear();
@@ -72,17 +72,7 @@ public class UsuarioService {
         usuarioEntity.setIdUser(idUsuario);
         usuarioRepository.save(usuarioEntity);
 
-        return converterUsuarioEntitieTOUpdateByAdminDTO(usuarioEntity);
-    }
-
-    private UserUpdateByAdminDTO converterUsuarioEntitieTOUpdateByAdminDTO(UsuarioEntity usuarioEntity) {
-        CargoEntity cargo = usuarioEntity.getCargos().stream()
-                .findFirst()
-                .orElseThrow();
-        CargoDTO cargoDTOS = objectMapper.convertValue(cargo, CargoDTO.class);
-        UserUpdateByAdminDTO userUpdateByAdminDTO = objectMapper.convertValue(usuarioEntity, UserUpdateByAdminDTO.class);
-        userUpdateByAdminDTO.setTipoCargo(cargoDTOS);
-        return userUpdateByAdminDTO;
+        return usuarioServiceUtil.retornarUsuarioDTOComCargo(usuarioEntity);
     }
 
     public UserDTO updateLoggedUser(UserUpdateDTO usuarioUpdate) throws UsuarioException, RegraDeNegocioException {
@@ -122,7 +112,7 @@ public class UsuarioService {
         usuarioRepository.delete(usuarioEntity);
     }
 
-    public UserCreateByAdminDTO createUserByAdmin(UserCreateDTO userCreateDTO, Set<TipoCargo> tipoCargo) throws
+    public UserWithCargoDTO createUserByAdmin(UserCreateDTO userCreateDTO, Set<TipoCargo> tipoCargo) throws
             RegraDeNegocioException {
         usuarioServiceUtil.validarEmail(userCreateDTO.getEmail());
         usuarioServiceUtil.verificarSeEmailTemCadastro(userCreateDTO.getEmail());
@@ -137,7 +127,7 @@ public class UsuarioService {
 
         usuarioEntity = usuarioRepository.save(usuarioEntity);
         updateUserByAdmin(usuarioEntity.getIdUser(), tipoCargo);
-        return usuarioServiceUtil.retornarUsuarioCriadoDTO(usuarioEntity);
+        return usuarioServiceUtil.retornarUsuarioDTOComCargo(usuarioEntity);
 
     }
 
