@@ -1,6 +1,5 @@
 package br.com.dbc.vemser.dbcompras.service;
 
-import br.com.dbc.vemser.dbcompras.dto.compra.CompraDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraListCotacaoDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraWithValorItensDTO;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.*;
@@ -28,6 +27,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -101,7 +101,13 @@ public class CotacaoService {
                                 cotacaoXItemPK.setIdCotacao(relatorio.getIdCotacao());
                                 cotacaoXItemPK.setIdItem(item.getIdItem());
 
-                                CotacaoXItemEntity cotacaoXItem = cotacaoXItemRepository.findById(cotacaoXItemPK).get();
+                                CotacaoXItemEntity cotacaoXItem = new CotacaoXItemEntity();
+
+                                try {
+                                    cotacaoXItem = findById(cotacaoXItemPK);
+                                } catch (EntidadeNaoEncontradaException e) {
+                                    throw new RuntimeException(e);
+                                }
 
                                 itemComValor.setIdItem(item.getIdItem());
                                 itemComValor.setNome(item.getNome());
@@ -118,6 +124,12 @@ public class CotacaoService {
                     return cotacao;
                 })
                 .toList();
+    }
+
+
+    public CotacaoXItemEntity findById(CotacaoXItemPK cotacaoXItemPK) throws EntidadeNaoEncontradaException {
+        return cotacaoXItemRepository.findById(cotacaoXItemPK)
+                .orElseThrow(()-> new EntidadeNaoEncontradaException("Este item não existe"));
     }
 
 
