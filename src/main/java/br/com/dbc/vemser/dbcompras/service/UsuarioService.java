@@ -15,6 +15,7 @@ import br.com.dbc.vemser.dbcompras.util.UsuarioServiceUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -53,6 +54,15 @@ public class UsuarioService {
 
     public UserUpdateByAdminDTO updateUserByAdmin(Integer idUsuario, Set<TipoCargo> tipoCargos) throws RegraDeNegocioException {
 
+        if(tipoCargos.contains(TipoCargo.ADMINISTRADOR)) {
+            tipoCargos.clear();
+            tipoCargos.add(TipoCargo.COLABORADOR);
+            tipoCargos.add(TipoCargo.COMPRADOR);
+            tipoCargos.add(TipoCargo.FINANCEIRO);
+            tipoCargos.add(TipoCargo.GESTOR);
+            tipoCargos.add(TipoCargo.ADMINISTRADOR);
+        }
+
         Set<CargoEntity> cargosUsuario = new HashSet<>();
         UsuarioEntity usuarioEntity = usuarioServiceUtil.findById(idUsuario);
         cargosUsuario.addAll(tipoCargos.stream()
@@ -79,7 +89,7 @@ public class UsuarioService {
         UsuarioEntity usuarioEntity = usuarioServiceUtil.retornarUsuarioEntityLogado();
         if (usuarioUpdate.getEmail() != null) {
             usuarioServiceUtil.validarEmail(usuarioUpdate.getEmail());
-            if(!usuarioUpdate.getEmail().equals(usuarioEntity.getEmail())){
+            if (!usuarioUpdate.getEmail().equals(usuarioEntity.getEmail())) {
                 usuarioServiceUtil.verificarSeEmailTemCadastro(usuarioUpdate.getEmail());
                 usuarioEntity.setEmail(usuarioUpdate.getEmail());
             }
@@ -142,8 +152,11 @@ public class UsuarioService {
     }
 
     public String validarLogin(UserLoginDTO login) throws RegraDeNegocioException {
+        try {
             return usuarioServiceUtil.recuperarToken(login.getEmail(), login.getPassword());
-
+        } catch (BadCredentialsException ex) {
+            throw new RegraDeNegocioException("Senha ou usuário inválidos!");
+        }
     }
 
     public List<UserWithCargoDTO> list() {

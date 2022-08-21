@@ -38,7 +38,4 @@ public class ItemEntity {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "item")
     private Set<CotacaoXItemEntity> cotacoes;
 
-    @Column(name = "valor")
-    private Double preco;
-
 }

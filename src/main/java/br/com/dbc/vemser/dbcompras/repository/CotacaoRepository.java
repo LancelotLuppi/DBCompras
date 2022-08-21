@@ -25,4 +25,19 @@ public interface CotacaoRepository extends JpaRepository<CotacaoEntity, Integer>
             where (cot.idCotacao = :idCotacao or :idCotacao is null)
             """)
     List<CotacaoRelatorioDTO> listCotacoes(@Param("idCotacao") Integer idCotacao);
+
+    @Query(value = """
+            select new br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoRelatorioDTO (
+                cot.idCotacao, 
+                cot.nome, 
+                cot.localDate, 
+                cot.anexo, 
+                cot.status, 
+                cot.valor
+            )
+            from quotation cot 
+            join cot.compra c
+            where (c.idCompra = :idCompra)
+            """)
+    List<CotacaoRelatorioDTO> listCotacoesPorCompra(@Param("idCompra") Integer idCompra);
 }

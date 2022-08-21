@@ -75,8 +75,9 @@ public class CotacaoService {
         cotacaoRepository.save(cotacaoSalva);
     }
 
-    public List<CotacaoDTO> listarCotacoes(Integer idCotacao) {
-        List<CotacaoRelatorioDTO> cotacoes = cotacaoRepository.listCotacoes(idCotacao);
+    public List<CotacaoDTO> listarCotacoes(Integer idCotacao, Integer idCompra) {
+
+        List<CotacaoRelatorioDTO> cotacoes = idCompra != null ? cotacaoRepository.listCotacoesPorCompra(idCompra) : cotacaoRepository.listCotacoes(idCotacao);
 
         return cotacoes.stream()
                 .map(relatorio -> {

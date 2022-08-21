@@ -81,6 +81,7 @@ public class CompraServiceUtil {
                 .map(item -> objectMapper.convertValue(item, ItemValorizadoDTO.class))
                 .toList();
         CompraWithValorItensDTO compraDTO = objectMapper.convertValue(compra, CompraWithValorItensDTO.class);
+        compraDTO.setNomeDoUsuario(compra.getUsuario().getNome());
         compraDTO.setItens(itemDTOList);
         return compraDTO;
     }
