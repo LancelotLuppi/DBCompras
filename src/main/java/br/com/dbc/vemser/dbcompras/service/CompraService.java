@@ -175,36 +175,6 @@ public class CompraService {
         return compraServiceUtil.converterCompraEntityToCompraDTO(compraRepository.save(compra));
     }
 
-    public List<CompraWithValorItensDTO> list(Integer idCompra) {
-
-        if (idCompra == null) {
-
-           return compraRepository.findAll()
-                   .stream()
-                   .map(compraEntity -> {
-                       try {
-                           return compraServiceUtil.converterCompraEntityToCompraWithValor(compraEntity);
-                       } catch (RegraDeNegocioException e) {
-                           throw new RuntimeException(e);
-                       }
-                   })
-                   .toList();
-        } else {
-
-            return compraRepository.findById(idCompra)
-                    .stream()
-                    .map(compraEntity -> {
-                        try {
-                            return compraServiceUtil.converterCompraEntityToCompraWithValor(compraEntity);
-                        } catch (RegraDeNegocioException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }).toList();
-
-        }
-
-    }
-
 //    public List<CompraWithValorItensDTO> listFinanceiro(String nomeUsuario, String nomeCompra) {
 ////        return compraRepository.listByNomeUsuario(nomeUsuario, nomeCompra)
 ////                .stream()

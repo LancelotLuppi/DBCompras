@@ -5,7 +5,6 @@ import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoDTO;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoRelatorioDTO;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoValorItensDTO;
-import br.com.dbc.vemser.dbcompras.dto.item.ItemValorizadoDTO;
 import br.com.dbc.vemser.dbcompras.entity.CompraEntity;
 import br.com.dbc.vemser.dbcompras.entity.CotacaoEntity;
 import br.com.dbc.vemser.dbcompras.entity.CotacaoXItemEntity;
@@ -23,6 +22,7 @@ import br.com.dbc.vemser.dbcompras.repository.CotacaoXItemRepository;
 import br.com.dbc.vemser.dbcompras.repository.ItemRepository;
 import br.com.dbc.vemser.dbcompras.util.CompraServiceUtil;
 import br.com.dbc.vemser.dbcompras.util.CotacaoServiceUtil;
+import br.com.dbc.vemser.dbcompras.util.ItemServiceUtil;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -55,6 +55,9 @@ public class CotacaoServiceTest {
 
     @Mock
     private ItemRepository itemRepository;
+
+    @Mock
+    private ItemServiceUtil itemServiceUtil;
 
     @Mock
     private CompraRepository compraRepository;
@@ -91,15 +94,18 @@ public class CotacaoServiceTest {
         ItemEntity item = getItemEntity();
         CotacaoXItemEntity cotacaoXItem = getCotacaoXItem();
         List<CotacaoValorItensDTO> cotacaoValorItensDTOList = new ArrayList<>();
+        compra.setItens(Set.of(item));
         cotacaoValorItensDTOList.add(cotacaoValorItensDTO);
         cotacaoCreateDTO.setListaDeValores(cotacaoValorItensDTOList);
         Integer idCotacao = 10;
 
 
         when(compraRepository.findById(anyInt())).thenReturn(Optional.of(compra));
+        doNothing().when(itemServiceUtil).verificarItensDaCompra(any(CompraEntity.class), anyList());
         when(cotacaoRepository.save(any(CotacaoEntity.class))).thenReturn(cotacao);
         when(itemRepository.findById(anyInt())).thenReturn(Optional.of(item));
         when(cotacaoXItemRepository.save(any(CotacaoXItemEntity.class))).thenReturn(cotacaoXItem);
+
 
         cotacaoService.create(idCotacao, cotacaoCreateDTO);
 

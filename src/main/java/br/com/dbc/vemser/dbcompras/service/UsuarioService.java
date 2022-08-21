@@ -1,6 +1,5 @@
 package br.com.dbc.vemser.dbcompras.service;
 
-import br.com.dbc.vemser.dbcompras.dto.cargo.CargoDTO;
 import br.com.dbc.vemser.dbcompras.dto.usuario.*;
 import br.com.dbc.vemser.dbcompras.entity.CargoEntity;
 import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
@@ -15,7 +14,6 @@ import br.com.dbc.vemser.dbcompras.util.UsuarioServiceUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +25,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
+
     private final ObjectMapper objectMapper;
     private final CargoRepository cargoRepository;
     private final UsuarioServiceUtil usuarioServiceUtil;

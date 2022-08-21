@@ -392,49 +392,6 @@ public class CompraServiceTest {
 
     }
 
-    @Test
-    public void deveListarComprasDoColaboradorComValorComSucesso () throws UsuarioException, RegraDeNegocioException {
-        List<CompraEntity> compras = new ArrayList<>();
-        CompraEntity compra = getCompraEntity();
-        ItemEntity item = getItemEntity();
-        compra.setItens(Set.of(item));
-        compras.add(compra);
-        CompraWithValorItensDTO compraDTO = getCompraWithValorItensDTO();
-        Integer id = 10;
-        ItemValorizadoDTO itemValorizadoDTO = getItemValorizadoDTO();
-        compraDTO.setItens(List.of(itemValorizadoDTO));
-
-
-        when(compraRepository.findById(anyInt())).thenReturn(Optional.of(compra));
-        when(compraServiceUtil.converterCompraEntityToCompraWithValor(any(CompraEntity.class))).thenReturn(compraDTO);
-
-        List<CompraWithValorItensDTO> compraListDTOS = compraService.list(id);
-
-        assertNotNull(compraListDTOS);
-        assertFalse(compraListDTOS.isEmpty());
-    }
-
-    @Test
-    public void deveListarTodasComprasDoColaboradorComValorComSucesso () throws UsuarioException, RegraDeNegocioException {
-        List<CompraEntity> compras = new ArrayList<>();
-        CompraEntity compra = getCompraEntity();
-        ItemEntity item = getItemEntity();
-        compra.setItens(Set.of(item));
-        compras.add(compra);
-        CompraWithValorItensDTO compraDTO = getCompraWithValorItensDTO();
-        Integer id = null;
-        ItemValorizadoDTO itemValorizadoDTO = getItemValorizadoDTO();
-        compraDTO.setItens(List.of(itemValorizadoDTO));
-
-
-        when(compraRepository.findAll()).thenReturn(compras);
-        when(compraServiceUtil.converterCompraEntityToCompraWithValor(any(CompraEntity.class))).thenReturn(compraDTO);
-
-        List<CompraWithValorItensDTO> compraListDTOS = compraService.list(id);
-
-        assertNotNull(compraListDTOS);
-        assertFalse(compraListDTOS.isEmpty());
-    }
 
     private static ItemUpdateDTO getItemUpdateDTO () {
         ItemUpdateDTO itemUpdateDTO = new ItemUpdateDTO();
