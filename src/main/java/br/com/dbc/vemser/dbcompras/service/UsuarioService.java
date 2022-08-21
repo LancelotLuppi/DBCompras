@@ -152,11 +152,7 @@ public class UsuarioService {
     }
 
     public String validarLogin(UserLoginDTO login) throws RegraDeNegocioException {
-        try {
             return usuarioServiceUtil.recuperarToken(login.getEmail(), login.getPassword());
-        } catch (BadCredentialsException ex) {
-            throw new RegraDeNegocioException("Senha ou usuário inválidos!");
-        }
     }
 
     public List<UserWithCargoDTO> list() {

@@ -100,7 +100,7 @@ public class UsuarioServiceTest {
         CargoEntity cargo = getCargoEntity();
         usuario.setCargos(Set.of(cargo));
         Set<TipoCargo> tipoCargos = new HashSet<>();
-        tipoCargos.add(TipoCargo.COLABORADOR);
+        tipoCargos.add(TipoCargo.ADMINISTRADOR);
         when(usuarioServiceUtil.findById(anyInt())).thenReturn(usuario);
         when(cargoRepository.findById(anyInt())).thenReturn(Optional.of(cargo));
         when(usuarioRepository.save(any(UsuarioEntity.class))).thenReturn(usuario);

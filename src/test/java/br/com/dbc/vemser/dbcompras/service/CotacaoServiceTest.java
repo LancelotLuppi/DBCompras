@@ -243,7 +243,6 @@ public class CotacaoServiceTest {
         item.setCompra(null);
         item.setNome("item");
         item.setCotacoes(null);
-        item.setPreco(10.0);
         item.setQuantidade(10);
         return item;
     }
