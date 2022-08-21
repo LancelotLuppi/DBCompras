@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 public class CotacaoRelatorioDTO {
     private Integer idCotacao;
     private String nome;
-
     private LocalDateTime localDate;
     private byte[] anexo;
     private StatusCotacao status;

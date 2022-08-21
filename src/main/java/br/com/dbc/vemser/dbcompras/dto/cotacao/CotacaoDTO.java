@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 public class CotacaoDTO extends CotacaoCreateDTO{
     private Integer idCotacao;
     private String nome;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime localDate;
     private String anexo;
     private StatusCotacao status;
