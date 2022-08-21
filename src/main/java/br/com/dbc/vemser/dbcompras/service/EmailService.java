@@ -24,9 +24,6 @@ public class EmailService {
 
     @Value("${spring.mail.username}")
     private String from;
-
-    @Value("${spring.mail.remetente}")
-    private String usuario;
     private String mensagem;
 
     private final JavaMailSender emailSender;
@@ -70,7 +67,6 @@ public class EmailService {
         Map<String, Object> dados = new HashMap<>();
 
         // local
-        dados.put("usuario", usuario);
         dados.put("email", from);
 
         // da requisicao
