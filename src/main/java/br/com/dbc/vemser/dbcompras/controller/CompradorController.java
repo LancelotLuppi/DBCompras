@@ -26,7 +26,7 @@ public class CompradorController {
     private final CompraService compraService;
 
     @PostMapping("/cotar")
-    public ResponseEntity<Void> create(Integer idCompra, @Valid @RequestBody CotacaoCreateDTO cotacaoCreateDTO) throws EntidadeNaoEncontradaException, UsuarioException {
+    public ResponseEntity<Void> create(Integer idCompra, @Valid @RequestBody CotacaoCreateDTO cotacaoCreateDTO) throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
         cotacaoService.create(idCompra, cotacaoCreateDTO);
         return ResponseEntity.noContent().build();
     }

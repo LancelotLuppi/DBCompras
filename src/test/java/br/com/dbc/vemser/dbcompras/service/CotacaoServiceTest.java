@@ -80,7 +80,7 @@ public class CotacaoServiceTest {
     }
 
     @Test
-    public void deveTestarCriarCotacaoComSucesso () throws EntidadeNaoEncontradaException, UsuarioException {
+    public void deveTestarCriarCotacaoComSucesso () throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
 
         CotacaoEntity cotacao = getCotacaoEntity();
         CompraEntity compra = getCompraEntity();
