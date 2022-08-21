@@ -36,6 +36,7 @@ public class CompraService {
     private final ItemRepository itemRepository;
     private final UsuarioServiceUtil usuarioServiceUtil;
     private final ItemServiceUtil itemServiceUtil;
+    private final EmailService emailService;
 
 
     public CompraDTO create(CompraCreateDTO compraCreateDTO) throws UsuarioException, RegraDeNegocioException {
@@ -54,6 +55,7 @@ public class CompraService {
 
         Set<ItemEntity> itens = compraServiceUtil.salvarItensDaCompra(compraCreateDTO, compraSalva);
         compraSalva.setItens(itens);
+        emailService.sendEmail(usuario.getNome(), compraSalva.getName(), usuario.getEmail(), StatusCompra.ABERTO);
 
         return compraServiceUtil.converterCompraEntityToCompraDTO(compraSalva);
     }
@@ -150,20 +152,19 @@ public class CompraService {
         return compraRepository.findByCompraId(idCompra);
     }
 
-    public CompraWithValorItensDTO aprovarReprovarCompra(Integer idCompra, EnumAprovacao aprovacao) throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
-
+    public CompraWithValorItensDTO aprovarReprovarCompra(Integer idCompra, EnumAprovacao aprovacao) throws EntidadeNaoEncontradaException, RegraDeNegocioException {
         CompraEntity compra = compraRepository.findById(idCompra)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Está compra não existe"));
 
-        if (aprovacao == EnumAprovacao.APROVAR) {
-            compra.setStatus(StatusCompra.APROVADO_FINANCEIRO);
-        } else {
-            compra.setStatus(StatusCompra.REPROVADO_FINANCEIRO);
+        if(!compra.getStatus().equals(StatusCompra.APROVADO_GESTOR)) {
+            throw new RegraDeNegocioException("Esta compra não pode ser aprovada!");
         }
 
-        compraRepository.save(compra);
-        return compraServiceUtil.converterCompraEntityToCompraWithValor(compra);
+        compra.setStatus(aprovacao == EnumAprovacao.APROVAR ? StatusCompra.APROVADO_FINANCEIRO : StatusCompra.REPROVADO_FINANCEIRO);
 
+        CompraEntity compraSalva = compraRepository.save(compra);
+        emailService.sendEmail(compraSalva.getUsuario().getNome(), compraSalva.getName(), compraSalva.getUsuario().getEmail(), compraSalva.getStatus());
+        return compraServiceUtil.converterCompraEntityToCompraWithValor(compra);
     }
 
     public CompraDTO finalizarCotacao(Integer idCompra) throws EntidadeNaoEncontradaException, RegraDeNegocioException {
@@ -173,6 +174,19 @@ public class CompraService {
         }
         compra.setStatus(StatusCompra.COTADO);
         return compraServiceUtil.converterCompraEntityToCompraDTO(compraRepository.save(compra));
+    }
+
+    public CompraDTO reprovarCompraGestor(Integer idCompra) throws EntidadeNaoEncontradaException, RegraDeNegocioException {
+        CompraEntity compra = compraServiceUtil.findByIDCompra(idCompra);
+
+        if(!compra.getStatus().equals(StatusCompra.COTADO)) {
+            throw new RegraDeNegocioException("Essa compra não pode ser reprovada");
+        }
+
+        compra.setStatus(StatusCompra.REPROVADO_GESTOR);
+        compra = compraRepository.save(compra);
+        emailService.sendEmail(compra.getUsuario().getNome(), compra.getName(), compra.getUsuario().getEmail(), compra.getStatus());
+        return compraServiceUtil.converterCompraEntityToCompraDTO(compra);
     }
 
 //    public List<CompraWithValorItensDTO> listFinanceiro(String nomeUsuario, String nomeCompra) {
