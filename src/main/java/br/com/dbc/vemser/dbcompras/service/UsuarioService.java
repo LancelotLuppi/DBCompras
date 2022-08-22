@@ -36,7 +36,6 @@ public class UsuarioService {
         usuarioServiceUtil.validarEmail(login.getEmail());
         usuarioServiceUtil.verificarSeEmailTemCadastro(login.getEmail());
         usuarioServiceUtil.validarFormatacaoSenha(login.getSenha());
-//        }
 
         UsuarioEntity usuarioEntity = usuarioServiceUtil.retornarUsuarioEntity(login);
 
@@ -146,7 +145,6 @@ public class UsuarioService {
             ex.printStackTrace();
             throw new RegraDeNegocioException("Usuário ou senha inválidos");
         }
-
     }
 
     public List<UserWithCargoDTO> list() {
