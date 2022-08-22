@@ -36,9 +36,7 @@ public class CompraServiceUtil {
     private final UsuarioServiceUtil usuarioServiceUtil;
     private final ObjectMapper objectMapper;
     private final ItemRepository itemRepository;
-
     private final CompraRepository compraRepository;
-
     private final CotacaoXItemRepository cotacaoXItemRepository;
 
 
