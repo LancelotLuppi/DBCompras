@@ -1,6 +1,7 @@
 package br.com.dbc.vemser.dbcompras.service;
 
 import br.com.dbc.vemser.dbcompras.dto.compra.*;
+import br.com.dbc.vemser.dbcompras.dto.item.ItemDTO;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemUpdateDTO;
 import br.com.dbc.vemser.dbcompras.entity.CompraEntity;
 import br.com.dbc.vemser.dbcompras.entity.ItemEntity;
@@ -148,8 +149,18 @@ public class CompraService {
         compraServiceUtil.converterCompraEntityToCompraDTO(compra);
     }
 
-    public List<CompraRelatorioDTO> relatorioCompras(Integer idCompra) {
-        return compraRepository.findByCompraId(idCompra);
+    public List<CompraRelatorioRetornoDTO> relatorioCompras(Integer idCompra) {
+        List<CompraRelatorioDTO> compras = compraRepository.findByCompraId(idCompra);
+        return compras.stream()
+                .map(compraDTO -> {
+                   CompraEntity compra = compraRepository.findById(compraDTO.getIdCompra()).get();
+                   CompraRelatorioRetornoDTO retorno = objectMapper.convertValue(compraDTO, CompraRelatorioRetornoDTO.class);
+                   retorno.setItens(compra.getItens().stream()
+                           .map(item -> objectMapper.convertValue(item, ItemDTO.class))
+                           .toList());
+                   return retorno;
+                })
+                .toList();
     }
 
     public CompraWithValorItensDTO aprovarReprovarCompra(Integer idCompra, EnumAprovacao aprovacao) throws EntidadeNaoEncontradaException, RegraDeNegocioException {

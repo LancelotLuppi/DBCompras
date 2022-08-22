@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -42,22 +43,16 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UsuarioServiceTest {
-
     @InjectMocks
     private UsuarioService usuarioService;
-
     @Mock
     private UsuarioRepository usuarioRepository;
-
     @Mock
     private CargoRepository cargoRepository;
-
     @Mock
     private UsuarioServiceUtil usuarioServiceUtil;
-
     @Mock
     private Argon2PasswordEncoder passwordEncoder;
-
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Before
@@ -265,6 +260,17 @@ public class UsuarioServiceTest {
 
         assertNotNull(teste);
 
+    }
+
+    @Test(expected = RegraDeNegocioException.class)
+    public void deveTestarValidarLoginIncorreto() throws RegraDeNegocioException {
+        UserLoginDTO userLoginDTO = getUserLoginDTO();
+
+        doThrow(BadCredentialsException.class)
+                .when(usuarioServiceUtil)
+                .recuperarToken(anyString(), anyString());
+
+        usuarioService.validarLogin(userLoginDTO);
     }
 
     @Test

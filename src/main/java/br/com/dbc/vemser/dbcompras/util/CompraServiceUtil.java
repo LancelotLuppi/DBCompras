@@ -5,10 +5,12 @@ import br.com.dbc.vemser.dbcompras.dto.compra.CompraDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraListDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraWithValorItensDTO;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoDTO;
-import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoRelatorioDTO;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemDTO;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemValorizadoDTO;
-import br.com.dbc.vemser.dbcompras.entity.*;
+import br.com.dbc.vemser.dbcompras.entity.CompraEntity;
+import br.com.dbc.vemser.dbcompras.entity.CotacaoXItemEntity;
+import br.com.dbc.vemser.dbcompras.entity.ItemEntity;
+import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
 import br.com.dbc.vemser.dbcompras.entity.pk.CotacaoXItemPK;
 import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
@@ -16,8 +18,9 @@ import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.repository.CompraRepository;
 import br.com.dbc.vemser.dbcompras.repository.CotacaoXItemRepository;
 import br.com.dbc.vemser.dbcompras.repository.ItemRepository;
-import br.com.dbc.vemser.dbcompras.service.CotacaoXItemService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -33,10 +36,8 @@ public class CompraServiceUtil {
     private final UsuarioServiceUtil usuarioServiceUtil;
     private final ObjectMapper objectMapper;
     private final ItemRepository itemRepository;
-
     private final CompraRepository compraRepository;
-
-    private final CotacaoXItemService cotacaoXItemService;
+    private final CotacaoXItemRepository cotacaoXItemRepository;
 
 
     public CompraEntity findByID(Integer idCompra) throws UsuarioException, EntidadeNaoEncontradaException {
@@ -98,14 +99,7 @@ public class CompraServiceUtil {
                                 cotacaoXItemPK.setIdCotacao(cotacaoEntity.getIdCotacao());
                                 cotacaoXItemPK.setIdItem(item.getIdItem());
 
-                                CotacaoXItemEntity cotacaoXItem = new CotacaoXItemEntity();
-
-
-                                try {
-                                    cotacaoXItem = cotacaoXItemService.findById(cotacaoXItemPK);
-                                } catch (EntidadeNaoEncontradaException e) {
-                                    throw new RuntimeException(e);
-                                }
+                                CotacaoXItemEntity cotacaoXItem = cotacaoXItemRepository.findById(cotacaoXItemPK).get();
                                 itemComValor.setIdItem(item.getIdItem());
                                 itemComValor.setNome(item.getNome());
                                 itemComValor.setValorUnitario(cotacaoXItem.getValorDoItem());
