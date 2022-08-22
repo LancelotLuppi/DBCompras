@@ -12,7 +12,6 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class ItemServiceUtil {
-    private final UsuarioServiceUtil usuarioServiceUtil;
 
     public void verificarItensDaCompra(CompraEntity compra, List<Integer> idItensRecebido) throws RegraDeNegocioException {
         List<Integer> idItensDaCompra = compra.getItens().stream()

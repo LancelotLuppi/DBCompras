@@ -86,52 +86,52 @@ public class CotacaoService {
 
     public List<ComprasComCotacaoDTO> listarCompraComCotacao() {
 
-      return compraRepository.findAll()
-              .stream()
-              .map(compraEntity -> {
-                  ComprasComCotacaoDTO comprasComCotacaoDTO = objectMapper.convertValue(compraEntity, ComprasComCotacaoDTO.class);
-                  List<CotacaoComItemDTO> cotacaoComItemDTOS = compraEntity.getCotacoes()
-                          .stream()
-                          .map(cotacaoEntity -> {
-                              CotacaoComItemDTO cotacaoComItemDTO = objectMapper.convertValue(cotacaoEntity, CotacaoComItemDTO.class);
-                              List<ItemValorizadoDTO> itemValorizadoDTOS = compraEntity.getItens()
-                                      .stream()
-                                      .map(item -> {
-                                          ItemValorizadoDTO itemComValor = new ItemValorizadoDTO();
+        return compraRepository.findAll()
+                .stream()
+                .map(compraEntity -> {
+                    ComprasComCotacaoDTO comprasComCotacaoDTO = objectMapper.convertValue(compraEntity, ComprasComCotacaoDTO.class);
+                    List<CotacaoComItemDTO> cotacaoComItemDTOS = compraEntity.getCotacoes()
+                            .stream()
+                            .map(cotacaoEntity -> {
+                                CotacaoComItemDTO cotacaoComItemDTO = objectMapper.convertValue(cotacaoEntity, CotacaoComItemDTO.class);
+                                List<ItemValorizadoDTO> itemValorizadoDTOS = compraEntity.getItens()
+                                        .stream()
+                                        .map(item -> {
+                                            ItemValorizadoDTO itemComValor = new ItemValorizadoDTO();
 
-                                          CotacaoXItemPK cotacaoXItemPK = new CotacaoXItemPK();
-                                          cotacaoXItemPK.setIdCotacao(cotacaoEntity.getIdCotacao());
-                                          cotacaoXItemPK.setIdItem(item.getIdItem());
+                                            CotacaoXItemPK cotacaoXItemPK = new CotacaoXItemPK();
+                                            cotacaoXItemPK.setIdCotacao(cotacaoEntity.getIdCotacao());
+                                            cotacaoXItemPK.setIdItem(item.getIdItem());
 
-                                          CotacaoXItemEntity cotacaoXItem = cotacaoXItemRepository.findById(cotacaoXItemPK).get();
-                                          itemComValor.setIdItem(item.getIdItem());
-                                          itemComValor.setNome(item.getNome());
-                                          itemComValor.setValorUnitario(cotacaoXItem.getValorDoItem());
-                                          itemComValor.setQuantidade(item.getQuantidade());
-                                          itemComValor.setValorTotal(cotacaoXItem.getValorTotal());
-                                          return itemComValor;
-                                      }).toList();
-                              Double valorCotacao = 0.0;
+                                            CotacaoXItemEntity cotacaoXItem = cotacaoXItemRepository.findById(cotacaoXItemPK).get();
+                                            itemComValor.setIdItem(item.getIdItem());
+                                            itemComValor.setNome(item.getNome());
+                                            itemComValor.setValorUnitario(cotacaoXItem.getValorDoItem());
+                                            itemComValor.setQuantidade(item.getQuantidade());
+                                            itemComValor.setValorTotal(cotacaoXItem.getValorTotal());
+                                            return itemComValor;
+                                        }).toList();
+                                double valorCotacao = 0.0;
 
-                              for(ItemValorizadoDTO itemValorizadoDTO : itemValorizadoDTOS){
-                                  valorCotacao += itemValorizadoDTO.getValorUnitario() * itemValorizadoDTO.getQuantidade();
-                              }
-                              cotacaoComItemDTO.setValor(valorCotacao);
-                              cotacaoComItemDTO.setItemValorizadoDTOS(itemValorizadoDTOS);
-                              return cotacaoComItemDTO;
-                          })
-                          .toList();
+                                for (ItemValorizadoDTO itemValorizadoDTO : itemValorizadoDTOS) {
+                                    valorCotacao += itemValorizadoDTO.getValorUnitario() * itemValorizadoDTO.getQuantidade();
+                                }
+                                cotacaoComItemDTO.setValor(valorCotacao);
+                                cotacaoComItemDTO.setItemValorizadoDTOS(itemValorizadoDTOS);
+                                return cotacaoComItemDTO;
+                            })
+                            .toList();
 
-                  double valorTotal = 0;
-                  for(CotacaoComItemDTO cotacaoComItemDTO : cotacaoComItemDTOS){
-                      if(cotacaoComItemDTO.getValor() != null){
-                          valorTotal += cotacaoComItemDTO.getValor();
-                      }
-                  }
-                  comprasComCotacaoDTO.setValorTotal(valorTotal);
-                  comprasComCotacaoDTO.setCotacoes(cotacaoComItemDTOS);
-                  return comprasComCotacaoDTO;
-              }).toList();
+                    double valorTotal = 0;
+                    for (CotacaoComItemDTO cotacaoComItemDTO : cotacaoComItemDTOS) {
+                        if (cotacaoComItemDTO.getValor() != null) {
+                            valorTotal += cotacaoComItemDTO.getValor();
+                        }
+                    }
+                    comprasComCotacaoDTO.setValorTotal(valorTotal);
+                    comprasComCotacaoDTO.setCotacoes(cotacaoComItemDTOS);
+                    return comprasComCotacaoDTO;
+                }).toList();
 
     }
 
