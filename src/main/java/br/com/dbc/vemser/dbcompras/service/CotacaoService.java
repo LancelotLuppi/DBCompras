@@ -89,57 +89,6 @@ public class CotacaoService {
         cotacaoRepository.save(cotacaoSalva);
     }
 
-    public List<CotacaoDTO> listarCotacoes(Integer idCotacao, Integer idCompra) {
-
-        List<CotacaoRelatorioDTO> cotacoes = idCompra != null ? cotacaoRepository.listCotacoesPorCompra(idCompra) : cotacaoRepository.listCotacoes(idCotacao);
-
-        return cotacoes.stream()
-                .map(relatorio -> {
-                    CotacaoEntity cotacaoEntity = cotacaoRepository.findById(relatorio.getIdCotacao()).get();
-                    Set<ItemEntity> itemEntityList = cotacaoEntity.getCompra().getItens();
-                    CotacaoDTO cotacao = objectMapper.convertValue(relatorio, CotacaoDTO.class);
-                    cotacao.setAnexo(Base64.getEncoder().encodeToString(relatorio.getAnexo()));
-                    CompraListCotacaoDTO compraRelatorioDTO = compraRepository.listCompraByIdCotacao(cotacao.getIdCotacao());
-
-                    CompraWithValorItensDTO compraDTO = new CompraWithValorItensDTO();
-                    compraDTO.setIdCompra(compraRelatorioDTO.getIdCompra());
-                    compraDTO.setDataCompra(compraRelatorioDTO.getDataCompra());
-                    compraDTO.setStatus(compraRelatorioDTO.getStatus());
-                    compraDTO.setValor(compraRelatorioDTO.getValorTotal());
-                    compraDTO.setDescricao(compraRelatorioDTO.getDescricao());
-                    compraDTO.setName(compraRelatorioDTO.getName());
-                    compraDTO.setNomeDoUsuario(cotacaoEntity.getCompra().getUsuario().getNome());
-
-                    List<ItemValorizadoDTO> itensComValorDTO = itemEntityList.stream()
-                            .map(item -> {
-                                ItemValorizadoDTO itemComValor = new ItemValorizadoDTO();
-
-                                CotacaoXItemPK cotacaoXItemPK = new CotacaoXItemPK();
-                                cotacaoXItemPK.setIdCotacao(relatorio.getIdCotacao());
-                                cotacaoXItemPK.setIdItem(item.getIdItem());
-                                CotacaoXItemEntity cotacaoXItem = cotacaoXItemRepository.findById(cotacaoXItemPK).get();
-                                itemComValor.setIdItem(item.getIdItem());
-                                itemComValor.setNome(item.getNome());
-                                itemComValor.setValorUnitario(cotacaoXItem.getValorDoItem());
-                                itemComValor.setQuantidade(item.getQuantidade());
-                                itemComValor.setValorTotal(cotacaoXItem.getValorTotal());
-                                return itemComValor;
-                            })
-                            .toList();
-                    Double valorCompra = 0.0;
-
-                    for(ItemValorizadoDTO itemValorizadoDTO : itensComValorDTO){
-                        valorCompra += itemValorizadoDTO.getValorUnitario() * itemValorizadoDTO.getQuantidade();
-                    }
-                    compraDTO.setValor(valorCompra);
-                    compraDTO.setItens(itensComValorDTO);
-                    cotacao.setCompraDTO(compraDTO);
-                    return cotacao;
-                })
-                .toList();
-    }
-
-
     public List<ComprasComCotacaoDTO> cotacaoComCompraList () {
 
       return compraRepository.findAll()

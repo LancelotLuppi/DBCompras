@@ -26,11 +26,6 @@ public class FinanceiroController {
 
     private final CotacaoService cotacaoService;
 
-    @GetMapping("/listar-compras")
-    public ResponseEntity<List<CotacaoDTO>> compras(@RequestParam(name = "idCotacao", required = false) Integer idCotacao, @RequestParam(name = "idCompra", required = false) Integer idCompra)  {
-        return ResponseEntity.ok(cotacaoService.listarCotacoes(idCotacao, idCompra));
-    }
-
     @PutMapping("aprovar-reprovar-compra/{idCompra}")
     public CompraWithValorItensDTO aprovarcompraOuReprovar(@PathVariable("idCompra") Integer idCompra, EnumAprovacao aprovacao) throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
         return compraService.aprovarReprovarCompra(idCompra, aprovacao);
