@@ -78,7 +78,7 @@ public class CompraService {
 
     public CompraDTO updateTeste(Integer idCompra, CompraCreateDTO compraUpdate) throws UsuarioException, RegraDeNegocioException, EntidadeNaoEncontradaException {
         compraServiceUtil.verificarCompraDoUserLogado(idCompra);
-        CompraEntity compra = compraServiceUtil.findByID(idCompra);
+        CompraEntity compra = compraServiceUtil.findByIDCompra(idCompra);
 
         if (!compra.getStatus().equals(StatusCompra.ABERTO)) {
             throw new RegraDeNegocioException("Apenas itens em ABERTO podem ser atualizados!");
@@ -106,7 +106,7 @@ public class CompraService {
 
     public CompraDTO update(Integer idCompra, CompraUpdateDTO compraDTO) throws UsuarioException, EntidadeNaoEncontradaException, RegraDeNegocioException {
         compraServiceUtil.verificarCompraDoUserLogado(idCompra);
-        CompraEntity compra = compraServiceUtil.findByID(idCompra);
+        CompraEntity compra = compraServiceUtil.findByIDCompra(idCompra);
 
         List<Integer> idItemRecebidoList = compraDTO.getItens().stream()
                 .map(ItemUpdateDTO::getIdItem)
@@ -136,7 +136,7 @@ public class CompraService {
 
     public void removerItensDaCompra(Integer idCompra, Integer idItem) throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
         compraServiceUtil.verificarCompraDoUserLogado(idCompra);
-        CompraEntity compra = compraServiceUtil.findByID(idCompra);
+        CompraEntity compra = compraServiceUtil.findByIDCompra(idCompra);
         itemServiceUtil.verificarItensDaCompra(compra, List.of(idCompra));
 
 

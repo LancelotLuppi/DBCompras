@@ -173,7 +173,7 @@ public class CompraServiceTest {
         Integer idCompra = 10;
 
         doNothing().when(compraServiceUtil).verificarCompraDoUserLogado(anyInt());
-        when(compraServiceUtil.findByID(anyInt())).thenReturn(compra);
+        when(compraServiceUtil.findByIDCompra(anyInt())).thenReturn(compra);
         when(itemRepository.save(any(ItemEntity.class))).thenReturn(item);
         when(compraRepository.save(any(CompraEntity.class))).thenReturn(compra);
         when(compraServiceUtil.converterCompraEntityToCompraDTO(any(CompraEntity.class))).thenReturn(compraDTO);
@@ -204,7 +204,7 @@ public class CompraServiceTest {
         Integer idCompra = 10;
 
         doNothing().when(compraServiceUtil).verificarCompraDoUserLogado(anyInt());
-        when(compraServiceUtil.findByID(anyInt())).thenReturn(compra);
+        when(compraServiceUtil.findByIDCompra(anyInt())).thenReturn(compra);
         doNothing().when(itemServiceUtil).verificarItensDaCompra(eq(compra), anyList());
         when(itemRepository.save(any(ItemEntity.class))).thenReturn(item);
         when(itemRepository.findById(anyInt())).thenReturn(Optional.of(item));
@@ -239,7 +239,7 @@ public class CompraServiceTest {
         compra.setStatus(statusCompra);
 
         doNothing().when(compraServiceUtil).verificarCompraDoUserLogado(anyInt());
-        when(compraServiceUtil.findByID(anyInt())).thenReturn(compra);
+        when(compraServiceUtil.findByIDCompra(anyInt())).thenReturn(compra);
 
         CompraDTO compraDTO1 = compraService.updateTeste(idCompra, compraCreateDTO);
 
@@ -273,7 +273,7 @@ public class CompraServiceTest {
         Integer idItem = 10;
 
         doNothing().when(compraServiceUtil).verificarCompraDoUserLogado(anyInt());
-        when(compraServiceUtil.findByID(anyInt())).thenReturn(compra);
+        when(compraServiceUtil.findByIDCompra(anyInt())).thenReturn(compra);
         doNothing().when(itemServiceUtil).verificarItensDaCompra(eq(compra), anyList());
         doNothing().when(itemRepository).delete(any(ItemEntity.class));
         when(itemRepository.findById(anyInt())).thenReturn(Optional.of(item));
@@ -510,13 +510,6 @@ public class CompraServiceTest {
         cotacaoXItemPK.setIdCotacao(10);
         cotacaoXItemPK.setIdItem(10);
         return cotacaoXItemPK;
-    }
-
-    private static CotacaoXItemEntity getCotacaoXItem () {
-        CotacaoXItemEntity cotacaoXItem = new CotacaoXItemEntity();
-        cotacaoXItem.setValorDoItem(10.0);
-        cotacaoXItem.setValorTotal(10.0);
-        return cotacaoXItem;
     }
 
     private static CotacaoEntity getCotacaoEntity () {

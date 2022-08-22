@@ -39,18 +39,6 @@ public class CompraServiceUtil {
     private final CompraRepository compraRepository;
     private final CotacaoXItemRepository cotacaoXItemRepository;
 
-
-    public CompraEntity findByID(Integer idCompra) throws UsuarioException, EntidadeNaoEncontradaException {
-        UsuarioEntity usuario = usuarioServiceUtil.retornarUsuarioEntityLogado();
-
-        Set<CompraEntity> compras = usuario.getCompras();
-
-        return compras.stream()
-                .filter(compraEntity -> compraEntity.getIdCompra().equals(idCompra))
-                .findFirst()
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Esta não compra não existe"));
-    }
-
     public CompraEntity findByIDCompra(Integer idCompra) throws EntidadeNaoEncontradaException {
         return compraRepository.findById(idCompra)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Esta não compra não existe"));
