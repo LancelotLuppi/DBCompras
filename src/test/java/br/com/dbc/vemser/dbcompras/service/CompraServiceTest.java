@@ -44,22 +44,18 @@ public class CompraServiceTest {
 
     @InjectMocks
     private CompraService compraService;
-
     @Mock
     private CompraRepository compraRepository;
-
     @Mock
     private UsuarioServiceUtil usuarioServiceUtil;
-
     @Mock
     private ItemRepository itemRepository;
-
     @Mock
     CompraServiceUtil compraServiceUtil;
-
     @Mock
     private ItemServiceUtil itemServiceUtil;
-
+    @Mock
+    private EmailService emailService;
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Before
@@ -87,6 +83,7 @@ public class CompraServiceTest {
         when(compraRepository.save(any(CompraEntity.class))).thenReturn(compra);
         when(compraServiceUtil.salvarItensDaCompra(eq(compraCreateDTO), eq(compra))).thenReturn(itens);
         when(compraServiceUtil.converterCompraEntityToCompraDTO(any(CompraEntity.class))).thenReturn(compraDTO);
+        doNothing().when(emailService).sendEmail(anyString(), anyString(), anyString(), any(StatusCompra.class));
 
         CompraDTO compraDTO1 = compraService.create(compraCreateDTO);
 
@@ -310,12 +307,11 @@ public class CompraServiceTest {
     public void deveTestarAprovarCompraFinanceiro () throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
 
         CompraEntity compra = getCompraEntity();
-        compra.setStatus(StatusCompra.APROVADO_FINANCEIRO);
+        compra.setStatus(StatusCompra.APROVADO_GESTOR);
         EnumAprovacao aprovacao = EnumAprovacao.APROVAR;
         CompraWithValorItensDTO compraWithValorItensDTO = getCompraWithValorItensDTO();
         compraWithValorItensDTO.setStatus(StatusCompra.APROVADO_FINANCEIRO);
         Integer idCompra = 10;
-
 
         when(compraRepository.findById(anyInt())).thenReturn(Optional.of(compra));
         when(compraRepository.save(any(CompraEntity.class))).thenReturn(compra);
@@ -330,15 +326,14 @@ public class CompraServiceTest {
     }
 
     @Test
-    public void deveTestarReprovarCompraFinanceiro  () throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
-
+    public void deveTestarReprovarCompraFinanceiro  () throws EntidadeNaoEncontradaException, RegraDeNegocioException {
         CompraEntity compra = getCompraEntity();
+        compra.setStatus(StatusCompra.APROVADO_GESTOR);
         StatusCompra statusCompra = StatusCompra.REPROVADO_FINANCEIRO;
         EnumAprovacao aprovacao = EnumAprovacao.REPROVAR;
         CompraWithValorItensDTO compraWithValorItensDTO = getCompraWithValorItensDTO();
         compraWithValorItensDTO.setStatus(statusCompra);
         Integer idCompra = 10;
-
 
         when(compraRepository.findById(anyInt())).thenReturn(Optional.of(compra));
         when(compraRepository.save(any(CompraEntity.class))).thenReturn(compra);
@@ -348,7 +343,16 @@ public class CompraServiceTest {
 
         verify(compraRepository, times(1)).save(any(CompraEntity.class));
         assertEquals(compra1.getStatus(), compra.getStatus());
+    }
 
+    @Test(expected = RegraDeNegocioException.class)
+    public void devetestarAprovarCompraFinanceiroComCompraInvalida() throws EntidadeNaoEncontradaException, RegraDeNegocioException {
+        CompraEntity compra = getCompraEntity();
+        EnumAprovacao aprovacao = EnumAprovacao.APROVAR;
+        Integer idCompra = 10;
+
+        when(compraRepository.findById(anyInt())).thenReturn(Optional.of(compra));
+        compraService.aprovarReprovarCompra(idCompra, aprovacao);
     }
 
     @Test
@@ -382,16 +386,49 @@ public class CompraServiceTest {
         Set<CotacaoEntity> cotacaoEntities = new HashSet<>();
         cotacaoEntities.add(cotacao);
         compra.setCotacoes(cotacaoEntities);
-        StatusCompra statusCompra = StatusCompra.COTADO;
         Integer idCompra = 10;
-        CompraDTO compraDTO = getCompraDTO();
 
         when(compraRepository.findById(anyInt())).thenReturn(Optional.of(compra));
 
-        CompraDTO compraDTO1 = compraService.finalizarCotacao(idCompra);
-
+        compraService.finalizarCotacao(idCompra);
     }
 
+    @Test
+    public void deveTestarReprovarCompraGestorComSucesso() throws EntidadeNaoEncontradaException, RegraDeNegocioException {
+        CompraEntity compra = getCompraEntity();
+        compra.setStatus(StatusCompra.COTADO);
+        CompraEntity compraRetorno = getCompraEntity();
+        compraRetorno.setStatus(StatusCompra.REPROVADO_GESTOR);
+        Integer idCompra = 10;
+
+        when(compraServiceUtil.findByIDCompra(anyInt())).thenReturn(compra);
+        when(compraRepository.save(any(CompraEntity.class))).thenReturn(compraRetorno);
+        doNothing().when(emailService).sendEmail(anyString(), anyString(), anyString(), any(StatusCompra.class));
+
+        compraService.reprovarCompraGestor(idCompra);
+
+        assertNotNull(compraRetorno);
+        assertEquals(compraRetorno.getStatus(), StatusCompra.REPROVADO_GESTOR);
+    }
+
+    @Test(expected = EntidadeNaoEncontradaException.class)
+    public void deveTestarReprovarCompraGestorSemCompra() throws EntidadeNaoEncontradaException, RegraDeNegocioException {
+        Integer idCompra = 10;
+
+        doThrow(EntidadeNaoEncontradaException.class).when(compraServiceUtil).findByIDCompra(anyInt());
+
+        compraService.reprovarCompraGestor(idCompra);
+    }
+
+    @Test(expected = RegraDeNegocioException.class)
+    public void deveTestarReprovarCompraGestorOperacaoInvalida() throws EntidadeNaoEncontradaException, RegraDeNegocioException {
+        CompraEntity compra = getCompraEntity();
+        Integer idCompra = 10;
+
+        when(compraServiceUtil.findByIDCompra(anyInt())).thenReturn(compra);
+
+        compraService.reprovarCompraGestor(idCompra);
+    }
 
     private static ItemUpdateDTO getItemUpdateDTO () {
         ItemUpdateDTO itemUpdateDTO = new ItemUpdateDTO();
