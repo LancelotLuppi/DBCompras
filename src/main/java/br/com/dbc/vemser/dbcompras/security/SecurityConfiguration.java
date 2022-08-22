@@ -39,6 +39,7 @@ public class SecurityConfiguration {
                 authz.antMatchers("/", "/auth/**", "/usuario").permitAll()
                         .antMatchers("/colaborador/**")
                         .hasAnyRole("COLABORADOR", "COMPRADOR","GESTOR")
+                        .antMatchers("/comprador/listar").hasAnyRole("COLABORADOR", "COMPRADOR")
                         .anyRequest()
                         .authenticated();
     }

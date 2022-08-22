@@ -1,8 +1,9 @@
 package br.com.dbc.vemser.dbcompras.util;
 
-import br.com.dbc.vemser.dbcompras.dto.compra.CompraCreateDTO;
+import br.com.dbc.vemser.dbcompras.dto.compra.*;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemCreateDTO;
 import br.com.dbc.vemser.dbcompras.entity.*;
+import br.com.dbc.vemser.dbcompras.entity.pk.CotacaoXItemPK;
 import br.com.dbc.vemser.dbcompras.enums.StatusCompra;
 import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
@@ -105,12 +106,72 @@ public class CompraServiceUtilTest {
         compraServiceUtil.verificarCompraDoUserLogado(12);
     }
 
-//    @Test
-//    public void deveTestarSalvarItensDaCompra() {
-//        CompraCreateDTO compraCreateDTO = getCompraCreateDTO();
-//
-//        when(itemRepository.save(any(ItemEntity.class))).thenReturn();
-//    }
+    @Test
+    public void deveTestarSalvarItensDaCompra() {
+        CompraCreateDTO compraCreateDTO = getCompraCreateDTO();
+        CompraEntity compraSalva = getCompraEntity();
+        ItemEntity itemEntity = getItemEntity();
+
+        when(itemRepository.save(any(ItemEntity.class))).thenReturn(itemEntity);
+
+        Set<ItemEntity> itens = compraServiceUtil.salvarItensDaCompra(compraCreateDTO, compraSalva);
+
+        assertNotNull(itens);
+        assertEquals(1, itens.size());
+        assertEquals(12, itens.stream().findFirst().get().getIdItem());
+    }
+
+    @Test
+    public void deveTestarConverterCompraEntityToCompraCreateDTO() {
+        CompraEntity compra = getCompraEntity();
+        CompraDTO compraDTO = compraServiceUtil.converterCompraEntityToCompraDTO(compra);
+
+        assertNotNull(compraDTO);
+        assertEquals(1, compraDTO.getItens().size());
+        assertEquals(10, compraDTO.getIdCompra());
+        assertEquals("compra", compraDTO.getName());
+        assertEquals("descricao", compraDTO.getDescricao());
+    }
+
+
+    @Test
+    public void deveTestarConverterCompraEntityToCompraWithValorComSucesso() throws RegraDeNegocioException {
+        UsuarioEntity usuario = getUsuarioEntity();
+        CompraEntity compra = getCompraEntity();
+        compra.setUsuario(usuario);
+        ItemEntity item = getItemEntity();
+        compra.setItens(Set.of(item));
+        CotacaoEntity cotacao = getCotacaoEntity();
+        cotacao.setCompra(compra);
+        CotacaoXItemEntity cotacaoXItemEntity = getCotacaoXItemEntity();
+        cotacaoXItemEntity.setCotacaoXItemPK(getCotacaoXItemPK());
+        cotacaoXItemEntity.setItem(getItemEntity());
+        cotacaoXItemEntity.setCotacao(cotacao);
+        cotacao.setItens(Set.of(cotacaoXItemEntity));
+        compra.setCotacoes(Set.of(cotacao));
+
+        when(cotacaoXItemRepository.findById(any())).thenReturn(Optional.of(cotacaoXItemEntity));
+
+        CompraWithValorItensDTO compraRetorno = compraServiceUtil.converterCompraEntityToCompraWithValor(compra);
+
+        assertNotNull(compraRetorno);
+        assertEquals(1, compraRetorno.getItens().size());
+    }
+
+    @Test
+    public void deveTestarConverterEntityParaListDTOComSucesso() {
+        CompraEntity compra = getCompraEntity();
+        ItemEntity item = getItemEntity();
+        compra.setItens(Set.of(item));
+
+        CompraListDTO listDTO = compraServiceUtil.converterEntityParaListDTO(compra);
+
+        assertNotNull(listDTO);
+        assertEquals(10, listDTO.getIdCompra());
+        assertEquals("compra", listDTO.getName());
+        assertEquals("descricao", listDTO.getDescricao());
+        assertEquals(1, listDTO.getItens().size());
+    }
 
     private static CompraEntity getCompraEntity() {
         CompraEntity compra = new CompraEntity();
@@ -128,7 +189,7 @@ public class CompraServiceUtilTest {
         itemEntity.setNome("batata");
         itemEntity.setQuantidade(3);
 
-        compra.setItens(Set.of());
+        compra.setItens(Set.of(itemEntity));
         compra.setCotacoes(null);
         return compra;
     }
@@ -141,10 +202,35 @@ public class CompraServiceUtilTest {
         return itemEntity;
     }
 
+    public CotacaoEntity getCotacaoEntity() {
+        CotacaoEntity cotacao = new CotacaoEntity();
+        cotacao.setIdCotacao(10);
+        cotacao.setNome("Cotacao");
+        cotacao.setValor(30.0);
+        return cotacao;
+    }
+
+    public CotacaoXItemEntity getCotacaoXItemEntity() {
+        CotacaoXItemEntity cotacaoXItem = new CotacaoXItemEntity();
+        cotacaoXItem.setValorDoItem(10.0);
+        cotacaoXItem.setValorTotal(30.0);
+
+        return cotacaoXItem;
+    }
+
+    public CotacaoXItemPK getCotacaoXItemPK() {
+        CotacaoEntity cotacao = getCotacaoEntity();
+        ItemEntity item =getItemEntity();
+        CotacaoXItemPK cotacaoXItemPK = new CotacaoXItemPK();
+        cotacaoXItemPK.setIdCotacao(cotacao.getIdCotacao());
+        cotacaoXItemPK.setIdItem(item.getIdItem());
+        return cotacaoXItemPK;
+    }
+
     private static UsuarioEntity getUsuarioEntity() {
         UsuarioEntity usuario = new UsuarioEntity();
         CargoEntity cargo = new CargoEntity();
-        String str = "byte array size example";
+        String str = "imagem";
         byte array[] = str.getBytes();
         CompraEntity compra = new CompraEntity();
         CotacaoEntity cotacao = new CotacaoEntity();

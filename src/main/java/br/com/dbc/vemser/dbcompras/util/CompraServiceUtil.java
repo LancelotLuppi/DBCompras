@@ -70,7 +70,7 @@ public class CompraServiceUtil {
         return compraDTO;
     }
 
-    public CompraWithValorItensDTO converterCompraEntityToCompraWithValor (CompraEntity compra) throws RegraDeNegocioException {
+    public CompraWithValorItensDTO converterCompraEntityToCompraWithValor (CompraEntity compra) {
 
         CotacaoDTO cotacaoDTOList = compra.getCotacoes()
                 .stream()
@@ -101,9 +101,7 @@ public class CompraServiceUtil {
                     cotacaoDTO.setCompraDTO(compraDTO);
                     return cotacaoDTO;
 
-                })
-                .findFirst()
-                .orElseThrow(()-> new RegraDeNegocioException("está compra não tem uma cotação"));
+                }).findFirst().get();
 
         List<ItemValorizadoDTO> itemValorizadoDTOS = cotacaoDTOList
                 .getCompraDTO().getItens();
