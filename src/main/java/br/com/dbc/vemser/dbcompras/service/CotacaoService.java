@@ -137,12 +137,6 @@ public class CotacaoService {
     }
 
 
-    public CotacaoXItemEntity findById(CotacaoXItemPK cotacaoXItemPK) throws EntidadeNaoEncontradaException {
-        return cotacaoXItemRepository.findById(cotacaoXItemPK)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Este item não existe"));
-    }
-
-
     public CotacaoDTO aprovarOuReprovarCotacao(Integer idCotacao, EnumAprovacao enumAprovacao) throws EntidadeNaoEncontradaException, RegraDeNegocioException {
 
         CotacaoEntity cotacao = cotacaoServiceUtil.findById(idCotacao);

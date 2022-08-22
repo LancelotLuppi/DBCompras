@@ -5,10 +5,7 @@ import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoDTO;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoRelatorioDTO;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoValorItensDTO;
-import br.com.dbc.vemser.dbcompras.entity.CompraEntity;
-import br.com.dbc.vemser.dbcompras.entity.CotacaoEntity;
-import br.com.dbc.vemser.dbcompras.entity.CotacaoXItemEntity;
-import br.com.dbc.vemser.dbcompras.entity.ItemEntity;
+import br.com.dbc.vemser.dbcompras.entity.*;
 import br.com.dbc.vemser.dbcompras.entity.pk.CotacaoXItemPK;
 import br.com.dbc.vemser.dbcompras.enums.EnumAprovacao;
 import br.com.dbc.vemser.dbcompras.enums.StatusCompra;
@@ -70,6 +67,8 @@ public class CotacaoServiceTest {
 
     @Mock
     private CotacaoServiceUtil cotacaoServiceUtil;
+    @Mock
+    private EmailService emailService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -110,43 +109,7 @@ public class CotacaoServiceTest {
         cotacaoService.create(idCotacao, cotacaoCreateDTO);
 
         verify(cotacaoRepository , times(2)).save(any(CotacaoEntity.class));
-
     }
-
-//    @Test
-//    public void deveListarCotacoesComSucesso () {
-//
-//        List<CotacaoRelatorioDTO> cotacaoRelatorioDTOS = new ArrayList<>();
-//        CotacaoRelatorioDTO cotacaoRelatorioDTO = getCotacaoRelatorioDTO();
-//        cotacaoRelatorioDTOS.add(cotacaoRelatorioDTO);
-//        Integer idCotacao = 10;
-//        CotacaoEntity cotacao = getCotacaoEntity();
-//        CompraEntity compra = getCompraEntity();
-//        ItemEntity item = getItemEntity();
-//        compra.setItens(Set.of(item));
-//        cotacao.setCompra(compra);
-//        item.setCompra(compra);
-//        CotacaoXItemEntity itemEntity = getCotacaoXItem();
-//        item.setCotacoes(Set.of(itemEntity));
-//        CotacaoXItemPK cotacaoXItemPK = getCotacaoXItemPK();
-//        itemEntity.setCotacaoXItemPK(cotacaoXItemPK);
-//        Set<CotacaoXItemEntity> itemEntitySet = new HashSet<>();
-//        itemEntitySet.add(itemEntity);
-//        cotacao.setItens(itemEntitySet);
-//        CompraListCotacaoDTO compraListCotacaoDTO = getCompraListCotacaoDTO();
-//
-//
-//        when(cotacaoRepository.listCotacoes(anyInt())).thenReturn(cotacaoRelatorioDTOS);
-//        when(cotacaoRepository.findById(anyInt())).thenReturn(Optional.of(cotacao));
-//        when(compraRepository.listCompraByIdCotacao(anyInt())).thenReturn(compraListCotacaoDTO);
-//        when(cotacaoXItemRepository.findById(cotacaoXItemPK)).thenReturn(Optional.of(itemEntity));
-//
-//        List<CotacaoDTO> cotacaoDTOList = cotacaoService.listarCotacoes(idCotacao);
-//
-//        assertNotNull(cotacaoDTOList);
-//        assertFalse(cotacaoDTOList.isEmpty());
-//
-//    }
 
     @Test
     public void deveTestarAprovarCotacaoComSucesso () throws EntidadeNaoEncontradaException, RegraDeNegocioException {
@@ -154,7 +117,6 @@ public class CotacaoServiceTest {
         CompraEntity compra = getCompraEntity();
         cotacao.setCompra(compra);
         Integer idCotacao = 10;
-        Integer idCompra = 10;
         CotacaoDTO cotacaoDTO = getCotacaoDTO();
         EnumAprovacao aprovacao = EnumAprovacao.APROVAR;
         cotacaoDTO.setStatus(StatusCotacao.APROVADO);
@@ -165,12 +127,12 @@ public class CotacaoServiceTest {
         when(compraRepository.save(any(CompraEntity.class))).thenReturn(compra);
         when(cotacaoRepository.save(any(CotacaoEntity.class))).thenReturn(cotacao);
         when(cotacaoServiceUtil.converterCotacaoToCotacaoDTO(any(CotacaoEntity.class))).thenReturn(cotacaoDTO);
+        doNothing().when(emailService).sendEmail(anyString(), anyString(), anyString(), any(StatusCompra.class));
 
         CotacaoDTO cotacaoDTO1 = cotacaoService.aprovarOuReprovarCotacao(idCotacao, aprovacao);
 
         assertNotNull(cotacaoDTO1);
         assertEquals(cotacaoDTO1.getStatus(), cotacaoDTO.getStatus());
-
     }
 
     private static CompraListCotacaoDTO getCompraListCotacaoDTO () {
@@ -234,6 +196,7 @@ public class CotacaoServiceTest {
     private static CotacaoEntity getCotacaoEntity () {
         CotacaoEntity cotacao = new CotacaoEntity();
         cotacao.setIdCotacao(10);
+        cotacao.setNome("Teste");
         cotacao.setLocalDate(LocalDateTime.now());
         cotacao.setStatus(StatusCotacao.EM_ABERTO);
         cotacao.setValor(10.0);
@@ -255,6 +218,9 @@ public class CotacaoServiceTest {
 
     private static CompraEntity getCompraEntity () {
         CompraEntity compra = new CompraEntity();
+        UsuarioEntity user = new UsuarioEntity();
+        user.setNome("Nome user");
+        compra.setUsuario(user);
         compra.setIdCompra(10);
         compra.setDataCompra(LocalDateTime.of(1991, 9, 8,10,20));
         compra.setStatus(StatusCompra.ABERTO);
