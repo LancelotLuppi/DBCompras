@@ -1,7 +1,5 @@
 package br.com.dbc.vemser.dbcompras.service;
 
-import br.com.dbc.vemser.dbcompras.enums.EnumAprovacao;
-import br.com.dbc.vemser.dbcompras.enums.StatusCompra;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import lombok.RequiredArgsConstructor;
@@ -21,15 +19,14 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class EmailService {
     private final freemarker.template.Configuration fmConfiguration;
+    private final JavaMailSender emailSender;
 
     @Value("${spring.mail.username}")
     private String from;
-    private String mensagem;
-
-    private final JavaMailSender emailSender;
+    private String mensagem = "";
 
 
-    public void sendEmail(String nome, String compra, String email, StatusCompra statusCompra) {
+    public void sendEmail(String nome, String compra, String email, String statusCompra) {
         MimeMessage mimeMessage = emailSender.createMimeMessage();
         try {
 
@@ -38,19 +35,19 @@ public class EmailService {
             mimeMessageHelper.setFrom(from);
             mimeMessageHelper.setTo(email);
             switch (statusCompra){
-                case ABERTO -> {
+                case "ABERTO" -> {
                     mimeMessageHelper.setSubject("Solicitação de compra recebida");
                 }
-                case APROVADO_GESTOR -> {
+                case "APROVADO_GESTOR" -> {
                     mimeMessageHelper.setSubject("Solicitação de compra aprovada - gestor");
                 }
-                case REPROVADO_GESTOR -> {
+                case "REPROVADO_GESTOR" -> {
                     mimeMessageHelper.setSubject("Solicitação de compra reprovada - gestor");
                 }
-                case APROVADO_FINANCEIRO -> {
+                case "APROVADO_FINANCEIRO" -> {
                     mimeMessageHelper.setSubject("Solicitação de compra aprovada - financeiro");
                 }
-                case REPROVADO_FINANCEIRO -> {
+                case "REPROVADO_FINANCEIRO" -> {
                     mimeMessageHelper.setSubject("Solicitação de compra reprovada - financeiro");
                 }
                 default -> mimeMessageHelper.setSubject("Compra finalizada com sucesso");
@@ -63,7 +60,7 @@ public class EmailService {
         }
     }
 
-    public String geContentFromTemplate(String nome, String compra, String email, StatusCompra status) throws IOException, TemplateException {
+    public String geContentFromTemplate(String nome, String compra, String email, String status) throws IOException, TemplateException {
         Map<String, Object> dados = new HashMap<>();
 
         // local
@@ -75,27 +72,23 @@ public class EmailService {
         dados.put("compra", compra);
 
 
-        String html = null;
+        Template template = null;
         switch (status){
-            case ABERTO -> {
-                Template template = fmConfiguration.getTemplate("nova-compra-template.html");
-                html = FreeMarkerTemplateUtils.processTemplateIntoString(template, dados);
+            case "REPROVADO_GESTOR", "REPROVADO_FINANCEIRO" -> {
+                template = fmConfiguration.getTemplate("solicitacao_reprovada-template.ftl");
             }
-            case REPROVADO_GESTOR, REPROVADO_FINANCEIRO -> {
-                Template template = fmConfiguration.getTemplate("solicitacao-reprovada.html");
-                html = FreeMarkerTemplateUtils.processTemplateIntoString(template, dados);
+            case "APROVADO_GESTOR", "APROVADO_FINANCEIRO" -> {
+                template = fmConfiguration.getTemplate("solicitacao_aprovada-template.ftl");
             }
-            case APROVADO_GESTOR, APROVADO_FINANCEIRO -> {
-                Template template = fmConfiguration.getTemplate("solicitacao-aprovada.html");
-                html = FreeMarkerTemplateUtils.processTemplateIntoString(template, dados);
+            case "FECHADO" -> {
+                template = fmConfiguration.getTemplate("compra_finalizada-template.ftl");
             }
-            case FECHADO -> {
-                Template template = fmConfiguration.getTemplate("edit-email-template.ftl");
-                html = FreeMarkerTemplateUtils.processTemplateIntoString(template, dados);
+            default -> {
+                template = fmConfiguration.getTemplate("nova_compra-template.ftl");
             }
         }
 
-        return html;
+        return FreeMarkerTemplateUtils.processTemplateIntoString(template, dados);
     }
 
     public String getMensagem() {
