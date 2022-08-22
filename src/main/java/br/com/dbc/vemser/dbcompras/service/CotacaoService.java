@@ -1,7 +1,5 @@
 package br.com.dbc.vemser.dbcompras.service;
 
-import br.com.dbc.vemser.dbcompras.dto.compra.CompraListCotacaoDTO;
-import br.com.dbc.vemser.dbcompras.dto.compra.CompraWithValorItensDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.ComprasComCotacaoDTO;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.*;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemValorizadoDTO;
@@ -29,7 +27,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
-import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
@@ -89,7 +86,7 @@ public class CotacaoService {
         cotacaoRepository.save(cotacaoSalva);
     }
 
-    public List<ComprasComCotacaoDTO> cotacaoComCompraList () {
+    public List<ComprasComCotacaoDTO> listarCompraComCotacao() {
 
       return compraRepository.findAll()
               .stream()

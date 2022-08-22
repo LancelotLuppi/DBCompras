@@ -2,7 +2,6 @@ package br.com.dbc.vemser.dbcompras.controller;
 
 import br.com.dbc.vemser.dbcompras.dto.compra.CompraWithValorItensDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.ComprasComCotacaoDTO;
-import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoDTO;
 import br.com.dbc.vemser.dbcompras.enums.EnumAprovacao;
 import br.com.dbc.vemser.dbcompras.exception.EntidadeNaoEncontradaException;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
@@ -34,6 +33,6 @@ public class FinanceiroController {
 
     @GetMapping("/listar-compras-com-cotacoes")
     public ResponseEntity<List<ComprasComCotacaoDTO>> listarCompras () {
-        return ResponseEntity.ok(cotacaoService.cotacaoComCompraList());
+        return ResponseEntity.ok(cotacaoService.listarCompraComCotacao());
     }
 }

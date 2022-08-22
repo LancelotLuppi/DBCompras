@@ -31,7 +31,7 @@ public class GestorController {
 
     @GetMapping("/listar")
     public ResponseEntity<List<ComprasComCotacaoDTO>> listarCompras () {
-        return ResponseEntity.ok(cotacaoService.cotacaoComCompraList());
+        return ResponseEntity.ok(cotacaoService.listarCompraComCotacao());
     }
 
 
