@@ -84,9 +84,9 @@ public class CotacaoService {
         cotacaoRepository.save(cotacaoSalva);
     }
 
-    public List<ComprasComCotacaoDTO> listarCompraComCotacao() {
+    public List<ComprasComCotacaoDTO> listarCompraComCotacao(Integer idCompra) {
 
-        return compraRepository.findAll()
+        return compraRepository.findAllOuPorId(idCompra)
                 .stream()
                 .map(compraEntity -> {
                     ComprasComCotacaoDTO comprasComCotacaoDTO = objectMapper.convertValue(compraEntity, ComprasComCotacaoDTO.class);

@@ -32,8 +32,8 @@ public class CompradorController {
     }
 
     @GetMapping("/listar")
-    public ResponseEntity<List<ComprasComCotacaoDTO>> listarCompras () {
-        return ResponseEntity.ok(cotacaoService.listarCompraComCotacao());
+    public ResponseEntity<List<ComprasComCotacaoDTO>> listarCompras (@RequestParam(name = "idCompra", required = false) Integer idCompra) {
+        return ResponseEntity.ok(cotacaoService.listarCompraComCotacao(idCompra));
     }
 
     @PutMapping("/concluir-cotacao")
