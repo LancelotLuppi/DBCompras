@@ -41,10 +41,8 @@ public class UsuarioServiceUtil {
     }
 
     public UsuarioEntity retornarUsuarioEntityLogado()
-            throws UsuarioException {
-        return usuarioRepository
-                .findById(getIdLoggedUser())
-                .orElseThrow(() -> new UsuarioException("Usuário não cadastrado"));
+            throws UsuarioException, RegraDeNegocioException {
+        return findById(getIdLoggedUser());
     }
 
     public Integer getIdLoggedUser() throws UsuarioException {

@@ -28,7 +28,7 @@ public class UsuarioController implements UsuarioDocumentation {
     }
 
     @GetMapping("/get-logged")
-    public ResponseEntity<UserWithCargoDTO> getUser() throws UsuarioException {
+    public ResponseEntity<UserWithCargoDTO> getUser() throws UsuarioException, RegraDeNegocioException {
         return ResponseEntity.ok(usuarioService.getLoggedUser());
     }
 

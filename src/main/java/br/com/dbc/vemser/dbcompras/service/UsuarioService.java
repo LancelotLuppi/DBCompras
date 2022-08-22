@@ -128,7 +128,7 @@ public class UsuarioService {
 
     }
 
-    public UserWithCargoDTO getLoggedUser() throws UsuarioException {
+    public UserWithCargoDTO getLoggedUser() throws UsuarioException, RegraDeNegocioException {
         UsuarioEntity usuarioEntity = usuarioServiceUtil.retornarUsuarioEntityLogado();
         UserWithCargoDTO userWithProfileImageDTO = usuarioServiceUtil.retornarUsuarioDTOComCargo(usuarioEntity);
 

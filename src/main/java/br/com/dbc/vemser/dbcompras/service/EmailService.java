@@ -56,6 +56,8 @@ public class EmailService {
 
             emailSender.send(mimeMessageHelper.getMimeMessage());
         } catch (MessagingException | IOException | TemplateException e) {
+
+            e.printStackTrace();
             mensagem = "Exception verificada";
         }
     }

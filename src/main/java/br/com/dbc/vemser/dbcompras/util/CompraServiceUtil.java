@@ -40,7 +40,7 @@ public class CompraServiceUtil {
     private final CotacaoXItemRepository cotacaoXItemRepository;
 
 
-    public CompraEntity findByID(Integer idCompra) throws UsuarioException, EntidadeNaoEncontradaException {
+    public CompraEntity findByID(Integer idCompra) throws UsuarioException, EntidadeNaoEncontradaException, RegraDeNegocioException {
         UsuarioEntity usuario = usuarioServiceUtil.retornarUsuarioEntityLogado();
 
         Set<CompraEntity> compras = usuario.getCompras();

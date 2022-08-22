@@ -28,7 +28,7 @@ public interface UsuarioDocumentation {
             "do usuário que está logado na aplicação.")
         @ApiResponse(responseCode = "200", description = "Retorna os dados com sucesso")
         @ApiResponse(responseCode = "400", description = "Erro de formatação do JSON || Usuário não cadastrado")
-    ResponseEntity<UserWithCargoDTO> getUser() throws UsuarioException;
+    ResponseEntity<UserWithCargoDTO> getUser() throws UsuarioException, RegraDeNegocioException;
 
     @Operation(summary = "Atualizar dados gerais do usuário logado", description = "Atualiza os dados de nome, email e foto " +
             "do usuário que está logado no sistema, pode-se alterar apenas um campo caso necessite")
