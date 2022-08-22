@@ -30,22 +30,6 @@ public interface CompraRepository extends JpaRepository<CompraEntity, Integer> {
             "where (u.idUser = :idUsuario)")
     List<CompraEntity> findAllByUsuarioId(Integer idUsuario);
 
-    @Query(value = """
-                select new br.com.dbc.vemser.dbcompras.dto.compra.CompraListCotacaoDTO(
-                    c.idCompra, 
-                    c.name, 
-                    c.descricao, 
-                    c.dataCompra, 
-                    c.valorTotal, 
-                    c.status
-                )
-                from purchase c 
-                join c.cotacoes cot 
-                where (:idCotacao is null OR cot.idCotacao = :idCotacao)
-                order by c.dataCompra desc
-            """)
-    CompraListCotacaoDTO listCompraByIdCotacao(@Param("idCotacao") Integer idCotacao);
-
     @Query("select new br.com.dbc.vemser.dbcompras.dto.compra.CompraRelatorioDTO (" +
             "p.idCompra," +
             "p.name," +
@@ -68,22 +52,4 @@ public interface CompraRepository extends JpaRepository<CompraEntity, Integer> {
             where (:idCompra = c.idCompra OR :idCompra is null)
             """)
     List<CompraEntity> findAllOuPorId(@RequestParam("idCompra") Integer idCompra);
-
-
-//    @Query("""
-//            select c
-//            from purchase c
-//            join c.usuario u
-//            where (u.nome LIKE CONCAT('%',:nomeUsuario,'%'))
-//            ORDER BY CASE c.status LIKE CONCAT('%',APROVADO_GESTOR,'%'))
-//            """)
-//    List<CompraEntity> listByNomeUsuarioAndCompraNome(@Param("nomeUsuario") String nomeUsuario, @Param("nomeCompra") String nomeCompra);
-
-//    @Query("""
-//            select c
-//            from purchase c
-//            where (c.name LIKE CONCAT('%',:nomeCompra, '%'))
-//            order by case LIKE CONCAT('%', APROVADO_GESTOR ,'%')
-//            """)
-//    List<CompraEntity> listByNomeCompra(@Param("nomeCompra") String nomeCompra);
 }
