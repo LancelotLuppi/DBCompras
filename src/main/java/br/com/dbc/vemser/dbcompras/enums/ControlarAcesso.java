@@ -1,7 +1,7 @@
 package br.com.dbc.vemser.dbcompras.enums;
 
 public enum ControlarAcesso {
-    ATIVAR (1), DESATIVAR(0);
+    DESATIVAR(0);
 
     private Integer enable;
 

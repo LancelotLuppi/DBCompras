@@ -183,6 +183,9 @@ public class CompraService {
         if (compra.getCotacoes().size() < 2) {
             throw new RegraDeNegocioException("A compra deve ter ao menos duas cotações registradas para ser finalizada");
         }
+        if(!compra.getStatus().equals(StatusCompra.EM_COTACAO)) {
+            throw new RegraDeNegocioException("A compra deve estar EM_COTACAO para a cotacao ser finalizada!");
+        }
         compra.setStatus(StatusCompra.COTADO);
         return compraServiceUtil.converterCompraEntityToCompraDTO(compraRepository.save(compra));
     }
