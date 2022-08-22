@@ -1,10 +1,8 @@
 package br.com.dbc.vemser.dbcompras.service;
 
-import br.com.dbc.vemser.dbcompras.dto.compra.CompraListCotacaoDTO;
 import br.com.dbc.vemser.dbcompras.dto.compra.ComprasComCotacaoDTO;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoCreateDTO;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoDTO;
-import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoRelatorioDTO;
 import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoValorItensDTO;
 import br.com.dbc.vemser.dbcompras.entity.*;
 import br.com.dbc.vemser.dbcompras.entity.pk.CotacaoXItemPK;
@@ -36,7 +34,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
@@ -201,26 +198,6 @@ public class CotacaoServiceTest {
         assertEquals(100, comprasDTO.get(0).getValorTotal(), 0);
     }
 
-    private static CompraListCotacaoDTO getCompraListCotacaoDTO () {
-        CompraListCotacaoDTO compraListCotacaoDTO = new CompraListCotacaoDTO();
-        compraListCotacaoDTO.setIdCompra(10);
-        compraListCotacaoDTO.setDescricao("teste");
-        compraListCotacaoDTO.setName("teste");
-        compraListCotacaoDTO.setValorTotal(10.0);
-        return compraListCotacaoDTO;
-    }
-
-    private static CotacaoRelatorioDTO getCotacaoRelatorioDTO () {
-        CotacaoRelatorioDTO cotacaoRelatorioDTO = new CotacaoRelatorioDTO();
-        cotacaoRelatorioDTO.setIdCotacao(10);
-        cotacaoRelatorioDTO.setNome("teste");
-        cotacaoRelatorioDTO.setStatus(StatusCotacao.EM_ABERTO);
-        cotacaoRelatorioDTO.setValor(10.0);
-        String str = "byte array size example";
-        byte array[] = str.getBytes();
-        cotacaoRelatorioDTO.setAnexo(array);
-        return cotacaoRelatorioDTO;
-    }
     private static CotacaoValorItensDTO getCotacaoValorItensDTO () {
         CotacaoValorItensDTO cotacaoValorItensDTO = new CotacaoValorItensDTO();
         cotacaoValorItensDTO.setValorDoItem(10.0);
@@ -243,13 +220,6 @@ public class CotacaoServiceTest {
         cotacaoDTO.setAnexo("teste");
         cotacaoDTO.setStatus(StatusCotacao.EM_ABERTO);
         return cotacaoDTO;
-    }
-
-    private static CotacaoXItemPK getCotacaoXItemPK () {
-        CotacaoXItemPK cotacaoXItemPK = new CotacaoXItemPK();
-        cotacaoXItemPK.setIdCotacao(10);
-        cotacaoXItemPK.setIdItem(10);
-        return cotacaoXItemPK;
     }
 
     private static CotacaoXItemEntity getCotacaoXItem () {
