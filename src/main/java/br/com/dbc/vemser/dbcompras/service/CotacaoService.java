@@ -43,6 +43,7 @@ public class CotacaoService {
     private final CompraServiceUtil compraServiceUtil;
     private final CotacaoServiceUtil cotacaoServiceUtil;
     private final ItemServiceUtil itemServiceUtil;
+    private final EmailService emailService;
 
     private final CotacaoXItemService cotacaoXItemService;
 
@@ -211,14 +212,16 @@ public class CotacaoService {
         cotacaoServiceUtil.verificarStatusDaCompraAndCotacao(compra, cotacao);
 
         cotacao.setStatus(enumAprovacao.equals(EnumAprovacao.APROVAR) ? StatusCotacao.APROVADO : StatusCotacao.REPROVADO);
+
         compra.setStatus(StatusCompra.APROVADO_GESTOR);
         compra.setValorTotal(cotacao.getValor());
 
         compraRepository.save(compra);
         cotacao = cotacaoRepository.save(cotacao);
 
+        emailService.sendEmail(compra.getUsuario().getNome(), compra.getName(), compra.getUsuario().getNome(), compra.getStatus());
+
         return cotacaoServiceUtil.converterCotacaoToCotacaoDTO(cotacao);
     }
-
 
 }
