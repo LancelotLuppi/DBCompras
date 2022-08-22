@@ -172,7 +172,7 @@ public class CotacaoServiceTest {
         when(compraRepository.save(any(CompraEntity.class))).thenReturn(compra);
         when(cotacaoRepository.save(any(CotacaoEntity.class))).thenReturn(cotacao);
         when(cotacaoServiceUtil.converterCotacaoToCotacaoDTO(any(CotacaoEntity.class))).thenReturn(cotacaoDTO);
-        doNothing().when(emailService).sendEmail(anyString(), anyString(), anyString(), any(StatusCompra.class));
+        doNothing().when(emailService).sendEmail(anyString(), anyString(), anyString(), anyString());
 
         CotacaoDTO cotacaoDTO1 = cotacaoService.aprovarOuReprovarCotacao(idCotacao, aprovacao);
 

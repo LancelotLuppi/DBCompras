@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -17,7 +17,7 @@
 
             <div>
               <br>"Olá, ${nome}," <br>
-              Recebemos a sua solicitação de nova compra<br>
+              A sua solicitação recebeu aprovação e seguirá em nossos procedimentos<br>
               <br>
               Acompanhe o andamento da compra através do seu email
               <br>Att,<br>

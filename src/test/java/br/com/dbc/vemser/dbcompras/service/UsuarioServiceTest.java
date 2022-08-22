@@ -230,7 +230,7 @@ public class UsuarioServiceTest {
     }
 
     @Test
-    public void deveTestarRetornarUsuarioLogadoComSucesso () throws UsuarioException {
+    public void deveTestarRetornarUsuarioLogadoComSucesso () throws UsuarioException, RegraDeNegocioException {
 
         UsuarioEntity usuario = getUsuarioEntity();
         UserWithCargoDTO userWithProfileImageDTO = getUserWithCargoDTO();

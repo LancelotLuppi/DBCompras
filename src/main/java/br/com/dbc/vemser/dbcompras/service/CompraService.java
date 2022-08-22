@@ -56,7 +56,7 @@ public class CompraService {
 
         Set<ItemEntity> itens = compraServiceUtil.salvarItensDaCompra(compraCreateDTO, compraSalva);
         compraSalva.setItens(itens);
-        emailService.sendEmail(usuario.getNome(), compraSalva.getName(), usuario.getEmail(), StatusCompra.ABERTO);
+        emailService.sendEmail(usuario.getNome(), compraSalva.getName(), usuario.getEmail(), StatusCompra.ABERTO.getStatusCompra());
 
         return compraServiceUtil.converterCompraEntityToCompraDTO(compraSalva);
     }
@@ -174,7 +174,7 @@ public class CompraService {
         compra.setStatus(aprovacao == EnumAprovacao.APROVAR ? StatusCompra.APROVADO_FINANCEIRO : StatusCompra.REPROVADO_FINANCEIRO);
 
         CompraEntity compraSalva = compraRepository.save(compra);
-        emailService.sendEmail(compraSalva.getUsuario().getNome(), compraSalva.getName(), compraSalva.getUsuario().getEmail(), compraSalva.getStatus());
+        emailService.sendEmail(compraSalva.getUsuario().getNome(), compraSalva.getName(), compraSalva.getUsuario().getEmail(), compraSalva.getStatus().getStatusCompra());
         return compraServiceUtil.converterCompraEntityToCompraWithValor(compra);
     }
 
@@ -196,7 +196,7 @@ public class CompraService {
 
         compra.setStatus(StatusCompra.REPROVADO_GESTOR);
         compra = compraRepository.save(compra);
-        emailService.sendEmail(compra.getUsuario().getNome(), compra.getName(), compra.getUsuario().getEmail(), compra.getStatus());
+        emailService.sendEmail(compra.getUsuario().getNome(), compra.getName(), compra.getUsuario().getEmail(), compra.getStatus().getStatusCompra());
         return compraServiceUtil.converterCompraEntityToCompraDTO(compra);
     }
 
