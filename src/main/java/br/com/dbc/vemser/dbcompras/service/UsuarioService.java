@@ -11,9 +11,9 @@ import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.repository.CargoRepository;
 import br.com.dbc.vemser.dbcompras.repository.UsuarioRepository;
 import br.com.dbc.vemser.dbcompras.util.UsuarioServiceUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +25,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
-
-    private final ObjectMapper objectMapper;
     private final CargoRepository cargoRepository;
     private final UsuarioServiceUtil usuarioServiceUtil;
 
@@ -141,7 +139,13 @@ public class UsuarioService {
     }
 
     public String validarLogin(UserLoginDTO login) throws RegraDeNegocioException {
+        try {
             return usuarioServiceUtil.recuperarToken(login.getEmail(), login.getPassword());
+        } catch (BadCredentialsException ex) {
+            ex.printStackTrace();
+            throw new RegraDeNegocioException("Usuário ou senha inválidos");
+        }
+
     }
 
     public List<UserWithCargoDTO> list() {

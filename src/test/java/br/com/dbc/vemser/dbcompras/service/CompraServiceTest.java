@@ -285,23 +285,22 @@ public class CompraServiceTest {
         verify(itemRepository, times(1)).delete(any(ItemEntity.class));
     }
 
-    @Test
-    public void deveRetornarCompraRelatorioDTOComSucesso () {
-
-        List<CompraRelatorioDTO> compraRelatorioDTOList = new ArrayList<>();
-        CompraRelatorioDTO compraRelatorioDTO = new CompraRelatorioDTO();
-        compraRelatorioDTO.setIdCompra(10);
-        compraRelatorioDTOList.add(compraRelatorioDTO);
-        Integer idCompra = 10;
-
-        when(compraRepository.findByCompraId(anyInt())).thenReturn(compraRelatorioDTOList);
-
-        List<CompraRelatorioDTO> dtoList = compraService.relatorioCompras(idCompra);
-
-        assertNotNull(compraRelatorioDTOList);
-        assertFalse(compraRelatorioDTOList.isEmpty());
-
-    }
+//    @Test
+//    public void deveRetornarCompraRelatorioDTOComSucesso () {
+//
+//        List<CompraRelatorioDTO> compraRelatorioDTOList = new ArrayList<>();
+//        CompraRelatorioDTO compraRelatorioDTO = new CompraRelatorioDTO();
+//        compraRelatorioDTO.setIdCompra(10);
+//        compraRelatorioDTOList.add(compraRelatorioDTO);
+//        Integer idCompra = 10;
+//
+//        when(compraRepository.findByCompraId(anyInt())).thenReturn(compraRelatorioDTOList);
+//
+//        List<CompraRelatorioDTO> dtoList = compraService.relatorioCompras(idCompra);
+//
+//        assertNotNull(compraRelatorioDTOList);
+//        assertFalse(compraRelatorioDTOList.isEmpty());
+//    }
 
     @Test
     public void deveTestarAprovarCompraFinanceiro () throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
