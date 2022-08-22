@@ -36,7 +36,7 @@ public class CompraServiceUtil {
 
     private final CompraRepository compraRepository;
 
-    private final CotacaoXItemService cotacaoXItemService;
+    private final CotacaoXItemRepository cotacaoXItemRepository;
 
 
     public CompraEntity findByID(Integer idCompra) throws UsuarioException, EntidadeNaoEncontradaException {
@@ -98,14 +98,7 @@ public class CompraServiceUtil {
                                 cotacaoXItemPK.setIdCotacao(cotacaoEntity.getIdCotacao());
                                 cotacaoXItemPK.setIdItem(item.getIdItem());
 
-                                CotacaoXItemEntity cotacaoXItem = new CotacaoXItemEntity();
-
-
-                                try {
-                                    cotacaoXItem = cotacaoXItemService.findById(cotacaoXItemPK);
-                                } catch (EntidadeNaoEncontradaException e) {
-                                    throw new RuntimeException(e);
-                                }
+                                CotacaoXItemEntity cotacaoXItem = cotacaoXItemRepository.findById(cotacaoXItemPK).get();
                                 itemComValor.setIdItem(item.getIdItem());
                                 itemComValor.setNome(item.getNome());
                                 itemComValor.setValorUnitario(cotacaoXItem.getValorDoItem());

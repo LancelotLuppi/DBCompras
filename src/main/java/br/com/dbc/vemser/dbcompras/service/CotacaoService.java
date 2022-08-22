@@ -42,8 +42,6 @@ public class CotacaoService {
     private final ItemServiceUtil itemServiceUtil;
     private final EmailService emailService;
 
-    private final CotacaoXItemService cotacaoXItemService;
-
 
     public void create(Integer idCompra, CotacaoCreateDTO cotacaoDTO) throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
         CompraEntity compraCotada = compraRepository.findById(idCompra).orElseThrow(() -> new EntidadeNaoEncontradaException("Compra inexistente"));
@@ -105,13 +103,7 @@ public class CotacaoService {
                                           cotacaoXItemPK.setIdCotacao(cotacaoEntity.getIdCotacao());
                                           cotacaoXItemPK.setIdItem(item.getIdItem());
 
-                                          CotacaoXItemEntity cotacaoXItem = new CotacaoXItemEntity();
-
-                                          try {
-                                              cotacaoXItem = cotacaoXItemService.findById(cotacaoXItemPK);
-                                          } catch (EntidadeNaoEncontradaException e) {
-                                              throw new RuntimeException(e);
-                                          }
+                                          CotacaoXItemEntity cotacaoXItem = cotacaoXItemRepository.findById(cotacaoXItemPK).get();
                                           itemComValor.setIdItem(item.getIdItem());
                                           itemComValor.setNome(item.getNome());
                                           itemComValor.setValorUnitario(cotacaoXItem.getValorDoItem());

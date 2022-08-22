@@ -285,25 +285,27 @@ public class CompraServiceTest {
         verify(itemRepository, times(1)).delete(any(ItemEntity.class));
     }
 
-//    @Test
-//    public void deveRetornarCompraRelatorioDTOComSucesso () {
-//
-//        List<CompraRelatorioDTO> compraRelatorioDTOList = new ArrayList<>();
-//        CompraRelatorioDTO compraRelatorioDTO = new CompraRelatorioDTO();
-//        compraRelatorioDTO.setIdCompra(10);
-//        compraRelatorioDTOList.add(compraRelatorioDTO);
-//        Integer idCompra = 10;
-//
-//        when(compraRepository.findByCompraId(anyInt())).thenReturn(compraRelatorioDTOList);
-//
-//        List<CompraRelatorioDTO> dtoList = compraService.relatorioCompras(idCompra);
-//
-//        assertNotNull(compraRelatorioDTOList);
-//        assertFalse(compraRelatorioDTOList.isEmpty());
-//    }
+    @Test
+    public void deveRetornarCompraRelatorioDTOComSucesso () {
+        List<CompraRelatorioDTO> compraRelatorioDTOList = new ArrayList<>();
+        CompraRelatorioDTO compraRelatorioDTO = new CompraRelatorioDTO();
+        CompraEntity compra = getCompraEntity();
+        compraRelatorioDTO.setIdCompra(10);
+        compraRelatorioDTOList.add(compraRelatorioDTO);
+        Integer idCompra = 10;
+
+        when(compraRepository.findByCompraId(anyInt())).thenReturn(compraRelatorioDTOList);
+        when(compraRepository.findById(anyInt())).thenReturn(Optional.of(compra));
+
+
+        List<CompraRelatorioRetornoDTO> dtoList = compraService.relatorioCompras(idCompra);
+
+        assertNotNull(dtoList);
+        assertFalse(dtoList.isEmpty());
+    }
 
     @Test
-    public void deveTestarAprovarCompraFinanceiro () throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
+    public void deveTestarAprovarCompraFinanceiro () throws EntidadeNaoEncontradaException, RegraDeNegocioException {
 
         CompraEntity compra = getCompraEntity();
         compra.setStatus(StatusCompra.APROVADO_GESTOR);
@@ -538,6 +540,7 @@ public class CompraServiceTest {
 
     private static CompraEntity getCompraEntity () {
         CompraEntity compra = new CompraEntity();
+
         compra.setIdCompra(10);
         compra.setDataCompra(LocalDateTime.of(1991, 9, 8,10,20));
         compra.setUsuario(getUsuarioEntity());
@@ -545,7 +548,13 @@ public class CompraServiceTest {
         compra.setName("compra");
         compra.setDescricao("compra");
         compra.setValorTotal(10.0);
-        compra.setItens(null);
+
+        ItemEntity itemEntity = new ItemEntity();
+        itemEntity.setIdItem(12);
+        itemEntity.setNome("batata");
+        itemEntity.setQuantidade(3);
+
+        compra.setItens(Set.of(itemEntity));
         compra.setCotacoes(null);
         return compra;
     }

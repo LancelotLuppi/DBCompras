@@ -11,6 +11,7 @@ import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.repository.CargoRepository;
 import br.com.dbc.vemser.dbcompras.repository.UsuarioRepository;
 import br.com.dbc.vemser.dbcompras.util.UsuarioServiceUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -27,7 +28,7 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final CargoRepository cargoRepository;
     private final UsuarioServiceUtil usuarioServiceUtil;
-
+    private final ObjectMapper objectMapper;
     private final Argon2PasswordEncoder passwordEncoder;
 
 
