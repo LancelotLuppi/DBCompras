@@ -3,7 +3,6 @@ package br.com.dbc.vemser.dbcompras.util;
 import br.com.dbc.vemser.dbcompras.entity.CompraEntity;
 import br.com.dbc.vemser.dbcompras.entity.ItemEntity;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
-import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
