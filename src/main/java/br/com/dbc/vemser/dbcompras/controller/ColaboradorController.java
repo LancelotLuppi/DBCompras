@@ -62,7 +62,7 @@ public class ColaboradorController {
     @DeleteMapping("/item/{idCompra}/{idItem}")
     public ResponseEntity<Void> deleteItem (@PathVariable("idCompra") Integer idCompra,
                                             @PathVariable("idItem") Integer idItem) throws
-            EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException, RegraDeNegocioException {
+            EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
         compraService.removerItensDaCompra(idCompra, idItem);
         return ResponseEntity.noContent().build();
     }

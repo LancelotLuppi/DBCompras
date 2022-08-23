@@ -1,6 +1,7 @@
 package br.com.dbc.vemser.dbcompras.controller;
 
-import br.com.dbc.vemser.dbcompras.dto.usuario.*;
+import br.com.dbc.vemser.dbcompras.dto.usuario.UserCreateDTO;
+import br.com.dbc.vemser.dbcompras.dto.usuario.UserWithCargoDTO;
 import br.com.dbc.vemser.dbcompras.enums.ControlarAcesso;
 import br.com.dbc.vemser.dbcompras.enums.TipoCargo;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
