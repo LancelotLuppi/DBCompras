@@ -16,6 +16,7 @@ import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.repository.CompraRepository;
 import br.com.dbc.vemser.dbcompras.repository.ItemRepository;
 import br.com.dbc.vemser.dbcompras.util.CompraServiceUtil;
+import br.com.dbc.vemser.dbcompras.util.ExceptionUtil;
 import br.com.dbc.vemser.dbcompras.util.ItemServiceUtil;
 import br.com.dbc.vemser.dbcompras.util.UsuarioServiceUtil;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -57,6 +58,7 @@ public class CompraServiceTest {
     @Mock
     private EmailService emailService;
     private ObjectMapper objectMapper = new ObjectMapper();
+    private ExceptionUtil exceptionUtil = new ExceptionUtil();
 
     @Before
     public void init() {
@@ -65,6 +67,7 @@ public class CompraServiceTest {
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         ReflectionTestUtils.setField(compraService, "objectMapper", objectMapper);
+        ReflectionTestUtils.setField(compraService, "exceptionUtil", exceptionUtil);
     }
 
     @Test
@@ -280,6 +283,7 @@ public class CompraServiceTest {
         when(compraRepository.save(any(CompraEntity.class))).thenReturn(compra);
         when(compraServiceUtil.converterCompraEntityToCompraDTO(any(CompraEntity.class))).thenReturn(compraDTO);
 
+
         compraService.removerItensDaCompra(idCompra, idItem);
 
         verify(itemRepository, times(1)).delete(any(ItemEntity.class));
@@ -365,6 +369,7 @@ public class CompraServiceTest {
         cotacaoEntities.add(cotacao1);
         cotacaoEntities.add(cotacao);
         compra.setCotacoes(cotacaoEntities);
+        compra.setStatus(StatusCompra.EM_COTACAO);
         StatusCompra statusCompra = StatusCompra.COTADO;
         Integer idCompra = 10;
         CompraDTO compraDTO = getCompraDTO();
