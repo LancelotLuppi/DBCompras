@@ -156,7 +156,7 @@ public class CotacaoService {
         compraRepository.save(compra);
         cotacao = cotacaoRepository.save(cotacao);
 
-        emailService.sendEmail(compra.getUsuario().getNome(), compra.getName(), compra.getUsuario().getNome(), compra.getStatus().getStatusCompra());
+//        emailService.sendEmail(compra.getUsuario().getNome(), compra.getName(), compra.getUsuario().getNome(), compra.getStatus().getStatusCompra());
 
         return cotacaoServiceUtil.converterCotacaoToCotacaoDTO(cotacao);
     }

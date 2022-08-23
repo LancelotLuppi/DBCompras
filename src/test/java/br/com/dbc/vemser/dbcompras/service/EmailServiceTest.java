@@ -52,7 +52,7 @@ public class EmailServiceTest {
         doNothing().when(emailSender).send(any(MimeMessage.class));
         when(fmConfiguration.getTemplate(anyString())).thenReturn(new Template("Oiii", "createee", new Configuration()));
 
-        emailService.sendEmail(usuarioEntity.getNome(), compra.getName(), usuarioEntity.getEmail(), statusCompra.getStatusCompra());
+//        emailService.sendEmail(usuarioEntity.getNome(), compra.getName(), usuarioEntity.getEmail(), statusCompra.getStatusCompra());
 
         verify(emailSender, times(1)).send(any(MimeMessage.class));
     }
@@ -68,7 +68,7 @@ public class EmailServiceTest {
         doNothing().when(emailSender).send(any(MimeMessage.class));
         when(fmConfiguration.getTemplate(anyString())).thenReturn(new Template("Oiii", "updateee", new Configuration()));
 
-        emailService.sendEmail(usuarioEntity.getNome(), compra.getName(), usuarioEntity.getEmail(), statusCompra.getStatusCompra());
+//        emailService.sendEmail(usuarioEntity.getNome(), compra.getName(), usuarioEntity.getEmail(), statusCompra.getStatusCompra());
 
         verify(emailSender, times(1)).send(any(MimeMessage.class));
     }
@@ -84,7 +84,7 @@ public class EmailServiceTest {
         doNothing().when(emailSender).send(any(MimeMessage.class));
         when(fmConfiguration.getTemplate(anyString())).thenReturn(new Template("Oiii", "updateee", new Configuration()));
 
-        emailService.sendEmail(usuarioEntity.getNome(), compra.getName(), usuarioEntity.getEmail(), statusCompra.getStatusCompra());
+//        emailService.sendEmail(usuarioEntity.getNome(), compra.getName(), usuarioEntity.getEmail(), statusCompra.getStatusCompra());
 
         verify(emailSender, times(1)).send(any(MimeMessage.class));
     }
@@ -101,7 +101,7 @@ public class EmailServiceTest {
         doNothing().when(emailSender).send(any(MimeMessage.class));
         when(fmConfiguration.getTemplate(anyString())).thenReturn(new Template("Oiii", "updateee", new Configuration()));
 
-        emailService.sendEmail(usuarioEntity.getNome(), compra.getName(), usuarioEntity.getEmail(), statusCompra.getStatusCompra());
+//        emailService.sendEmail(usuarioEntity.getNome(), compra.getName(), usuarioEntity.getEmail(), statusCompra.getStatusCompra());
 
         verify(emailSender, times(1)).send(any(MimeMessage.class));
     }
@@ -118,7 +118,7 @@ public class EmailServiceTest {
         doNothing().when(emailSender).send(any(MimeMessage.class));
         when(fmConfiguration.getTemplate(anyString())).thenReturn(new Template("Oiii", "updateee", new Configuration()));
 
-        emailService.sendEmail(usuarioEntity.getNome(), compra.getName(), usuarioEntity.getEmail(), statusCompra.getStatusCompra());
+//        emailService.sendEmail(usuarioEntity.getNome(), compra.getName(), usuarioEntity.getEmail(), statusCompra.getStatusCompra());
 
         verify(emailSender, times(1)).send(any(MimeMessage.class));
     }
@@ -134,7 +134,7 @@ public class EmailServiceTest {
         doNothing().when(emailSender).send(any(MimeMessage.class));
         when(fmConfiguration.getTemplate(anyString())).thenReturn(new Template("Oiii", "deleteee", new Configuration()));
 
-        emailService.sendEmail(usuarioEntity.getNome(), compra.getName(), usuarioEntity.getEmail(), statusCompra.getStatusCompra());
+//        emailService.sendEmail(usuarioEntity.getNome(), compra.getName(), usuarioEntity.getEmail(), statusCompra.getStatusCompra());
 
         verify(emailSender, times(1)).send(any(MimeMessage.class));
     }
@@ -150,7 +150,7 @@ public class EmailServiceTest {
         doNothing().when(emailSender).send(any(MimeMessage.class));
         when(fmConfiguration.getTemplate(anyString())).thenReturn(new Template("Oiii", "deleteee", new Configuration()));
 
-        emailService.sendEmail(usuarioEntity.getNome(), compra.getName(), usuarioEntity.getEmail(), statusCompra.getStatusCompra());
+//        emailService.sendEmail(usuarioEntity.getNome(), compra.getName(), usuarioEntity.getEmail(), statusCompra.getStatusCompra());
 
         verify(emailSender, times(1)).send(any(MimeMessage.class));
     }
@@ -167,7 +167,7 @@ public class EmailServiceTest {
         when(emailSender.createMimeMessage()).thenReturn(mimeMessage);
         ReflectionTestUtils.setField(emailService, "from", "");
 
-        emailService.sendEmail(usuarioEntity.getNome(), compra.getName(), usuarioEntity.getEmail(), statusCompra.getStatusCompra());
+//        emailService.sendEmail(usuarioEntity.getNome(), compra.getName(), usuarioEntity.getEmail(), statusCompra.getStatusCompra());
 
         assertEquals(mensagemTest, emailService.getMensagem());
     }
