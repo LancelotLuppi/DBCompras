@@ -86,7 +86,7 @@ public class CompraServiceTest {
         when(compraRepository.save(any(CompraEntity.class))).thenReturn(compra);
         when(compraServiceUtil.salvarItensDaCompra(eq(compraCreateDTO), eq(compra))).thenReturn(itens);
         when(compraServiceUtil.converterCompraEntityToCompraDTO(any(CompraEntity.class))).thenReturn(compraDTO);
-        doNothing().when(emailService).sendEmail(anyString(), anyString(), anyString(), anyString());
+//        doNothing().when(emailService).sendEmail(anyString(), anyString(), anyString(), anyString());
 
         CompraDTO compraDTO1 = compraService.create(compraCreateDTO);
 
@@ -409,7 +409,7 @@ public class CompraServiceTest {
 
         when(compraServiceUtil.findByIDCompra(anyInt())).thenReturn(compra);
         when(compraRepository.save(any(CompraEntity.class))).thenReturn(compraRetorno);
-        doNothing().when(emailService).sendEmail(anyString(), anyString(), anyString(), anyString());
+//        doNothing().when(emailService).sendEmail(anyString(), anyString(), anyString(), anyString());
 
         compraService.reprovarCompraGestor(idCompra);
 
