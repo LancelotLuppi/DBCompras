@@ -127,7 +127,7 @@ public class CompraServiceTest {
         when(compraRepository.findById(anyInt())).thenReturn(Optional.of(compra));
         when(compraServiceUtil.converterEntityParaListDTO(any(CompraEntity.class))).thenReturn(compraListDTO);
 
-        List<CompraListDTO> compraListDTOS = compraService.listColaborador(id);
+        List<CompraListDTO> compraListDTOS = compraService.listarComprasColaborador(id);
 
         assertNotNull(compraListDTOS);
         assertFalse(compraListDTOS.isEmpty());
@@ -150,7 +150,7 @@ public class CompraServiceTest {
         when(usuarioServiceUtil.getIdLoggedUser()).thenReturn(numero);
         when(compraServiceUtil.converterEntityParaListDTO(any(CompraEntity.class))).thenReturn(compraListDTO);
 
-        List<CompraListDTO> compraListDTOS = compraService.listColaborador(id);
+        List<CompraListDTO> compraListDTOS = compraService.listarComprasColaborador(id);
 
         assertNotNull(compraListDTOS);
         assertFalse(compraListDTOS.isEmpty());
@@ -178,7 +178,7 @@ public class CompraServiceTest {
         when(compraRepository.save(any(CompraEntity.class))).thenReturn(compra);
         when(compraServiceUtil.converterCompraEntityToCompraDTO(any(CompraEntity.class))).thenReturn(compraDTO);
 
-        CompraDTO compraDTO1 = compraService.updateTeste(idCompra, compraCreateDTO);
+        CompraDTO compraDTO1 = compraService.updateComNovosItens(idCompra, compraCreateDTO);
 
         assertNotNull(compraDTO1);
         assertEquals(compraDTO.getName(), compraDTO1.getName());
@@ -241,7 +241,7 @@ public class CompraServiceTest {
         doNothing().when(compraServiceUtil).verificarCompraDoUserLogado(anyInt());
         when(compraServiceUtil.findByIDCompra(anyInt())).thenReturn(compra);
 
-        CompraDTO compraDTO1 = compraService.updateTeste(idCompra, compraCreateDTO);
+        CompraDTO compraDTO1 = compraService.updateComNovosItens(idCompra, compraCreateDTO);
 
     }
 
