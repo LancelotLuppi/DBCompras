@@ -1,10 +1,15 @@
 package br.com.dbc.vemser.dbcompras.service;
 
 import br.com.dbc.vemser.dbcompras.dto.compra.ComprasComCotacaoDTO;
-import br.com.dbc.vemser.dbcompras.dto.cotacao.*;
+import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoComItemDTO;
+import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoCreateDTO;
+import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoDTO;
+import br.com.dbc.vemser.dbcompras.dto.cotacao.CotacaoValorItensDTO;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemValorizadoDTO;
-import br.com.dbc.vemser.dbcompras.entity.*;
+import br.com.dbc.vemser.dbcompras.entity.CompraEntity;
+import br.com.dbc.vemser.dbcompras.entity.CotacaoEntity;
 import br.com.dbc.vemser.dbcompras.entity.CotacaoXItemEntity;
+import br.com.dbc.vemser.dbcompras.entity.ItemEntity;
 import br.com.dbc.vemser.dbcompras.entity.pk.CotacaoXItemPK;
 import br.com.dbc.vemser.dbcompras.enums.EnumAprovacao;
 import br.com.dbc.vemser.dbcompras.enums.StatusCompra;
