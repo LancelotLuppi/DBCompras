@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -18,7 +17,6 @@ import java.util.Set;
 @Setter
 @Entity(name = "purchase")
 public class CompraEntity implements java.io.Serializable{
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_COMPRA")
@@ -59,7 +57,4 @@ public class CompraEntity implements java.io.Serializable{
     @JoinColumn(name = "id_purchase",
             referencedColumnName = "id_purchase")
     private Set<CotacaoEntity> cotacoes;
-
-
-
 }
