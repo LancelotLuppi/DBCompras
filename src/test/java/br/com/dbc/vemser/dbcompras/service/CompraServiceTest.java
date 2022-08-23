@@ -16,6 +16,7 @@ import br.com.dbc.vemser.dbcompras.exception.UsuarioException;
 import br.com.dbc.vemser.dbcompras.repository.CompraRepository;
 import br.com.dbc.vemser.dbcompras.repository.ItemRepository;
 import br.com.dbc.vemser.dbcompras.util.CompraServiceUtil;
+import br.com.dbc.vemser.dbcompras.util.ExceptionUtil;
 import br.com.dbc.vemser.dbcompras.util.ItemServiceUtil;
 import br.com.dbc.vemser.dbcompras.util.UsuarioServiceUtil;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -57,6 +58,7 @@ public class CompraServiceTest {
     @Mock
     private EmailService emailService;
     private ObjectMapper objectMapper = new ObjectMapper();
+    private ExceptionUtil exceptionUtil = new ExceptionUtil();
 
     @Before
     public void init() {
@@ -65,6 +67,7 @@ public class CompraServiceTest {
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         ReflectionTestUtils.setField(compraService, "objectMapper", objectMapper);
+        ReflectionTestUtils.setField(compraService, "exceptionUtil", exceptionUtil);
     }
 
     @Test
@@ -127,7 +130,7 @@ public class CompraServiceTest {
         when(compraRepository.findById(anyInt())).thenReturn(Optional.of(compra));
         when(compraServiceUtil.converterEntityParaListDTO(any(CompraEntity.class))).thenReturn(compraListDTO);
 
-        List<CompraListDTO> compraListDTOS = compraService.listColaborador(id);
+        List<CompraListDTO> compraListDTOS = compraService.listarComprasColaborador(id);
 
         assertNotNull(compraListDTOS);
         assertFalse(compraListDTOS.isEmpty());
@@ -150,7 +153,7 @@ public class CompraServiceTest {
         when(usuarioServiceUtil.getIdLoggedUser()).thenReturn(numero);
         when(compraServiceUtil.converterEntityParaListDTO(any(CompraEntity.class))).thenReturn(compraListDTO);
 
-        List<CompraListDTO> compraListDTOS = compraService.listColaborador(id);
+        List<CompraListDTO> compraListDTOS = compraService.listarComprasColaborador(id);
 
         assertNotNull(compraListDTOS);
         assertFalse(compraListDTOS.isEmpty());
@@ -178,7 +181,7 @@ public class CompraServiceTest {
         when(compraRepository.save(any(CompraEntity.class))).thenReturn(compra);
         when(compraServiceUtil.converterCompraEntityToCompraDTO(any(CompraEntity.class))).thenReturn(compraDTO);
 
-        CompraDTO compraDTO1 = compraService.updateTeste(idCompra, compraCreateDTO);
+        CompraDTO compraDTO1 = compraService.updateComNovosItens(idCompra, compraCreateDTO);
 
         assertNotNull(compraDTO1);
         assertEquals(compraDTO.getName(), compraDTO1.getName());
@@ -241,7 +244,7 @@ public class CompraServiceTest {
         doNothing().when(compraServiceUtil).verificarCompraDoUserLogado(anyInt());
         when(compraServiceUtil.findByIDCompra(anyInt())).thenReturn(compra);
 
-        CompraDTO compraDTO1 = compraService.updateTeste(idCompra, compraCreateDTO);
+        CompraDTO compraDTO1 = compraService.updateComNovosItens(idCompra, compraCreateDTO);
 
     }
 
@@ -279,6 +282,7 @@ public class CompraServiceTest {
         when(itemRepository.findById(anyInt())).thenReturn(Optional.of(item));
         when(compraRepository.save(any(CompraEntity.class))).thenReturn(compra);
         when(compraServiceUtil.converterCompraEntityToCompraDTO(any(CompraEntity.class))).thenReturn(compraDTO);
+
 
         compraService.removerItensDaCompra(idCompra, idItem);
 
@@ -365,6 +369,7 @@ public class CompraServiceTest {
         cotacaoEntities.add(cotacao1);
         cotacaoEntities.add(cotacao);
         compra.setCotacoes(cotacaoEntities);
+        compra.setStatus(StatusCompra.EM_COTACAO);
         StatusCompra statusCompra = StatusCompra.COTADO;
         Integer idCompra = 10;
         CompraDTO compraDTO = getCompraDTO();

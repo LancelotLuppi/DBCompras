@@ -1,7 +1,5 @@
 package br.com.dbc.vemser.dbcompras.entity;
 
-import br.com.dbc.vemser.dbcompras.entity.CotacaoEntity;
-import br.com.dbc.vemser.dbcompras.entity.ItemEntity;
 import br.com.dbc.vemser.dbcompras.entity.pk.CotacaoXItemPK;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

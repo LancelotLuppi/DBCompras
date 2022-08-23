@@ -27,10 +27,10 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -77,8 +77,9 @@ public class UsuarioServiceUtilsTest {
     public void deveTestarFindByIdSemSucesso () throws RegraDeNegocioException {
         UsuarioEntity usuario = getUsuarioEntity();
 
-        UsuarioEntity usuario1 = usuarioServiceUtil.findById(usuario.getIdUser());
+        when(usuarioRepository.findById(anyInt())).thenReturn(Optional.empty());
 
+        usuarioServiceUtil.findById(usuario.getIdUser());
     }
 
     @Test
@@ -91,65 +92,59 @@ public class UsuarioServiceUtilsTest {
         UsuarioEntity usuarioEntity = usuarioServiceUtil.retornarUsuarioEntityLogado();
 
         assertNotNull(usuarioEntity);
-
     }
 
     @Test
-    public void deveTestarBuscarIdDoUsuarioLogado () throws UsuarioException {
-
-        Integer idUser = 10;
+    public void deveTestarBuscarIdDoUsuarioLogadoComSucesso () throws UsuarioException {
         criarUsuarioLogado();
 
         Integer idUserEntity = usuarioServiceUtil.getIdLoggedUser();
 
         assertNotNull(idUserEntity);
+        assertEquals(123, idUserEntity);
+    }
 
+    @Test(expected = UsuarioException.class)
+    public void deveTestarBuscarIdDoUsuarioLogadoSemSucesso () throws UsuarioException {
+        usuarioServiceUtil.getIdLoggedUser();
     }
 
     @Test
-    public void deveTestarValidarEmailComSucesso () throws RegraDeNegocioException {
-
+    public void deveTestarValidarEmailComPadraoDBC () throws RegraDeNegocioException {
         String email = "teste@dbccompany.com.br";
-
         usuarioServiceUtil.validarEmail(email);
-
     }
 
     @Test(expected = RegraDeNegocioException.class)
-    public void deveTestarNaoValidarEmailComSucesso () throws RegraDeNegocioException {
-
+    public void deveTestarValidarEmailForaDoPadraoDBC () throws RegraDeNegocioException {
         String email = "teste@gmail.com.br";
-
         usuarioServiceUtil.validarEmail(email);
-
     }
 
     @Test
-    public void deveValidarFormatacaoDeSenha() throws RegraDeNegocioException {
+    public void deveValidarFormatacaoDeSenhaCorreta() throws RegraDeNegocioException {
         String senha = "Ir@nmam98";
-
         usuarioServiceUtil.validarFormatacaoSenha(senha);
     }
 
     @Test(expected = RegraDeNegocioException.class)
-    public void deveNaoValidarFormatacaoDeSenha() throws RegraDeNegocioException {
+    public void deveValidarFormatacaoDeSenhaIncorreta() throws RegraDeNegocioException {
         String senha = "Ir@nmam";
-
         usuarioServiceUtil.validarFormatacaoSenha(senha);
     }
 
-    @Test
-    public void deveVerificarSenhaDoUsuario () throws UsuarioException {
+    @Test()
+    public void deveTestarVerificarSeEmailTemCadastroSem() throws RegraDeNegocioException {
+        when(usuarioRepository.findByEmail(anyString())).thenReturn(Optional.empty());
+        usuarioServiceUtil.verificarSeEmailTemCadastro("umEmail@mail.com");
+    }
 
-        boolean teste = false;
-
-        String testeSenha = "AtackOnT1t@n";
+    @Test(expected = RegraDeNegocioException.class)
+    public void deveTestarVerificarSeEmailTemCadastroComCadastro() throws RegraDeNegocioException {
         UsuarioEntity usuario = getUsuarioEntity();
+        when(usuarioRepository.findByEmail(anyString())).thenReturn(Optional.of(usuario));
 
-        boolean resultado = usuarioServiceUtil.verificarSenhaUsuario(testeSenha,usuario);
-
-        assertEquals(resultado, teste);
-
+        usuarioServiceUtil.verificarSeEmailTemCadastro("umEmail@mail.com");
     }
 
 

@@ -37,7 +37,7 @@ public class ColaboradorController {
 
     @PutMapping("compra/novos-itens/{idCompra}")
     public ResponseEntity<CompraDTO> updateNovosItens(@PathVariable Integer idCompra, @Valid @RequestBody CompraCreateDTO compraDTO) throws EntidadeNaoEncontradaException, UsuarioException, RegraDeNegocioException {
-        return ResponseEntity.ok(compraService.updateTeste(idCompra, compraDTO));
+        return ResponseEntity.ok(compraService.updateComNovosItens(idCompra, compraDTO));
     }
 
     @PutMapping("/item")
@@ -49,7 +49,7 @@ public class ColaboradorController {
     @GetMapping("/compras")
     public ResponseEntity<List<CompraListDTO>> listCompras (@RequestParam(required = false) Integer idCompra) throws
             UsuarioException, RegraDeNegocioException {
-        return ResponseEntity.ok(compraService.listColaborador(idCompra));
+        return ResponseEntity.ok(compraService.listarComprasColaborador(idCompra));
     }
 
     @DeleteMapping("/compra/{id}")

@@ -1,6 +1,9 @@
 package br.com.dbc.vemser.dbcompras.util;
 
-import br.com.dbc.vemser.dbcompras.dto.compra.*;
+import br.com.dbc.vemser.dbcompras.dto.compra.CompraCreateDTO;
+import br.com.dbc.vemser.dbcompras.dto.compra.CompraDTO;
+import br.com.dbc.vemser.dbcompras.dto.compra.CompraListDTO;
+import br.com.dbc.vemser.dbcompras.dto.compra.CompraWithValorItensDTO;
 import br.com.dbc.vemser.dbcompras.dto.item.ItemCreateDTO;
 import br.com.dbc.vemser.dbcompras.entity.*;
 import br.com.dbc.vemser.dbcompras.entity.pk.CotacaoXItemPK;
@@ -15,7 +18,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.checkerframework.checker.nullness.Opt;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
