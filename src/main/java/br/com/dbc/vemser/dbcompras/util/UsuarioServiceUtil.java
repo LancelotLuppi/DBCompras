@@ -1,7 +1,10 @@
 package br.com.dbc.vemser.dbcompras.util;
 
 import br.com.dbc.vemser.dbcompras.dto.cargo.CargoDTO;
-import br.com.dbc.vemser.dbcompras.dto.usuario.*;
+import br.com.dbc.vemser.dbcompras.dto.usuario.UserCreateDTO;
+import br.com.dbc.vemser.dbcompras.dto.usuario.UserDTO;
+import br.com.dbc.vemser.dbcompras.dto.usuario.UserLoginComSucessoDTO;
+import br.com.dbc.vemser.dbcompras.dto.usuario.UserWithCargoDTO;
 import br.com.dbc.vemser.dbcompras.entity.CargoEntity;
 import br.com.dbc.vemser.dbcompras.entity.UsuarioEntity;
 import br.com.dbc.vemser.dbcompras.exception.RegraDeNegocioException;
@@ -10,7 +13,6 @@ import br.com.dbc.vemser.dbcompras.repository.UsuarioRepository;
 import br.com.dbc.vemser.dbcompras.security.TokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,7 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-@Slf4j
+
 @Component
 @RequiredArgsConstructor
 public class UsuarioServiceUtil {
@@ -71,7 +73,6 @@ public class UsuarioServiceUtil {
 
     public void validarEmail(String emailParaValidar) throws RegraDeNegocioException {
         if (emailParaValidar.matches("^(.+)@dbccompany.com.br")) {
-            log.info("Email validado");
         } else {
             throw new RegraDeNegocioException("Insira um email DBC válido");
         }
@@ -85,14 +86,12 @@ public class UsuarioServiceUtil {
 
     public void validarFormatacaoSenha(String senhaParaValidar) throws RegraDeNegocioException {
         if (senhaParaValidar.matches("^(?=.*[A-Z])(?=.*[.!@$%^&(){}:;<>,?/~_+-=|])(?=.*[0-9])(?=.*[a-z]).{8,16}$")) {
-            log.info("Senha válida");
         } else {
             throw new RegraDeNegocioException("A senha deve ter entre 8 e 16 caracteres, com letras, números e caracteres especiais");
         }
     }
 
-    public boolean verificarSenhaUsuario(String senha, UsuarioEntity usuario) throws UsuarioException {
-
+    public boolean verificarSenhaUsuario(String senha, UsuarioEntity usuario) {
         return passwordEncoder.matches(senha, usuario.getPassword());
     }
 
@@ -115,18 +114,6 @@ public class UsuarioServiceUtil {
     public UserDTO retornarUsuarioDTO(UsuarioEntity usuario) {
         return objectMapper.convertValue(usuario, UserDTO.class);
     }
-
-    public UserCreateByAdminDTO retornarUsuarioCriadoDTO(UsuarioEntity usuario) {
-        CargoEntity cargo = usuario.getCargos().stream()
-                .findFirst()
-                .orElseThrow();
-        CargoDTO cargoDTOS = objectMapper.convertValue(cargo, CargoDTO.class);
-
-        UserCreateByAdminDTO userCriado = objectMapper.convertValue(usuario, UserCreateByAdminDTO.class);
-        userCriado.setCargoDTO(cargoDTOS);
-        return userCriado;
-    }
-
 
     public String encodePassword(String password) {
         return passwordEncoder.encode(password);

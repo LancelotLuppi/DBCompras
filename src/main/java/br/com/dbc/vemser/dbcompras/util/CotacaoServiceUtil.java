@@ -20,18 +20,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CotacaoServiceUtil {
     private final CotacaoRepository cotacaoRepository;
+    private final ExceptionUtil exceptionUtil;
     private final ObjectMapper objectMapper;
 
     public void verificarStatusDaCompraAndCotacao(CompraEntity compra, CotacaoEntity cotacao) throws RegraDeNegocioException {
-        if(!compra.getStatus().equals(StatusCompra.COTADO)) {
-            throw new RegraDeNegocioException("Essa compra não está permitida a ser aprovada!");
-        }
-        if (!cotacao.getStatus().equals(StatusCotacao.EM_ABERTO)) {
-            throw new RegraDeNegocioException("Esta cotação já foi aprovada");
-        }
-        if (compra.getCotacoes().size() < 2) {
-            throw new RegraDeNegocioException("Este usuario tem menos de duas cotações cadastradas");
-        }
+        exceptionUtil
+                .verificarCondicaoException(!compra.getStatus().equals(StatusCompra.COTADO),
+                        "Essa compra não está permitida a ser aprovada!");
+        exceptionUtil
+                .verificarCondicaoException(!cotacao.getStatus().equals(StatusCotacao.EM_ABERTO),
+                        "Esta cotação já foi concluída");
+        exceptionUtil
+                .verificarCondicaoException(compra.getCotacoes().size() < 2,
+                        "Este usuario tem menos de duas cotações cadastradas");
     }
 
     public CotacaoEntity findById(Integer idCotacao) throws EntidadeNaoEncontradaException {
