@@ -73,6 +73,7 @@ public class UsuarioServiceUtil {
 
     public void validarEmail(String emailParaValidar) throws RegraDeNegocioException {
         if (emailParaValidar.matches("^(.+)@dbccompany.com.br")) {
+            // FIXME Ajeitar esta lógica
         } else {
             throw new RegraDeNegocioException("Insira um email DBC válido");
         }
@@ -86,6 +87,7 @@ public class UsuarioServiceUtil {
 
     public void validarFormatacaoSenha(String senhaParaValidar) throws RegraDeNegocioException {
         if (senhaParaValidar.matches("^(?=.*[A-Z])(?=.*[.!@$%^&(){}:;<>,?/~_+-=|])(?=.*[0-9])(?=.*[a-z]).{8,16}$")) {
+            // FIXME Ajeitar esta lógica
         } else {
             throw new RegraDeNegocioException("A senha deve ter entre 8 e 16 caracteres, com letras, números e caracteres especiais");
         }

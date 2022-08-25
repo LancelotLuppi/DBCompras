@@ -90,7 +90,7 @@ public class CotacaoService {
     }
 
     public List<ComprasComCotacaoDTO> listarCompraComCotacao() {
-
+        // FIXME Melhorar consulta / performance (1 consulta só?)
         return compraRepository.findAll()
                 .stream()
                 .map(compraEntity -> {

@@ -55,10 +55,12 @@ public class EmailService {
             mimeMessageHelper.setText(geContentFromTemplate(nome, compra, email, statusCompra), true);
 
             emailSender.send(mimeMessageHelper.getMimeMessage());
-        } catch (MessagingException | IOException | TemplateException e) {
+        } catch (MessagingException | IOException | TemplateException  e) {
+            // FIXME melhorar esta parte de tratamento
 
-            e.printStackTrace();
             mensagem = "Exception verificada";
+        }  catch (Exception  e) {
+
         }
     }
 

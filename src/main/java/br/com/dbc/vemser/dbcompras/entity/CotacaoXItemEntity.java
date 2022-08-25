@@ -24,6 +24,7 @@ public class CotacaoXItemEntity {
     @Column(name = "total_value")
     private Double valorTotal;
 
+    // FIXME privates?
     @ManyToOne
     @MapsId("idCotacao")
     @JoinColumn(name = "id_quotation")
